@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.billboard.android.library)
     alias(libs.plugins.billboard.android.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -17,4 +18,7 @@ dependencies {
     api(libs.okhttp.logging)
     api(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
 }
