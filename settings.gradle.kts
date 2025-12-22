@@ -27,3 +27,5 @@ rootProject.name = "Billboard"
 include(":app")
 include(":core:design-system")
 include(":core:design-foundation")
+include(":core:network")
+include(":core:model")

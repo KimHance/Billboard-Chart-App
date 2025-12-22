@@ -61,5 +61,9 @@ gradlePlugin{
             id="hance.android.hilt"
             implementationClass = "HiltConventionPlugin"
         }
+        register("jvmLibrary") {
+            id = "hance.jvm.library"
+            implementationClass = "JvmLibraryConventionPlugin"
+        }
     }
 }

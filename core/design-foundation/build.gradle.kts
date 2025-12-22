@@ -1,5 +1,5 @@
 plugins {
-    id("hance.android.library.compose")
+    alias(libs.plugins.billboard.android.library.compose)
 }
 
 android {
