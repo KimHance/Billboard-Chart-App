@@ -28,7 +28,7 @@ import com.hancekim.billboard.core.designfoundation.icon.Album
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
-import com.hancekim.billboard.core.designsystem.componenet.image.BillboardAsyncImage
+import com.hancekim.billboard.core.imageloader.BillboardAsyncImage
 
 data class Carousel(
     val imgUrl: String,
@@ -50,18 +50,20 @@ fun CarouselItem(
             .background(colorScheme.bgCard),
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            modifier = Modifier
-                .fillMaxHeight(.35f)
-                .aspectRatio(1f / 1f),
-            imageVector = BillboardIcons.Album,
-            tint = colorScheme.textTertiary,
-            contentDescription = null,
-        )
         BillboardAsyncImage(
             modifier = Modifier.fillMaxSize(),
             model = item.imgUrl,
             contentDescription = null,
+            placeholder = {
+                Icon(
+                    modifier = Modifier
+                        .fillMaxHeight(.35f)
+                        .aspectRatio(1f / 1f),
+                    imageVector = BillboardIcons.Album,
+                    tint = colorScheme.textTertiary,
+                    contentDescription = null,
+                )
+            },
             contentScale = ContentScale.Crop
         )
         Canvas(modifier = Modifier.fillMaxSize()) {

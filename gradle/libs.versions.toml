@@ -66,6 +66,9 @@ lottie = "6.7.1"
 # circuie
 circuit = "0.31.0"
 
+# timber
+timber = "5.0.1"
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
@@ -132,6 +135,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidxRoom" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
 androidx-room-gradle-plugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "androidxRoom" }
+androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
 
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
@@ -176,8 +180,7 @@ circuit-navigation = { group = "com.slack.circuit", name = "circuitx-navigation"
 circuit-androidx-overlay = { group = "com.slack.circuit", name = "circuitx-overlays", version.ref = "circuit" }
 circuit-codegen-annotations = { module = "com.slack.circuit:circuit-codegen-annotations", version.ref = "circuit" }
 circuit-codegen = { module = "com.slack.circuit:circuit-codegen", version.ref = "circuit" }
-
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 inject = "javax.inject:javax.inject:1"
-androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
 
 

@@ -33,7 +33,7 @@ import com.hancekim.billboard.core.designfoundation.icon.Album
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
-import com.hancekim.billboard.core.designsystem.componenet.image.BillboardAsyncImage
+import com.hancekim.billboard.core.imageloader.BillboardAsyncImage
 
 @Stable
 sealed interface ChartStatus {
@@ -153,7 +153,7 @@ private fun DetailInfo(
                 .size(64.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(BillboardTheme.colorScheme.bgImageFallback),
-            placeHolder = {
+            placeholder = {
                 Icon(
                     imageVector = BillboardIcons.Album,
                     tint = BillboardTheme.colorScheme.borderButton,
