@@ -18,7 +18,7 @@ dependencies {
     api(libs.okhttp.logging)
     api(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
-
+    implementation(libs.androidx.annotation.experimental)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
 }

@@ -29,6 +29,7 @@ androidxHilt = "1.3.0"
 androidxWindow = "1.5.1"
 androidxJunit = "1.3.0"
 androidxComposeBom = "2025.12.01"
+androidxAnnotaion = "1.5.1"
 
 # compose
 composeMaterial3 = "1.4.0"
@@ -138,6 +139,8 @@ androidx-room-gradle-plugin = { group = "androidx.room", name = "room-gradle-plu
 androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
 
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+
+androidx-annotation-experimental = { group = "androidx.annotation", name = "annotation-experimental", version.ref = "androidxAnnotaion" }
 
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutine" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutine" }
