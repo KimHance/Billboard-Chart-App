@@ -32,7 +32,7 @@ class ResultCall<T>(
                     val errorBody = response.errorBody()?.string()
                     val exception = try {
                         errorBody?.let {
-                            val apiError = jsonBuilder.decodeFromString<ApiError>(it)
+                            val apiError = jsonBuilder.decodeFromString(ApiError.serializer(), it)
                             ApiException(response.code(), apiError)
                         } ?: HttpException(response)
                     } catch (e: Exception) {
