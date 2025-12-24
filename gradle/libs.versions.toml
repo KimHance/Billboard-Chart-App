@@ -184,6 +184,6 @@ circuit-androidx-overlay = { group = "com.slack.circuit", name = "circuitx-overl
 circuit-codegen-annotations = { module = "com.slack.circuit:circuit-codegen-annotations", version.ref = "circuit" }
 circuit-codegen = { module = "com.slack.circuit:circuit-codegen", version.ref = "circuit" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
-inject = "javax.inject:javax.inject:1"
+javax-inject = { module = "javax.inject:javax.inject", version = "1" }
 
 
