@@ -89,6 +89,7 @@ billboard-android-library = { id = "hance.android.library" }
 billboard-android-library-compose = { id = "hance.android.library.compose" }
 billboard-android-room = { id = "hance.android.room" }
 billboard-android-hilt = { id = "hance.android.hilt" }
+billboard-android-feature = { id = "hance.android.feature" }
 billboard-jvm-library = { id = "hance.jvm.library" }
 
 [libraries]

@@ -57,6 +57,10 @@ gradlePlugin{
             id="hance.android.room"
             implementationClass = "AndroidRoomConventionPlugin"
         }
+        register("androidFeature"){
+            id="hance.android.feature"
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
         register("hilt"){
             id="hance.android.hilt"
             implementationClass = "HiltConventionPlugin"
