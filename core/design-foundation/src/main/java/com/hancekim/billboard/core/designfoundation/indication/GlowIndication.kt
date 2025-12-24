@@ -1,4 +1,4 @@
-package com.hancekim.billboard.core.designfoundation.modifier
+package com.hancekim.billboard.core.designfoundation.indication
 
 import androidx.compose.animation.Animatable
 import androidx.compose.foundation.IndicationNodeFactory

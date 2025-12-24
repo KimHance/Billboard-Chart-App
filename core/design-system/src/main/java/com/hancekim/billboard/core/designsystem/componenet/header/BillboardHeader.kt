@@ -27,7 +27,7 @@ import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.icon.Logo
 import com.hancekim.billboard.core.designfoundation.icon.Menu
-import com.hancekim.billboard.core.designfoundation.modifier.OffscreenIndication
+import com.hancekim.billboard.core.designfoundation.indication.OffscreenIndication
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designfoundation.util.throttledProcess
 import com.hancekim.billboard.core.designsystem.BillboardTheme
