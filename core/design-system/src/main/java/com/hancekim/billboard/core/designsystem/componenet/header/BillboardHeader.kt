@@ -23,7 +23,9 @@ import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
+import com.hancekim.billboard.core.designfoundation.icon.Logo
 import com.hancekim.billboard.core.designfoundation.icon.Menu
 import com.hancekim.billboard.core.designfoundation.modifier.OffscreenIndication
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
@@ -78,10 +80,21 @@ fun BillboardHeader(
                 imageVector = BillboardIcons.Menu,
                 contentDescription = "menu_button"
             )
-            Text(
-                text = "BILLBOARD",
-                style = BillboardTheme.typography.headingXl()
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    modifier = Modifier.size(24.dp),
+                    imageVector = BillboardIcons.Logo,
+                    tint = BillboardColor.Green400,
+                    contentDescription = null
+                )
+                Text(
+                    text = "BILLBOARD",
+                    style = BillboardTheme.typography.headingXl()
+                )
+            }
         }
     }
 }
