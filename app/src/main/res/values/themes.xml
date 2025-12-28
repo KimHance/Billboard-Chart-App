@@ -2,4 +2,11 @@
 <resources>
 
     <style name="Theme.Billboard" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.Billboard.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="postSplashScreenTheme">@style/Theme.Billboard</item>
+    </style>
+
 </resources>

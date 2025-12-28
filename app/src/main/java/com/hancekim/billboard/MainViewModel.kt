@@ -18,7 +18,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     val splashState: StateFlow<SplashState> = flow {
         emit(SplashState.Loading)
-        delay(2.seconds)
+        delay(3.seconds)
         emit(
             if (networkMonitor.isConnected()) SplashState.Success
             else SplashState.NetworkError
