@@ -6,3 +6,7 @@ plugins {
 android {
     namespace = "com.hancekim.feature.splash"
 }
+
+dependencies {
+    api(libs.androidx.core.splash)
+}

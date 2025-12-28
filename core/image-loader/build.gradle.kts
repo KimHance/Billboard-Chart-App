@@ -7,7 +7,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.coil)
+    api(libs.coil)
     implementation(libs.coil.gif)
     implementation(libs.coil.svg)
     implementation(libs.coil.network)

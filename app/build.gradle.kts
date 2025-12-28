@@ -1,5 +1,7 @@
 plugins {
-    id("hance.android.application.compose")
+    alias(libs.plugins.billboard.android.aplication)
+    alias(libs.plugins.billboard.android.aplication.compse)
+    alias(libs.plugins.billboard.android.hilt)
 }
 
 android {
@@ -24,5 +26,10 @@ android {
 
 dependencies {
     implementation(projects.core.designSystem)
+    implementation(projects.core.imageLoader)
+    implementation(projects.core.network)
+    implementation(libs.timber)
     implementation(libs.androidx.activity.compose)
+
+    implementation(projects.feature.splash)
 }
