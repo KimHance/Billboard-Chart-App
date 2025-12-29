@@ -32,4 +32,5 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     implementation(projects.feature.splash)
+    implementation(projects.core.circuit)
 }

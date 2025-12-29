@@ -38,18 +38,38 @@ import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
+import com.hancekim.billboard.core.designsystem.componenet.dialog.BillboardAlert
+import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.runtime.screen.Screen
+import dagger.hilt.android.components.ActivityRetainedComponent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
+data object SplashScreen : Screen
+
+@CircuitInject(SplashScreen::class, ActivityRetainedComponent::class)
 @Composable
 fun SplashUi(
+    state: SplashState,
     modifier: Modifier = Modifier
 ) {
+    val eventSink = state.eventSink
     Surface(
         modifier = modifier,
         contentColor = Color.Unspecified,
         color = BillboardTheme.colorScheme.bgApp
     ) {
+        if (state.networkState == NetworkState.DisConnected) {
+            BillboardAlert(
+                onClick = { eventSink(SplashEvent.OnQuitAlertButtonClick) },
+                title = "네트워크 확인",
+                body = "네트워크 연결을 확인해주세요",
+                buttonLabel = "확인",
+                onDismissRequest = { eventSink(SplashEvent.OnQuitAlertButtonClick) }
+            )
+        }
         Box(
             Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -179,6 +199,8 @@ private fun ShimmeringLogoIconPreview() {
 @Composable
 private fun SplashUiPreview() {
     BillboardTheme {
-        SplashUi()
+        SplashUi(
+            SplashState(NetworkState.Checking) {}
+        )
     }
 }

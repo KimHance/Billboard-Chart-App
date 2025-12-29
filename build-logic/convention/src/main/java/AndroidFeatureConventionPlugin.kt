@@ -8,7 +8,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.apply {
                 apply("hance.android.library")
-                apply("hance.android.room")
+                apply("com.google.devtools.ksp")
             }
 
             dependencies {

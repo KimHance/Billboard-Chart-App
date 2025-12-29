@@ -74,6 +74,7 @@ timber = "5.0.1"
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-parcelize = {id ="kotlin-parcelize"}
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "androidxRoom" }
@@ -82,6 +83,7 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 android-test = { id = "com.android.test", version.ref = "agp" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidxBaselineprofile" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+
 
 billboard-android-aplication = { id = "hance.android.application" }
 billboard-android-aplication-compse = { id = "hance.android.application.compose" }
@@ -186,5 +188,17 @@ circuit-codegen-annotations = { module = "com.slack.circuit:circuit-codegen-anno
 circuit-codegen = { module = "com.slack.circuit:circuit-codegen", version.ref = "circuit" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 javax-inject = { module = "javax.inject:javax.inject", version = "1" }
+
+
+[bundles]
+circuit = [
+    "circuit",
+    "circuit-android",
+    "circuit-effect",
+    "circuit-gesture-navigation",
+    "circuit-navigation",
+    "circuit-overlay",
+    "circuit-androidx-overlay"
+]
 
 
