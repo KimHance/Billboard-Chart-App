@@ -12,7 +12,6 @@ android {
 }
 
 dependencies {
-    api(projects.core.model)
     api(libs.retrofit.core)
     api(libs.retrofit.kotlin.serialization)
     api(libs.okhttp.logging)

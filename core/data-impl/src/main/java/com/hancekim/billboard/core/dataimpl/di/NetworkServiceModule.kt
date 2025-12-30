@@ -18,6 +18,6 @@ object NetworkServiceModule {
         networkFactory
             .createNetworkService(
                 service = BillboardService::class.java,
-                url = "https://KimHance.github.io/Billboard-Auto-Scarping"
+                url = "https://KimHance.github.io/Billboard-Auto-Scarping/"
             )
 }

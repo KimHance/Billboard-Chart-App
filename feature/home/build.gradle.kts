@@ -11,5 +11,5 @@ android {
 
 dependencies {
     implementation(projects.core.circuit)
-    implementation(projects.core.network)
+    implementation(projects.core.domain)
 }
