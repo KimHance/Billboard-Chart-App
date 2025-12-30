@@ -1,5 +1,6 @@
 package com.hancekim.feature.splash
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
@@ -61,6 +62,10 @@ fun SplashUi(
         contentColor = Color.Unspecified,
         color = BillboardTheme.colorScheme.bgApp
     ) {
+        BackHandler(true) {
+            eventSink(SplashEvent.OnQuitAlertButtonClick)
+        }
+
         if (state.networkState == NetworkState.DisConnected) {
             BillboardAlert(
                 onClick = { eventSink(SplashEvent.OnQuitAlertButtonClick) },
@@ -128,7 +133,6 @@ fun SplashUi(
                         style = BillboardTheme.typography.heading2Xl(),
                         color = BillboardTheme.colorScheme.textPrimary,
                     )
-
                 }
             }
         }

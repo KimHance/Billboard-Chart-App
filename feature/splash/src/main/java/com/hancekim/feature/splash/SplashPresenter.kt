@@ -28,8 +28,7 @@ class SplashPresenter @AssistedInject constructor(
         var networkState by rememberRetained { mutableStateOf(NetworkState.Checking) }
         LaunchedImpressionEffect {
             delay(3.seconds)
-            networkState =
-                if (networkMonitor.isConnected()) NetworkState.Connected else NetworkState.DisConnected
+            networkState = if (networkMonitor.isConnected()) NetworkState.Connected else NetworkState.DisConnected
         }
         return SplashState(networkState) { event ->
             when (event) {
