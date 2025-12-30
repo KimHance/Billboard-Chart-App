@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -35,39 +34,43 @@ tasks {
     }
 }
 
-gradlePlugin{
+gradlePlugin {
     plugins {
-        register("androidApplication"){
-            id="hance.android.application"
+        register("androidApplication") {
+            id = "hance.android.application"
             implementationClass = "AndroidApplicationConventionPlugin"
         }
-        register("androidCompose"){
-            id="hance.android.application.compose"
+        register("androidCompose") {
+            id = "hance.android.application.compose"
             implementationClass = "AndroidApplicationComposeConventionPlugin"
         }
-        register("androidLibrary"){
-            id="hance.android.library"
+        register("androidLibrary") {
+            id = "hance.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
         }
-        register("androidLibraryCompose"){
-            id="hance.android.library.compose"
+        register("androidLibraryCompose") {
+            id = "hance.android.library.compose"
             implementationClass = "AndroidLibraryComposeConventionPlugin"
         }
-        register("androidRoom"){
-            id="hance.android.room"
+        register("androidRoom") {
+            id = "hance.android.room"
             implementationClass = "AndroidRoomConventionPlugin"
         }
-        register("androidFeature"){
-            id="hance.android.feature"
+        register("androidFeature") {
+            id = "hance.android.feature"
             implementationClass = "AndroidFeatureConventionPlugin"
         }
-        register("hilt"){
-            id="hance.android.hilt"
+        register("hilt") {
+            id = "hance.android.hilt"
             implementationClass = "HiltConventionPlugin"
         }
         register("jvmLibrary") {
             id = "hance.jvm.library"
             implementationClass = "JvmLibraryConventionPlugin"
+        }
+        register("circuit") {
+            id = "hance.circuit"
+            implementationClass = "AndroidCircuitConventionPlugin"
         }
     }
 }

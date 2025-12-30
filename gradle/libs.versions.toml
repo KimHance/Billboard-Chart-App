@@ -93,6 +93,7 @@ billboard-android-room = { id = "hance.android.room" }
 billboard-android-hilt = { id = "hance.android.hilt" }
 billboard-android-feature = { id = "hance.android.feature" }
 billboard-jvm-library = { id = "hance.jvm.library" }
+billboard-circuit = {id = "hance.circuit"}
 
 [libraries]
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }

@@ -14,8 +14,6 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             dependencies {
                 add("implementation", project(":core:design-system"))
                 add("implementation", libs.findLibrary("androidx.lifecycle.runtime").get())
-                add("implementation", libs.findLibrary("androidx.lifecycle.viewModelCompose").get())
-                add("implementation", libs.findLibrary("androidx.hilt.navigation.compose").get())
                 add("implementation", libs.findLibrary("kotlinx.coroutines.android").get())
             }
         }
