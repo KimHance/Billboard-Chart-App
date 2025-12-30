@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun forceExit() {
-        finishAffinity()
+        finishAndRemoveTask()
         exitProcess(0)
     }
 }
