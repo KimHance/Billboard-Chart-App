@@ -31,15 +31,21 @@ class HomePresenter @AssistedInject constructor(
     @Composable
     override fun present(): HomeState {
 
-        var chartFilter by rememberRetained { mutableStateOf<ChartFilter>(ChartFilter.BillboardHot100) }
+        var chartFilter by rememberRetained { mutableStateOf(ChartFilter.BillboardHot100) }
         var date by rememberRetained { mutableStateOf("") }
         var topTen by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
         var chartList by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
+        var expandedIndex by rememberRetained { mutableStateOf<Int?>(null) }
 
         val hot100 by produceRetainedState(
             initialValue = ChartOverview()
         ) {
-            runCatching { getHot100UseCase() }.onSuccess { value = it }
+            runCatching { getHot100UseCase() }.onSuccess {
+                value = it
+                date = it.date
+                topTen = it.topTen.toPersistentList()
+                chartList = it.chartList.toPersistentList()
+            }
         }
 
         val artist100 by produceRetainedState(
@@ -62,16 +68,50 @@ class HomePresenter @AssistedInject constructor(
 
         val onFilterChanged: (ChartFilter) -> Unit = { filter ->
             chartFilter = filter
+            expandedIndex = null
+            when (filter) {
+                ChartFilter.BillboardHot100 -> {
+                    date = hot100.date
+                    topTen = hot100.topTen.toPersistentList()
+                    chartList = hot100.chartList.toPersistentList()
+                }
+
+                ChartFilter.Billboard200 -> {
+                    date = billboard200.date
+                    topTen = billboard200.topTen.toPersistentList()
+                    chartList = billboard200.chartList.toPersistentList()
+                }
+
+                ChartFilter.Global200 -> {
+                    date = global200.date
+                    topTen = global200.topTen.toPersistentList()
+                    chartList = global200.chartList.toPersistentList()
+                }
+
+                ChartFilter.Artist100 -> {
+                    date = artist100.date
+                    topTen = artist100.topTen.toPersistentList()
+                    chartList = artist100.chartList.toPersistentList()
+                }
+            }
         }
 
         return HomeState(
-            date = hot100.date,
-            topTen = hot100.topTen.toPersistentList(),
-            chartList = hot100.chartList.toPersistentList(),
+            date = date,
+            topTen = topTen,
+            chartList = chartList,
             chartFilter = chartFilter,
+            expandedIndex = expandedIndex,
         ) { event ->
             when (event) {
                 is HomeEvent.OnFilterClick -> onFilterChanged(event.filter)
+                is HomeEvent.OnExpandButtonClick -> {
+                    expandedIndex = if (expandedIndex == event.itemIndex) {
+                        null
+                    } else {
+                        event.itemIndex
+                    }
+                }
             }
         }
     }

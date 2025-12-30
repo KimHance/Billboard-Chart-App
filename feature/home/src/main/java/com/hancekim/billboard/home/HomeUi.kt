@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,7 +60,7 @@ fun HomeUi(
                 ) {
                     FilterRow(
                         modifier = Modifier.padding(bottom = 32.dp),
-                                currentIndex = ChartFilter . entries . indexOf (state.chartFilter),
+                        currentIndex = ChartFilter.entries.indexOf(state.chartFilter),
                     ) {
                         eventSink(HomeEvent.OnFilterClick(it))
                     }
@@ -74,11 +74,11 @@ fun HomeUi(
                         size = TitleSize.Large,
                     )
                 }
-                items(
+                itemsIndexed(
                     items = state.chartList,
-                    key = { "${it.rank}/${it.status}/${it.title}/${it.artist}" },
-                    contentType = { "chart" }
-                ) { item ->
+                    key = { _, item -> "${item.rank}/${item.status}/${item.title}/${item.artist}" },
+                    contentType = { _, _ -> "chart" }
+                ) { index, item ->
                     RankingItem(
                         rank = item.rank,
                         imgUrl = item.image,
@@ -88,12 +88,12 @@ fun HomeUi(
                         lastWeek = item.lastWeek,
                         peak = item.peakPosition,
                         onWeeks = item.weekOnChart,
-                        expand = false,
+                        expand = index == state.expandedIndex,
                         debut = item.debutPosition,
                         debutDate = item.debutDate,
-                        peakDate = "",
+                        peakDate = item.peakDate,
                         modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp),
-                        onExpandButtonClick = {}
+                        onExpandButtonClick = { eventSink(HomeEvent.OnExpandButtonClick(index)) }
                     )
                 }
             }

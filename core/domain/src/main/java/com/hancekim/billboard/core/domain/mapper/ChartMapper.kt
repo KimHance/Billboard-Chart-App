@@ -25,6 +25,7 @@ fun BillboardChart.toModel(): Chart {
         image = this.image,
         lastWeek = this.lastWeek,
         peakPosition = this.peakPosition,
+        peakDate = this.peakDate,
         debutPosition = this.debutPosition,
         debutDate = this.debutDate,
         weekOnChart = this.weeksOnChart

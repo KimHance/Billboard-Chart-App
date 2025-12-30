@@ -8,6 +8,7 @@ data class Chart(
     val image: String = "",
     val lastWeek: Int = 0,
     val peakPosition: Int = 0,
+    val peakDate: String ="",
     val debutPosition: Int = 0,
     val debutDate: String = "",
     val weekOnChart: Int = 0,

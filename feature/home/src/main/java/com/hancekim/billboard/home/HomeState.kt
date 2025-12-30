@@ -14,11 +14,16 @@ data class HomeState(
     val topTen: ImmutableList<Chart> = persistentListOf(),
     val chartList: ImmutableList<Chart> = persistentListOf(),
     val chartFilter: ChartFilter = ChartFilter.BillboardHot100,
+    val expandedIndex: Int? = null,
     val eventSink: (HomeEvent) -> Unit,
 ) : CircuitUiState
 
 sealed interface HomeEvent : CircuitUiEvent {
     data class OnFilterClick(
         val filter: ChartFilter
+    ) : HomeEvent
+
+    data class OnExpandButtonClick(
+        val itemIndex: Int,
     ) : HomeEvent
 }
