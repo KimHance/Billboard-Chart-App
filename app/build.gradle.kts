@@ -32,5 +32,6 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     implementation(projects.feature.splash)
+    implementation(projects.feature.home)
     implementation(projects.core.circuit)
 }

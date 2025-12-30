@@ -36,21 +36,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.dialog.BillboardAlert
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.runtime.screen.Screen
 import dagger.hilt.android.components.ActivityRetainedComponent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
-data object SplashScreen : Screen
-
-@CircuitInject(SplashScreen::class, ActivityRetainedComponent::class)
+@CircuitInject(BillboardScreen.Splash::class, ActivityRetainedComponent::class)
 @Composable
 fun SplashUi(
     state: SplashState,

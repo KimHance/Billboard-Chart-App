@@ -4,9 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.circuit.PopResult
 import com.hancekim.billboard.core.network.NetworkMonitor
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -28,8 +30,14 @@ class SplashPresenter @AssistedInject constructor(
         var networkState by rememberRetained { mutableStateOf(NetworkState.Checking) }
         LaunchedImpressionEffect {
             delay(3.seconds)
-            networkState = if (networkMonitor.isConnected()) NetworkState.Connected else NetworkState.DisConnected
+            networkState =
+                if (networkMonitor.isConnected()) NetworkState.Connected else NetworkState.DisConnected
         }
+
+        LaunchedImpressionEffect(networkState) {
+            if (networkState == NetworkState.Connected) navigator.goTo(BillboardScreen.Home)
+        }
+
         return SplashState(networkState) { event ->
             when (event) {
                 SplashEvent.GoToMainScreen -> {}
@@ -37,8 +45,9 @@ class SplashPresenter @AssistedInject constructor(
             }
         }
     }
+
     @AssistedFactory
-    @CircuitInject(SplashScreen::class, ActivityRetainedComponent::class)
+    @CircuitInject(BillboardScreen.Splash::class, ActivityRetainedComponent::class)
     fun interface SplashPresenterFactory {
         fun create(
             navigator: Navigator,
