@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -43,6 +44,7 @@ internal fun CenterInfo(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
+                modifier = Modifier.fillMaxWidth(),
                 text = title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -50,6 +52,7 @@ internal fun CenterInfo(
                 color = BillboardTheme.colorScheme.textPrimary,
             )
             Text(
+                modifier = Modifier.fillMaxWidth(),
                 text = artist,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

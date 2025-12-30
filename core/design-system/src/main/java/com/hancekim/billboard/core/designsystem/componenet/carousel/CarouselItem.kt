@@ -64,7 +64,7 @@ fun CarouselItem(
                     contentDescription = null,
                 )
             },
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.FillBounds
         )
         Canvas(modifier = Modifier.fillMaxSize()) {
             val gradientBrush = Brush.verticalGradient(

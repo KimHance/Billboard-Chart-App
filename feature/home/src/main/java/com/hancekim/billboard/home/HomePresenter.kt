@@ -3,7 +3,9 @@ package com.hancekim.billboard.home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.hancekim.billboard.core.circuit.BillboardScreen
+import com.hancekim.billboard.core.designsystem.componenet.filter.ChartFilter
 import com.hancekim.billboard.core.domain.GetBillboard200UseCase
 import com.hancekim.billboard.core.domain.GetBillboardArtist100UseCase
 import com.hancekim.billboard.core.domain.GetBillboardGlobal200UseCase
@@ -29,9 +31,10 @@ class HomePresenter @AssistedInject constructor(
     @Composable
     override fun present(): HomeState {
 
-        val date by rememberRetained { mutableStateOf("") }
-        val topTen by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
-        val chartList by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
+        var chartFilter by rememberRetained { mutableStateOf<ChartFilter>(ChartFilter.BillboardHot100) }
+        var date by rememberRetained { mutableStateOf("") }
+        var topTen by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
+        var chartList by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
 
         val hot100 by produceRetainedState(
             initialValue = ChartOverview()
@@ -57,11 +60,20 @@ class HomePresenter @AssistedInject constructor(
             runCatching { getBillboard200UseCase() }.onSuccess { value = it }
         }
 
+        val onFilterChanged: (ChartFilter) -> Unit = { filter ->
+            chartFilter = filter
+        }
+
         return HomeState(
             date = hot100.date,
             topTen = hot100.topTen.toPersistentList(),
-            chartList = hot100.chartList.toPersistentList()
-        )
+            chartList = hot100.chartList.toPersistentList(),
+            chartFilter = chartFilter,
+        ) { event ->
+            when (event) {
+                is HomeEvent.OnFilterClick -> onFilterChanged(event.filter)
+            }
+        }
     }
 
     @AssistedFactory

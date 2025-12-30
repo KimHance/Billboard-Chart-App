@@ -1,6 +1,7 @@
 package com.hancekim.billboard.core.imageloader
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
@@ -66,6 +67,7 @@ fun BillboardAsyncImage(
             placeholder()
         }
         AsyncImage(
+            modifier = Modifier.fillMaxSize(),
             model = imageRequestBuilder,
             contentDescription = contentDescription,
             onState = { state ->

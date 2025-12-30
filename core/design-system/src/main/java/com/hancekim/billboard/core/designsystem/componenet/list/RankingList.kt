@@ -33,6 +33,7 @@ import com.hancekim.billboard.core.designfoundation.icon.Album
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
+import com.hancekim.billboard.core.designsystem.componenet.list.ChartStatus.Moved
 import com.hancekim.billboard.core.imageloader.BillboardAsyncImage
 
 @Stable
@@ -57,6 +58,15 @@ sealed interface ChartStatus {
         data object Steady : Moved
     }
 }
+
+fun String.toStatus(): ChartStatus =
+    when (this) {
+        "New" -> ChartStatus.Entrance.New
+        "Re-Entry" -> ChartStatus.Entrance.ReEntry
+        "Rising" -> Moved.Up
+        "Falling" -> Moved.Down
+        else -> Moved.Steady
+    }
 
 @Composable
 fun RankingItem(
