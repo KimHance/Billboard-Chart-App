@@ -37,14 +37,8 @@ fun TrendingSection(
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        TitleSection(
-            title = "Trending Now",
-            size = TitleSize.Medium,
-        )
         TopCarousel(
-            modifier = Modifier.padding(horizontal = 12.dp),
             carouselList = carouseList,
             onItemClick = onCarouselItemClick
         )

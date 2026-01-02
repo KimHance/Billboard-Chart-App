@@ -1,6 +1,7 @@
 package com.hancekim.billboard.home
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -50,14 +51,24 @@ fun HomeUi(
         topBar = { BillboardHeader { } },
         snackbarHost = { SnackbarHost(state.snackbarHostState) },
         content = { paddingValues ->
+            val contentHorizontalPadding = 16.dp
             LazyColumn(
                 modifier = Modifier.padding(paddingValues),
+                contentPadding = PaddingValues(
+                    vertical = 12.dp,
+                    horizontal = contentHorizontalPadding
+                )
             ) {
                 item(
                     contentType = "trending"
                 ) {
+                    TitleSection(
+                        title = "Trending Now",
+                        size = TitleSize.Medium,
+                    )
                     TrendingSection(
-                        modifier = Modifier.padding(top = 8.dp, bottom = 40.dp),
+                        modifier = Modifier
+                            .padding(top = 32.dp, bottom = 40.dp),
                         trendingList = state.topTen,
                         onCarouselItemClick = {}
                     )
@@ -66,7 +77,9 @@ fun HomeUi(
                     contentType = "filter"
                 ) {
                     FilterRow(
-                        modifier = Modifier.padding(bottom = 32.dp),
+                        modifier = Modifier
+                            .padding(bottom = 32.dp)
+                            .ignoreHorizontalContentPadding(contentHorizontalPadding),
                         currentIndex = ChartFilter.entries.indexOf(state.chartFilter),
                     ) {
                         eventSink(HomeEvent.OnFilterClick(it))
@@ -99,7 +112,7 @@ fun HomeUi(
                         debut = item.debutPosition,
                         debutDate = item.debutDate,
                         peakDate = item.peakDate,
-                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp),
+                        modifier = Modifier.padding(top = 12.dp),
                         onExpandButtonClick = { eventSink(HomeEvent.OnExpandButtonClick(index)) }
                     )
                 }

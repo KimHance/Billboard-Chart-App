@@ -3,7 +3,6 @@ package com.hancekim.billboard.core.designsystem.componenet.title
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,8 +26,7 @@ fun TitleSection(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(28.dp)
-            .padding(start = 24.dp),
+            .height(28.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
