@@ -1,5 +1,6 @@
 package com.hancekim.billboard.home
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Stable
 import com.hancekim.billboard.core.designsystem.componenet.filter.ChartFilter
 import com.hancekim.billboard.core.domain.model.Chart
@@ -15,6 +16,8 @@ data class HomeState(
     val chartList: ImmutableList<Chart> = persistentListOf(),
     val chartFilter: ChartFilter = ChartFilter.BillboardHot100,
     val expandedIndex: Int? = null,
+    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    val showQuitToast: Boolean = false,
     val eventSink: (HomeEvent) -> Unit,
 ) : CircuitUiState
 
@@ -26,4 +29,6 @@ sealed interface HomeEvent : CircuitUiEvent {
     data class OnExpandButtonClick(
         val itemIndex: Int,
     ) : HomeEvent
+
+    data object OnBackPressed : HomeEvent
 }

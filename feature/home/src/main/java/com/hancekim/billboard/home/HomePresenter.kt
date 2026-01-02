@@ -1,10 +1,14 @@
 package com.hancekim.billboard.home
 
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.hancekim.billboard.core.circuit.BillboardScreen
+import com.hancekim.billboard.core.circuit.PopResult
 import com.hancekim.billboard.core.designsystem.componenet.filter.ChartFilter
 import com.hancekim.billboard.core.domain.GetBillboard200UseCase
 import com.hancekim.billboard.core.domain.GetBillboardArtist100UseCase
@@ -15,14 +19,18 @@ import com.hancekim.billboard.core.domain.model.ChartOverview
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.components.ActivityRetainedComponent
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.launch
 
 class HomePresenter @AssistedInject constructor(
+    @Assisted private val navigator: Navigator,
     private val getHot100UseCase: GetBillboardHot100UseCase,
     private val getArtist100UseCase: GetBillboardArtist100UseCase,
     private val getGlobal200UseCase: GetBillboardGlobal200UseCase,
@@ -30,12 +38,14 @@ class HomePresenter @AssistedInject constructor(
 ) : Presenter<HomeState> {
     @Composable
     override fun present(): HomeState {
-
+        val scope = rememberCoroutineScope()
+        val snackbarHostState = rememberRetained { SnackbarHostState() }
         var chartFilter by rememberRetained { mutableStateOf(ChartFilter.BillboardHot100) }
         var date by rememberRetained { mutableStateOf("") }
         var topTen by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
         var chartList by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
         var expandedIndex by rememberRetained { mutableStateOf<Int?>(null) }
+        var isExitSnackbarVisible by rememberRetained { mutableStateOf(false) }
 
         val hot100 by produceRetainedState(
             initialValue = ChartOverview()
@@ -102,6 +112,8 @@ class HomePresenter @AssistedInject constructor(
             chartList = chartList,
             chartFilter = chartFilter,
             expandedIndex = expandedIndex,
+            snackbarHostState = snackbarHostState,
+            showQuitToast = isExitSnackbarVisible,
         ) { event ->
             when (event) {
                 is HomeEvent.OnFilterClick -> onFilterChanged(event.filter)
@@ -112,6 +124,21 @@ class HomePresenter @AssistedInject constructor(
                         event.itemIndex
                     }
                 }
+
+                is HomeEvent.OnBackPressed -> {
+                    if (isExitSnackbarVisible) {
+                        navigator.pop(PopResult.QuitAppResult)
+                    } else {
+                        isExitSnackbarVisible = true
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = "Press back again to exit",
+                                duration = SnackbarDuration.Short,
+                            )
+                            isExitSnackbarVisible = false
+                        }
+                    }
+                }
             }
         }
     }
@@ -119,6 +146,8 @@ class HomePresenter @AssistedInject constructor(
     @AssistedFactory
     @CircuitInject(BillboardScreen.Home::class, ActivityRetainedComponent::class)
     fun interface HomePresenterFactory {
-        fun create(): HomePresenter
+        fun create(
+            navigator: Navigator,
+        ): HomePresenter
     }
 }

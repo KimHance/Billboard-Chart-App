@@ -8,10 +8,10 @@ import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.circuit.PopResult
 import com.hancekim.billboard.core.network.NetworkMonitor
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.resetRoot
 import com.slack.circuitx.effects.LaunchedImpressionEffect
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -29,21 +29,16 @@ class SplashPresenter @AssistedInject constructor(
     override fun present(): SplashState {
         var networkState by rememberRetained { mutableStateOf(NetworkState.Checking) }
         LaunchedImpressionEffect {
-            delay(3.seconds)
+            delay(2.seconds)
             networkState =
                 if (networkMonitor.isConnected()) NetworkState.Connected else NetworkState.DisConnected
         }
 
         LaunchedImpressionEffect(networkState) {
-            if (networkState == NetworkState.Connected) navigator.goTo(BillboardScreen.Home)
+            if (networkState == NetworkState.Connected) navigator.resetRoot(BillboardScreen.Home)
         }
 
-        return SplashState(networkState) { event ->
-            when (event) {
-                SplashEvent.GoToMainScreen -> {}
-                SplashEvent.OnQuitAlertButtonClick -> navigator.pop(PopResult.QuitAppResult)
-            }
-        }
+        return SplashState(networkState) { navigator.pop(PopResult.QuitAppResult) }
     }
 
     @AssistedFactory

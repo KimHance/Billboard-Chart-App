@@ -75,6 +75,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun forceExit() {
+
         finishAndRemoveTask()
         exitProcess(0)
     }

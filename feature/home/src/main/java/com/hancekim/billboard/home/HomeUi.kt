@@ -1,14 +1,13 @@
 package com.hancekim.billboard.home
 
-import android.os.Build
-import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.circuit.BillboardScreen
@@ -35,6 +34,10 @@ fun HomeUi(
     val colorScheme = BillboardTheme.colorScheme
     val eventSink = state.eventSink
 
+    BackHandler {
+        eventSink(HomeEvent.OnBackPressed)
+    }
+
     StateDiffLogEffect(
         state = state,
         enabled = true,
@@ -45,6 +48,7 @@ fun HomeUi(
         modifier = modifier,
         containerColor = colorScheme.bgApp,
         topBar = { BillboardHeader { } },
+        snackbarHost = { SnackbarHost(state.snackbarHostState) },
         content = { paddingValues ->
             LazyColumn(
                 modifier = Modifier.padding(paddingValues),

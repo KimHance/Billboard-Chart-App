@@ -52,23 +52,22 @@ fun SplashUi(
     state: SplashState,
     modifier: Modifier = Modifier
 ) {
-    val eventSink = state.eventSink
     Surface(
         modifier = modifier,
         contentColor = Color.Unspecified,
         color = BillboardTheme.colorScheme.bgApp
     ) {
         BackHandler(true) {
-            eventSink(SplashEvent.OnQuitAlertButtonClick)
+            state.quitEventSink(OnQuitAlertButtonClick)
         }
 
         if (state.networkState == NetworkState.DisConnected) {
             BillboardAlert(
-                onClick = { eventSink(SplashEvent.OnQuitAlertButtonClick) },
+                onClick = { state.quitEventSink(OnQuitAlertButtonClick) },
                 title = "네트워크 확인",
                 body = "네트워크 연결을 확인해주세요",
                 buttonLabel = "확인",
-                onDismissRequest = { eventSink(SplashEvent.OnQuitAlertButtonClick) }
+                onDismissRequest = { state.quitEventSink(OnQuitAlertButtonClick) }
             )
         }
         Box(
