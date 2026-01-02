@@ -1,5 +1,6 @@
 package com.hancekim.billboard.home
 
+import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
+import com.hancekim.billboard.core.designsystem.StateDiffLogEffect
 import com.hancekim.billboard.core.designsystem.componenet.filter.ChartFilter
 import com.hancekim.billboard.core.designsystem.componenet.filter.FilterRow
 import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeader
@@ -33,11 +35,12 @@ fun HomeUi(
     val colorScheme = BillboardTheme.colorScheme
     val eventSink = state.eventSink
 
-    LaunchedEffect(
-        state
-    ) {
-        Log.d("ruben", "HomeUi: $state")
-    }
+    StateDiffLogEffect(
+        state = state,
+        enabled = true,
+        tag = "home"
+    )
+
     Scaffold(
         modifier = modifier,
         containerColor = colorScheme.bgApp,
