@@ -52,10 +52,12 @@ class MainActivity : ComponentActivity() {
                     AppTheme.Dark -> SystemBarStyle.dark(
                         scrim = Color.TRANSPARENT
                     )
+
                     AppTheme.Light -> SystemBarStyle.light(
                         scrim = Color.TRANSPARENT,
                         darkScrim = Color.TRANSPARENT
                     )
+
                     AppTheme.System -> SystemBarStyle.auto(
                         lightScrim = Color.TRANSPARENT,
                         darkScrim = Color.TRANSPARENT

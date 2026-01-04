@@ -156,6 +156,8 @@ class HomePresenter @AssistedInject constructor(
                         }
                     }
                 }
+
+                HomeEvent.OnSettingIconClick -> navigator.goTo(BillboardScreen.Setting)
             }
         }
     }

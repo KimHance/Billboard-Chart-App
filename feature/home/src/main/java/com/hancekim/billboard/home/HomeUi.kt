@@ -50,7 +50,11 @@ fun HomeUi(
     Scaffold(
         modifier = modifier,
         containerColor = colorScheme.bgApp,
-        topBar = { BillboardHeader { } },
+        topBar = {
+            BillboardHeader(
+                title = "BILLBOARD"
+            ) { eventSink(HomeEvent.OnSettingIconClick) }
+        },
         snackbarHost = { SnackbarHost(state.snackbarHostState) },
         content = { paddingValues ->
             val contentHorizontalPadding = 16.dp

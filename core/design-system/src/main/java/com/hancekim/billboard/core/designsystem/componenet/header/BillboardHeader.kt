@@ -1,6 +1,5 @@
 package com.hancekim.billboard.core.designsystem.componenet.header
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +23,7 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.isTraversalGroup
@@ -31,18 +31,24 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designfoundation.color.BillboardColor
+import com.hancekim.billboard.core.designfoundation.icon.ArrowBack
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.icon.Logo
 import com.hancekim.billboard.core.designfoundation.icon.Setting
 import com.hancekim.billboard.core.designfoundation.indication.OffscreenIndication
+import com.hancekim.billboard.core.designfoundation.modifier.clickableIfNeed
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
-import com.hancekim.billboard.core.designfoundation.util.throttledProcess
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 
 @Composable
 fun BillboardHeader(
+    title: String,
     modifier: Modifier = Modifier,
-    onSettingButtonClick: () -> Unit,
+    isLogoVisible: Boolean = true,
+    leadingIcon: ImageVector? = null,
+    trailingIcon: ImageVector? = BillboardIcons.Setting,
+    onLeadingIconClick: (() -> Unit)? = null,
+    onTrailingIconClick: (() -> Unit)? = null,
 ) {
     val bgColor = BillboardTheme.colorScheme.bgAppbar
     val contentColor = BillboardTheme.colorScheme.textPrimary
@@ -85,29 +91,47 @@ fun BillboardHeader(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        modifier = Modifier.size(24.dp),
-                        imageVector = BillboardIcons.Logo,
-                        tint = BillboardColor.Green400,
-                        contentDescription = null
-                    )
+                    leadingIcon?.let { icon ->
+                        Icon(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clickableIfNeed(
+                                    role = Role.Button,
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = OffscreenIndication(BillboardTheme.colorScheme.textSecondary),
+                                    onClick = onLeadingIconClick
+                                ),
+                            imageVector = icon,
+                            contentDescription = "setting_button"
+                        )
+                    }
+                    if (isLogoVisible) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            imageVector = BillboardIcons.Logo,
+                            tint = BillboardColor.Green400,
+                            contentDescription = null
+                        )
+                    }
                     Text(
-                        text = "BILLBOARD",
+                        text = title,
                         style = BillboardTheme.typography.headingXl()
                     )
                 }
-                Icon(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clickable(
-                            role = Role.Button,
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = OffscreenIndication(BillboardTheme.colorScheme.textSecondary),
-                            onClick = throttledProcess { onSettingButtonClick() }
-                        ),
-                    imageVector = BillboardIcons.Setting,
-                    contentDescription = "setting_button"
-                )
+                trailingIcon?.let { icon ->
+                    Icon(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clickableIfNeed(
+                                role = Role.Button,
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = OffscreenIndication(BillboardTheme.colorScheme.textSecondary),
+                                onClick = onTrailingIconClick
+                            ),
+                        imageVector = icon,
+                        contentDescription = "setting_button"
+                    )
+                }
             }
         }
     }
@@ -115,10 +139,23 @@ fun BillboardHeader(
 
 @ThemePreviews
 @Composable
-private fun BillboardHeaderPreview() {
+private fun BillboardHeader1Preview() {
     BillboardTheme {
-        BillboardHeader {
+        BillboardHeader(
+            title = "BILLBOARD"
+        )
+    }
+}
 
-        }
+@ThemePreviews
+@Composable
+private fun BillboardHeader2Preview() {
+    BillboardTheme {
+        BillboardHeader(
+            title = "Setting",
+            trailingIcon = null,
+            isLogoVisible = false,
+            leadingIcon = BillboardIcons.ArrowBack,
+        )
     }
 }
