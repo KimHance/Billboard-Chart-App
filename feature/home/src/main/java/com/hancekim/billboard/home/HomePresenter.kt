@@ -1,8 +1,10 @@
 package com.hancekim.billboard.home
 
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,12 +42,21 @@ class HomePresenter @AssistedInject constructor(
     override fun present(): HomeState {
         val scope = rememberCoroutineScope()
         val snackbarHostState = rememberRetained { SnackbarHostState() }
+        val lazyListState = rememberLazyListState()
         var chartFilter by rememberRetained { mutableStateOf(ChartFilter.BillboardHot100) }
         var date by rememberRetained { mutableStateOf("") }
         var topTen by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
         var chartList by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
         var expandedIndex by rememberRetained { mutableStateOf<Int?>(null) }
         var isExitSnackbarVisible by rememberRetained { mutableStateOf(false) }
+
+        val isFilterSticky by rememberRetained {
+            derivedStateOf {
+                val layoutInfo = lazyListState.layoutInfo
+                val trendingItem = layoutInfo.visibleItemsInfo.find { it.index == 0 }
+                trendingItem == null || (trendingItem.offset + trendingItem.size) <= layoutInfo.viewportStartOffset
+            }
+        }
 
         val hot100 by produceRetainedState(
             initialValue = ChartOverview()
@@ -77,6 +88,11 @@ class HomePresenter @AssistedInject constructor(
         }
 
         val onFilterChanged: (ChartFilter) -> Unit = { filter ->
+            if (isFilterSticky) {
+                scope.launch {
+                    lazyListState.animateScrollToItem(1)
+                }
+            }
             chartFilter = filter
             expandedIndex = null
             when (filter) {
@@ -113,6 +129,7 @@ class HomePresenter @AssistedInject constructor(
             chartFilter = chartFilter,
             expandedIndex = expandedIndex,
             snackbarHostState = snackbarHostState,
+            lazyListState = lazyListState,
             showQuitToast = isExitSnackbarVisible,
         ) { event ->
             when (event) {

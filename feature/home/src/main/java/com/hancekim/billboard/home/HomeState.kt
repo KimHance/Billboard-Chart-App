@@ -1,5 +1,7 @@
 package com.hancekim.billboard.home
 
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Stable
 import com.hancekim.billboard.core.designsystem.componenet.filter.ChartFilter
@@ -18,6 +20,7 @@ data class HomeState(
     val expandedIndex: Int? = null,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     val showQuitToast: Boolean = false,
+    val lazyListState: LazyListState,
     val eventSink: (HomeEvent) -> Unit,
 ) : CircuitUiState
 

@@ -1,11 +1,13 @@
 package com.hancekim.billboard.home
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
@@ -54,10 +56,12 @@ fun HomeUi(
             val contentHorizontalPadding = 16.dp
             LazyColumn(
                 modifier = Modifier.padding(paddingValues),
+                state = state.lazyListState,
                 contentPadding = PaddingValues(
                     vertical = 12.dp,
                     horizontal = contentHorizontalPadding
-                )
+                ),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 item(
                     contentType = "trending"
@@ -66,9 +70,10 @@ fun HomeUi(
                         title = "Trending Now",
                         size = TitleSize.Medium,
                     )
+                    //Todo 뮤비로 대체
                     TrendingSection(
                         modifier = Modifier
-                            .padding(top = 32.dp, bottom = 40.dp),
+                            .padding(top = 32.dp, bottom = 28.dp),
                         trendingList = state.topTen,
                         onCarouselItemClick = {}
                     )
@@ -78,7 +83,7 @@ fun HomeUi(
                 ) {
                     FilterRow(
                         modifier = Modifier
-                            .padding(bottom = 32.dp)
+                            .padding(bottom = 20.dp)
                             .ignoreHorizontalContentPadding(contentHorizontalPadding),
                         currentIndex = ChartFilter.entries.indexOf(state.chartFilter),
                     ) {
@@ -89,7 +94,7 @@ fun HomeUi(
                     contentType = "filterTitle"
                 ) {
                     TitleSection(
-                        modifier = Modifier.padding(bottom = 24.dp),
+                        modifier = Modifier.padding(bottom = 12.dp),
                         title = state.chartFilter.text,
                         size = TitleSize.Large,
                     )
@@ -112,7 +117,6 @@ fun HomeUi(
                         debut = item.debutPosition,
                         debutDate = item.debutDate,
                         peakDate = item.peakDate,
-                        modifier = Modifier.padding(top = 12.dp),
                         onExpandButtonClick = { eventSink(HomeEvent.OnExpandButtonClick(index)) }
                     )
                 }
@@ -126,7 +130,9 @@ fun HomeUi(
 private fun HomeUiPreview() {
     BillboardTheme {
         HomeUi(
-            state = HomeState {
+            state = HomeState(
+                lazyListState = rememberLazyListState()
+            ) {
 
             },
             modifier = Modifier.fillMaxSize()
