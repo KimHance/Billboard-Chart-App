@@ -5,7 +5,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.icon.Logo
-import com.hancekim.billboard.core.designfoundation.icon.Menu
+import com.hancekim.billboard.core.designfoundation.icon.Setting
 import com.hancekim.billboard.core.designfoundation.indication.OffscreenIndication
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designfoundation.util.throttledProcess
@@ -43,7 +42,7 @@ import com.hancekim.billboard.core.designsystem.BillboardTheme
 @Composable
 fun BillboardHeader(
     modifier: Modifier = Modifier,
-    onLeadingIconClick: () -> Unit,
+    onSettingButtonClick: () -> Unit,
 ) {
     val bgColor = BillboardTheme.colorScheme.bgAppbar
     val contentColor = BillboardTheme.colorScheme.textPrimary
@@ -80,20 +79,8 @@ fun BillboardHeader(
                     .height(56.dp)
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Icon(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clickable(
-                            role = Role.Button,
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = OffscreenIndication(BillboardTheme.colorScheme.textSecondary),
-                            onClick = throttledProcess { onLeadingIconClick() }
-                        ),
-                    imageVector = BillboardIcons.Menu,
-                    contentDescription = "menu_button"
-                )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -109,6 +96,18 @@ fun BillboardHeader(
                         style = BillboardTheme.typography.headingXl()
                     )
                 }
+                Icon(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clickable(
+                            role = Role.Button,
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = OffscreenIndication(BillboardTheme.colorScheme.textSecondary),
+                            onClick = throttledProcess { onSettingButtonClick() }
+                        ),
+                    imageVector = BillboardIcons.Setting,
+                    contentDescription = "setting_button"
+                )
             }
         }
     }
