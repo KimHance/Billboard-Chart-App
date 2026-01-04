@@ -27,11 +27,11 @@ android {
 dependencies {
     implementation(projects.core.designSystem)
     implementation(projects.core.imageLoader)
-    implementation(projects.core.network)
+    implementation(projects.core.circuit)
+    implementation(projects.core.domain)
     implementation(libs.timber)
     implementation(libs.androidx.activity.compose)
 
     implementation(projects.feature.splash)
     implementation(projects.feature.home)
-    implementation(projects.core.circuit)
 }

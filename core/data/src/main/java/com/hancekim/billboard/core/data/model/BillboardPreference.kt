@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BillboardPreference(
-    val isSystemFont: Boolean = true,
-    val theme: Int = 0,
+    val fontCode: Int = 0,
+    val themeCode: Int = 0,
 )
