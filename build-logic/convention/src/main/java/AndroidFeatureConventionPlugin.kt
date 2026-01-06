@@ -15,6 +15,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 add("implementation", project(":core:design-system"))
                 add("implementation", libs.findLibrary("androidx.lifecycle.runtime").get())
                 add("implementation", libs.findLibrary("kotlinx.coroutines.android").get())
+                add("implementation", libs.findLibrary("timber").get())
             }
         }
     }
