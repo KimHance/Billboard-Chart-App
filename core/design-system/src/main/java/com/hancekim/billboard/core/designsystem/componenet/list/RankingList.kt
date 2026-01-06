@@ -2,6 +2,7 @@ package com.hancekim.billboard.core.designsystem.componenet.list
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -149,18 +150,18 @@ private fun DetailInfo(
                 color = BillboardTheme.colorScheme.bgCard,
                 shape = RoundedCornerShape(14.dp)
             )
-            .padding(start = 19.dp),
+            .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
             text = rank.toString(),
-            style = BillboardTheme.typography.headingLg(),
+            style = BillboardTheme.typography.titleMd(),
             color = BillboardTheme.colorScheme.textPrimary,
         )
         BillboardAsyncImage(
             modifier = Modifier
-                .padding(start = 18.dp)
-                .size(64.dp)
+                .size(50.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(BillboardTheme.colorScheme.bgImageFallback),
             placeholder = {
@@ -175,18 +176,14 @@ private fun DetailInfo(
             contentScale = ContentScale.Crop,
         )
         TrendingIndicator(
-            modifier = Modifier.padding(start = 12.dp),
             status = status,
         )
         CenterInfo(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 10.dp, end = 8.dp),
+            modifier = Modifier.weight(1f),
             title = title,
             artist = artist
         )
         RankingInfo(
-            modifier = Modifier.padding(end = 16.dp),
             lastWeek = lastWeek,
             peak = peak,
             onWeeks = onWeeks,

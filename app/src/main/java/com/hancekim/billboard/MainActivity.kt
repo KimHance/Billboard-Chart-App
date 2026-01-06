@@ -46,6 +46,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             val appFont by viewModel.appFont.collectAsStateWithLifecycle()
             val appTheme by viewModel.appTheme.collectAsStateWithLifecycle()
+            val backStack = rememberSaveableBackStack(root = BillboardScreen.Splash)
+            val navigator = rememberCircuitNavigator(backStack) { result ->
+                when (result) {
+                    is PopResult.QuitAppResult -> {
+                        forceExit()
+                    }
+                }
+            }
 
             LaunchedEffect(appTheme) {
                 val systemBarStyle = when (appTheme) {
@@ -77,14 +85,6 @@ class MainActivity : ComponentActivity() {
                 },
                 isSystemFont = appFont == AppFont.System
             ) {
-                val backStack = rememberSaveableBackStack(root = BillboardScreen.Splash)
-                val navigator = rememberCircuitNavigator(backStack) { result ->
-                    when (result) {
-                        is PopResult.QuitAppResult -> {
-                            forceExit()
-                        }
-                    }
-                }
                 CircuitCompositionLocals(circuit) {
                     Surface(
                         modifier = Modifier
@@ -95,6 +95,7 @@ class MainActivity : ComponentActivity() {
                         color = BillboardTheme.colorScheme.bgApp,
                         contentColor = ComposeColor.Unspecified,
                     ) {
+
                         NavigableCircuitContent(
                             navigator = navigator,
                             backStack = backStack,

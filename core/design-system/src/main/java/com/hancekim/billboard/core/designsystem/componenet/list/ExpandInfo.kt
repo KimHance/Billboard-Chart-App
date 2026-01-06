@@ -46,25 +46,17 @@ fun ExpandInfo(
             .background(BillboardTheme.colorScheme.bgExpanded)
             .padding(24.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         ExpandInfoDetail(
             title = "Debut Position",
             number = debut,
             date = debutDate,
-            modifier = Modifier.weight(1f),
         )
         ExpandInfoDetail(
             title = "Peak Position",
             number = peak,
             date = peakDate,
-            modifier = Modifier.weight(1f),
-        )
-        ExpandInfoDetail(
-            title = "Chart History",
-            number = debut,
-            date = debutDate,
-            modifier = Modifier.weight(1f),
         )
     }
 }
@@ -77,7 +69,6 @@ private fun ExpandInfoDetail(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -89,7 +80,6 @@ private fun ExpandInfoDetail(
         Box(
             modifier = Modifier
                 .padding(horizontal = 2.dp)
-                .fillMaxWidth()
                 .aspectRatio(1f / 1f, matchHeightConstraintsFirst = true)
                 .border(
                     width = 1.1.dp,
