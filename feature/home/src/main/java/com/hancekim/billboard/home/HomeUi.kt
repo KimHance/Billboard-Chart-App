@@ -3,15 +3,19 @@ package com.hancekim.billboard.home
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
@@ -24,7 +28,7 @@ import com.hancekim.billboard.core.designsystem.componenet.list.RankingItem
 import com.hancekim.billboard.core.designsystem.componenet.list.toStatus
 import com.hancekim.billboard.core.designsystem.componenet.title.TitleSection
 import com.hancekim.billboard.core.designsystem.componenet.title.TitleSize
-import com.hancekim.billboard.home.component.TrendingSection
+import com.hancekim.billboard.core.player.YoutubePlayer
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dagger.hilt.android.components.ActivityRetainedComponent
 
@@ -75,12 +79,19 @@ fun HomeUi(
                         size = TitleSize.Medium,
                     )
                     //Todo 뮤비로 대체
-                    TrendingSection(
-                        modifier = Modifier
-                            .padding(top = 32.dp, bottom = 28.dp),
-                        trendingList = state.topTen,
-                        onCarouselItemClick = {}
+                    YoutubePlayer(
+                        Modifier
+                            .padding(top = 32.dp, bottom = 28.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .fillMaxWidth()
+                            .aspectRatio(16f / 9f)
                     )
+                    /* TrendingSection(
+                         modifier = Modifier
+                             .padding(top = 32.dp, bottom = 28.dp),
+                         trendingList = state.topTen,
+                         onCarouselItemClick = {}
+                     )*/
                 }
                 stickyHeader(
                     contentType = "filter"

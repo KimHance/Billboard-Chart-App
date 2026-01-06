@@ -70,11 +70,14 @@ circuit = "0.31.0"
 # timber
 timber = "5.0.1"
 
+# youtube
+youtubePlayer = "13.0.0"
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kotlin-parcelize = {id ="kotlin-parcelize"}
+kotlin-parcelize = { id = "kotlin-parcelize" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "androidxRoom" }
@@ -93,7 +96,7 @@ billboard-android-room = { id = "hance.android.room" }
 billboard-android-hilt = { id = "hance.android.hilt" }
 billboard-android-feature = { id = "hance.android.feature" }
 billboard-jvm-library = { id = "hance.jvm.library" }
-billboard-circuit = {id = "hance.circuit"}
+billboard-circuit = { id = "hance.circuit" }
 
 [libraries]
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }
@@ -185,11 +188,12 @@ circuit-gesture-navigation = { group = "com.slack.circuit", name = "circuitx-ges
 circuit-overlay = { group = "com.slack.circuit", name = "circuit-overlay", version.ref = "circuit" }
 circuit-navigation = { group = "com.slack.circuit", name = "circuitx-navigation", version.ref = "circuit" }
 circuit-androidx-overlay = { group = "com.slack.circuit", name = "circuitx-overlays", version.ref = "circuit" }
-circuit-codegen-annotations = { module = "com.slack.circuit:circuit-codegen-annotations", version.ref = "circuit" }
-circuit-codegen = { module = "com.slack.circuit:circuit-codegen", version.ref = "circuit" }
-timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
-javax-inject = { module = "javax.inject:javax.inject", version = "1" }
+circuit-codegen-annotations = { group = "com.slack.circuit", name = "circuit-codegen-annotations", version.ref = "circuit" }
+circuit-codegen = { group = "com.slack.circuit", name = "circuit-codegen", version.ref = "circuit" }
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
 
+youtube-player = { group = "com.pierfrancescosoffritti.androidyoutubeplayer", name = "core", version.ref = "youtubePlayer" }
 
 [bundles]
 circuit = [
