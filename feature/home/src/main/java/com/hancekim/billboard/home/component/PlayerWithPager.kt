@@ -40,7 +40,7 @@ import com.hancekim.billboard.home.ignoreHorizontalContentPadding
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-fun PlayWithPager(
+fun PlayerWithPager(
     chartFilter: ChartFilter,
     chartList: ImmutableList<Chart>,
     expandedIndex: Int?,

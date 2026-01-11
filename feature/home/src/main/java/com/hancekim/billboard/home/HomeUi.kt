@@ -20,7 +20,7 @@ import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.StateDiffLogEffect
 import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeader
 import com.hancekim.billboard.core.player.PlayerState
-import com.hancekim.billboard.home.component.PlayWithPager
+import com.hancekim.billboard.home.component.PlayerWithPager
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dagger.hilt.android.components.ActivityRetainedComponent
 
@@ -61,7 +61,7 @@ fun HomeUi(
         snackbarHost = { SnackbarHost(state.snackbarHostState) },
         content = { paddingValues ->
             val containerScrollState = rememberScrollState()
-            PlayWithPager(
+            PlayerWithPager(
                 modifier = Modifier.padding(paddingValues),
                 eventSink = eventSink,
                 chartFilter = state.chartFilter,
