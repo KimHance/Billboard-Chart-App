@@ -5,6 +5,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Stable
 import com.hancekim.billboard.core.designsystem.componenet.filter.ChartFilter
 import com.hancekim.billboard.core.domain.model.Chart
+import com.hancekim.billboard.core.player.PlayerState
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import kotlinx.collections.immutable.ImmutableList
@@ -13,13 +14,14 @@ import kotlinx.collections.immutable.persistentListOf
 @Stable
 data class HomeState(
     val date: String = "",
+    val showQuitToast: Boolean = false,
+    val expandedIndex: Int? = null,
     val topTen: ImmutableList<Chart> = persistentListOf(),
     val chartList: ImmutableList<Chart> = persistentListOf(),
     val chartFilter: ChartFilter = ChartFilter.BillboardHot100,
-    val expandedIndex: Int? = null,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
-    val showQuitToast: Boolean = false,
-    val lazyListState: LazyListState,
+    val lazyListState: LazyListState = LazyListState(),
+    val playerState : PlayerState,
     val eventSink: (HomeEvent) -> Unit,
 ) : CircuitUiState
 

@@ -1,6 +1,6 @@
 package com.hancekim.billboard.home
 
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.circuit.PopResult
 import com.hancekim.billboard.core.designsystem.componenet.filter.ChartFilter
@@ -18,6 +19,7 @@ import com.hancekim.billboard.core.domain.GetBillboardGlobal200UseCase
 import com.hancekim.billboard.core.domain.GetBillboardHot100UseCase
 import com.hancekim.billboard.core.domain.model.Chart
 import com.hancekim.billboard.core.domain.model.ChartOverview
+import com.hancekim.billboard.core.player.PlayerState
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
@@ -30,6 +32,7 @@ import dagger.hilt.android.components.ActivityRetainedComponent
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class HomePresenter @AssistedInject constructor(
     @Assisted private val navigator: Navigator,
@@ -41,8 +44,10 @@ class HomePresenter @AssistedInject constructor(
     @Composable
     override fun present(): HomeState {
         val scope = rememberCoroutineScope()
+        val context = LocalContext.current
         val snackbarHostState = rememberRetained { SnackbarHostState() }
-        val lazyListState = rememberLazyListState()
+        val lazyListState = rememberRetained { LazyListState() }
+        val playerState = rememberRetained { PlayerState(context) }
         var chartFilter by rememberRetained { mutableStateOf(ChartFilter.BillboardHot100) }
         var date by rememberRetained { mutableStateOf("") }
         var topTen by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
@@ -61,11 +66,15 @@ class HomePresenter @AssistedInject constructor(
         val hot100 by produceRetainedState(
             initialValue = ChartOverview()
         ) {
-            runCatching { getHot100UseCase() }.onSuccess {
+            runCatching {
+                getHot100UseCase()
+            }.onSuccess {
                 value = it
                 date = it.date
                 topTen = it.topTen.toPersistentList()
                 chartList = it.chartList.toPersistentList()
+                Timber.tag("ruben").d("success")
+                playerState.load("4MaozyVj8-8")
             }
         }
 
@@ -90,7 +99,7 @@ class HomePresenter @AssistedInject constructor(
         val onFilterChanged: (ChartFilter) -> Unit = { filter ->
             if (isFilterSticky) {
                 scope.launch {
-                    lazyListState.animateScrollToItem(1)
+                    lazyListState.animateScrollToItem(1,0)
                 }
             }
             chartFilter = filter
@@ -131,6 +140,7 @@ class HomePresenter @AssistedInject constructor(
             snackbarHostState = snackbarHostState,
             lazyListState = lazyListState,
             showQuitToast = isExitSnackbarVisible,
+            playerState = playerState
         ) { event ->
             when (event) {
                 is HomeEvent.OnFilterClick -> onFilterChanged(event.filter)
