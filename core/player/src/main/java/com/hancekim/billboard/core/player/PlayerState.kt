@@ -9,13 +9,12 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstan
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-import timber.log.Timber
 
 @Stable
 class PlayerState(
     context: Context,
 ) {
-    var player: YouTubePlayer? = null
+    private var player: YouTubePlayer? = null
 
     private val playerView = YouTubePlayerView(context).apply {
         enableAutomaticInitialization = false
@@ -39,21 +38,22 @@ class PlayerState(
                 }
 
                 override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
-                    Timber.tag("ruben").d("$second")
                 }
             }
         )
     }
 
+    private var videoId: String = ""
+    var isPlay by mutableStateOf(true)
+        private set
+    var isMute by mutableStateOf(false)
+        private set
+    var isEnabled by mutableStateOf(true)
+        private set
+
     fun getPlayerView(): YouTubePlayerView {
         return playerView
     }
-
-    private var videoId: String = ""
-    var isPlay by mutableStateOf(true)
-    var isMute by mutableStateOf(false)
-
-    var isEnabled by mutableStateOf(true)
 
     fun load(videoId: String) {
         this.videoId = videoId

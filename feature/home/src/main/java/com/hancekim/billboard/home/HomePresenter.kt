@@ -1,11 +1,13 @@
 package com.hancekim.billboard.home
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -32,7 +34,6 @@ import dagger.hilt.android.components.ActivityRetainedComponent
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class HomePresenter @AssistedInject constructor(
     @Assisted private val navigator: Navigator,
@@ -47,19 +48,18 @@ class HomePresenter @AssistedInject constructor(
         val context = LocalContext.current
         val snackbarHostState = rememberRetained { SnackbarHostState() }
         val lazyListState = rememberRetained { LazyListState() }
+        val scrollState = rememberRetained { ScrollState(0) }
         val playerState = rememberRetained { PlayerState(context) }
         var chartFilter by rememberRetained { mutableStateOf(ChartFilter.BillboardHot100) }
-        var date by rememberRetained { mutableStateOf("") }
         var topTen by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
         var chartList by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
         var expandedIndex by rememberRetained { mutableStateOf<Int?>(null) }
         var isExitSnackbarVisible by rememberRetained { mutableStateOf(false) }
+        var listOffsetY by rememberRetained { mutableFloatStateOf(0f) }
 
         val isFilterSticky by rememberRetained {
             derivedStateOf {
-                val layoutInfo = lazyListState.layoutInfo
-                val trendingItem = layoutInfo.visibleItemsInfo.find { it.index == 0 }
-                trendingItem == null || (trendingItem.offset + trendingItem.size) <= layoutInfo.viewportStartOffset
+                listOffsetY > 0f && scrollState.value >= listOffsetY
             }
         }
 
@@ -70,10 +70,8 @@ class HomePresenter @AssistedInject constructor(
                 getHot100UseCase()
             }.onSuccess {
                 value = it
-                date = it.date
                 topTen = it.topTen.toPersistentList()
                 chartList = it.chartList.toPersistentList()
-                Timber.tag("ruben").d("success")
                 playerState.load("4MaozyVj8-8")
             }
         }
@@ -97,48 +95,41 @@ class HomePresenter @AssistedInject constructor(
         }
 
         val onFilterChanged: (ChartFilter) -> Unit = { filter ->
-            if (isFilterSticky) {
-                scope.launch {
-                    lazyListState.animateScrollToItem(1,0)
-                }
-            }
             chartFilter = filter
             expandedIndex = null
             when (filter) {
                 ChartFilter.BillboardHot100 -> {
-                    date = hot100.date
                     topTen = hot100.topTen.toPersistentList()
                     chartList = hot100.chartList.toPersistentList()
                 }
 
                 ChartFilter.Billboard200 -> {
-                    date = billboard200.date
                     topTen = billboard200.topTen.toPersistentList()
                     chartList = billboard200.chartList.toPersistentList()
                 }
 
                 ChartFilter.Global200 -> {
-                    date = global200.date
                     topTen = global200.topTen.toPersistentList()
                     chartList = global200.chartList.toPersistentList()
                 }
 
                 ChartFilter.Artist100 -> {
-                    date = artist100.date
                     topTen = artist100.topTen.toPersistentList()
                     chartList = artist100.chartList.toPersistentList()
                 }
             }
+            lazyListState.requestScrollToItem(0, 0)
         }
 
         return HomeState(
-            date = date,
             topTen = topTen,
+            isFilterSticky = isFilterSticky,
             chartList = chartList,
             chartFilter = chartFilter,
             expandedIndex = expandedIndex,
             snackbarHostState = snackbarHostState,
             lazyListState = lazyListState,
+            scrollState = scrollState,
             showQuitToast = isExitSnackbarVisible,
             playerState = playerState
         ) { event ->
@@ -167,6 +158,7 @@ class HomePresenter @AssistedInject constructor(
                     }
                 }
 
+                is HomeEvent.OnListPositioned -> listOffsetY = event.y
                 HomeEvent.OnSettingIconClick -> navigator.goTo(BillboardScreen.Setting)
             }
         }

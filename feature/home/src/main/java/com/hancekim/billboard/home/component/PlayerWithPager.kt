@@ -25,6 +25,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designsystem.componenet.filter.ChartFilter
 import com.hancekim.billboard.core.designsystem.componenet.filter.FilterRow
@@ -36,7 +38,6 @@ import com.hancekim.billboard.core.domain.model.Chart
 import com.hancekim.billboard.core.player.PlayerState
 import com.hancekim.billboard.core.player.YoutubePlayer
 import com.hancekim.billboard.home.HomeEvent
-import com.hancekim.billboard.home.ignoreHorizontalContentPadding
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
@@ -63,7 +64,10 @@ fun PlayerWithPager(
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(32.dp),
-                modifier = Modifier.padding(bottom = 20.dp)
+                modifier = Modifier.padding(
+                    vertical = 20.dp,
+                    horizontal = ContentHorizontalPadding
+                )
             ) {
                 TitleSection(
                     title = "Trending Now",
@@ -77,10 +81,14 @@ fun PlayerWithPager(
                         .aspectRatio(16f / 9f)
                 )
             }
-            Column(modifier = Modifier.height(this@BoxWithConstraints.maxHeight)) {
+            Column(
+                modifier = Modifier
+                    .height(this@BoxWithConstraints.maxHeight)
+                    .onPlaced {
+                        eventSink(HomeEvent.OnListPositioned(it.positionInParent().y))
+                    }
+            ) {
                 FilterRow(
-                    modifier = Modifier
-                        .ignoreHorizontalContentPadding(ContentHorizontalPadding),
                     currentIndex = ChartFilter.entries.indexOf(chartFilter),
                 ) {
                     eventSink(HomeEvent.OnFilterClick(it))
@@ -113,6 +121,7 @@ fun PlayerWithPager(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     item(
+                        key = "filter",
                         contentType = "filterTitle"
                     ) {
                         TitleSection(

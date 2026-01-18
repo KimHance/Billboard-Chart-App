@@ -1,5 +1,6 @@
 package com.hancekim.billboard.home
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Stable
@@ -13,15 +14,16 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Stable
 data class HomeState(
-    val date: String = "",
     val showQuitToast: Boolean = false,
     val expandedIndex: Int? = null,
+    val isFilterSticky: Boolean = false,
     val topTen: ImmutableList<Chart> = persistentListOf(),
     val chartList: ImmutableList<Chart> = persistentListOf(),
     val chartFilter: ChartFilter = ChartFilter.BillboardHot100,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    val scrollState: ScrollState = ScrollState(0),
     val lazyListState: LazyListState = LazyListState(),
-    val playerState : PlayerState,
+    val playerState: PlayerState,
     val eventSink: (HomeEvent) -> Unit,
 ) : CircuitUiState
 
@@ -37,4 +39,8 @@ sealed interface HomeEvent : CircuitUiEvent {
     data object OnBackPressed : HomeEvent
 
     data object OnSettingIconClick : HomeEvent
+
+    data class OnListPositioned(
+        val y: Float,
+    ) : HomeEvent
 }
