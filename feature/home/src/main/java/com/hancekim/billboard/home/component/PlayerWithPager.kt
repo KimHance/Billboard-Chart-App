@@ -1,5 +1,9 @@
 package com.hancekim.billboard.home.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -44,6 +48,7 @@ import kotlinx.collections.immutable.ImmutableList
 fun PlayerWithPager(
     chartFilter: ChartFilter,
     chartList: ImmutableList<Chart>,
+    isPipMode: Boolean,
     expandedIndex: Int?,
     playerState: PlayerState,
     scrollState: ScrollState,
@@ -73,13 +78,19 @@ fun PlayerWithPager(
                     title = "Trending Now",
                     size = TitleSize.Medium,
                 )
-                YoutubePlayer(
-                    state = playerState,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .fillMaxWidth()
-                        .aspectRatio(16f / 9f)
-                )
+                AnimatedVisibility(
+                    visible = isPipMode.not(),
+                    enter = fadeIn(tween(200)),
+                    exit = ExitTransition.None,
+                ) {
+                    YoutubePlayer(
+                        state = playerState,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(16.dp))
+                            .fillMaxWidth()
+                            .aspectRatio(16f / 9f)
+                    )
+                }
             }
             Column(
                 modifier = Modifier

@@ -123,7 +123,7 @@ class HomePresenter @AssistedInject constructor(
 
         return HomeState(
             topTen = topTen,
-            isFilterSticky = isFilterSticky,
+            isPipMode = isFilterSticky,
             chartList = chartList,
             chartFilter = chartFilter,
             expandedIndex = expandedIndex,

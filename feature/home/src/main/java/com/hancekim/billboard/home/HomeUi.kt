@@ -1,12 +1,18 @@
 package com.hancekim.billboard.home
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.hancekim.billboard.core.circuit.BillboardScreen
@@ -14,6 +20,7 @@ import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.StateDiffLogEffect
 import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeader
+import com.hancekim.billboard.core.player.ListPipPlayer
 import com.hancekim.billboard.core.player.PlayerState
 import com.hancekim.billboard.home.component.PlayerWithPager
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -50,6 +57,7 @@ fun HomeUi(
         content = { paddingValues ->
             PlayerWithPager(
                 modifier = Modifier.padding(paddingValues),
+                isPipMode = state.isPipMode,
                 eventSink = eventSink,
                 chartFilter = state.chartFilter,
                 chartList = state.chartList,
@@ -58,6 +66,18 @@ fun HomeUi(
                 scrollState = state.scrollState,
                 lazyListState = state.lazyListState,
             )
+            Box(Modifier.fillMaxSize()) {
+                AnimatedVisibility(
+                    modifier = Modifier.align(Alignment.BottomEnd),
+                    visible = state.isPipMode,
+                    enter = fadeIn(tween(200)),
+                    exit = ExitTransition.None
+                ) {
+                    ListPipPlayer(
+                        state = state.playerState
+                    )
+                }
+            }
         }
     )
 }

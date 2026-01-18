@@ -16,7 +16,7 @@ import kotlinx.collections.immutable.persistentListOf
 data class HomeState(
     val showQuitToast: Boolean = false,
     val expandedIndex: Int? = null,
-    val isFilterSticky: Boolean = false,
+    val isPipMode: Boolean = false,
     val topTen: ImmutableList<Chart> = persistentListOf(),
     val chartList: ImmutableList<Chart> = persistentListOf(),
     val chartFilter: ChartFilter = ChartFilter.BillboardHot100,

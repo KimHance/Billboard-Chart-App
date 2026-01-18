@@ -92,6 +92,7 @@ class PlayerState(
     }
 
     fun disabled() {
+        pause()
         isEnabled = false
     }
 
