@@ -41,6 +41,9 @@ import com.hancekim.billboard.core.designsystem.componenet.title.TitleSize
 import com.hancekim.billboard.core.domain.model.Chart
 import com.hancekim.billboard.core.player.PlayerState
 import com.hancekim.billboard.core.player.YoutubePlayer
+import com.hancekim.billboard.core.player.pip.ListPipPlayer
+import com.hancekim.billboard.core.player.pip.PipState
+import com.hancekim.billboard.core.player.pip.pipDraggable
 import com.hancekim.billboard.home.HomeEvent
 import kotlinx.collections.immutable.ImmutableList
 
@@ -53,6 +56,7 @@ fun PlayerWithPager(
     playerState: PlayerState,
     scrollState: ScrollState,
     lazyListState: LazyListState,
+    pipState: PipState,
     modifier: Modifier = Modifier,
     eventSink: (HomeEvent) -> Unit,
 ) {
@@ -163,6 +167,13 @@ fun PlayerWithPager(
                     }
                 }
             }
+        }
+        if (isPipMode) {
+            ListPipPlayer(
+                modifier = Modifier
+                    .pipDraggable(pipState),
+                state = playerState
+            )
         }
     }
 }

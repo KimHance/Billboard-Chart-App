@@ -47,8 +47,7 @@ class PipState(
 
     private var isInitialized = false
 
-    // composition마다 갱신
-    internal var scope: CoroutineScope? = null
+    private var scope: CoroutineScope? = null
 
     val displayOffsetX: Float
         get() = if (isDragging) dragOffsetX else animatedX.value
@@ -85,6 +84,10 @@ class PipState(
             dragOffsetY = initY
             isInitialized = true
         }
+    }
+
+    fun setScope(scope: CoroutineScope) {
+        this.scope = scope
     }
 
     fun onDragStart() {

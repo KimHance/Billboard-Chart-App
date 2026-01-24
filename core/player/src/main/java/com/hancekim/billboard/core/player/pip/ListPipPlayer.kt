@@ -1,4 +1,4 @@
-package com.hancekim.billboard.core.player
+package com.hancekim.billboard.core.player.pip
 
 import android.view.ViewGroup
 import androidx.compose.animation.animateColorAsState
@@ -33,6 +33,8 @@ import com.hancekim.billboard.core.designfoundation.icon.IcoClose
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designfoundation.util.throttledProcess
 import com.hancekim.billboard.core.designsystem.BillboardTheme
+import com.hancekim.billboard.core.player.PlayerControllerButtons
+import com.hancekim.billboard.core.player.PlayerState
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 

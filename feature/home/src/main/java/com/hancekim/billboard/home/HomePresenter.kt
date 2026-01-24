@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -22,6 +23,7 @@ import com.hancekim.billboard.core.domain.GetBillboardHot100UseCase
 import com.hancekim.billboard.core.domain.model.Chart
 import com.hancekim.billboard.core.domain.model.ChartOverview
 import com.hancekim.billboard.core.player.PlayerState
+import com.hancekim.billboard.core.player.pip.PipState
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
@@ -48,6 +50,7 @@ class HomePresenter @AssistedInject constructor(
         val context = LocalContext.current
         val snackbarHostState = rememberRetained { SnackbarHostState() }
         val lazyListState = rememberRetained { LazyListState() }
+        val pipState = rememberRetained { PipState() }
         val scrollState = rememberRetained { ScrollState(0) }
         val playerState = rememberRetained { PlayerState(context) }
         var chartFilter by rememberRetained { mutableStateOf(ChartFilter.BillboardHot100) }
@@ -62,6 +65,8 @@ class HomePresenter @AssistedInject constructor(
                 listOffsetY > 0f && scrollState.value >= listOffsetY
             }
         }
+
+        LaunchedEffect(scope) { pipState.setScope(scope) }
 
         val hot100 by produceRetainedState(
             initialValue = ChartOverview()
@@ -131,7 +136,8 @@ class HomePresenter @AssistedInject constructor(
             lazyListState = lazyListState,
             scrollState = scrollState,
             showQuitToast = isExitSnackbarVisible,
-            playerState = playerState
+            playerState = playerState,
+            pipState = pipState,
         ) { event ->
             when (event) {
                 is HomeEvent.OnFilterClick -> onFilterChanged(event.filter)
