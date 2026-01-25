@@ -168,12 +168,14 @@ fun PlayerWithPager(
                 }
             }
         }
-        if (isPipMode) {
-            ListPipPlayer(
-                modifier = Modifier
-                    .pipDraggable(pipState),
-                state = playerState
-            )
+        AnimatedVisibility(
+            modifier = Modifier
+                .pipDraggable(pipState),
+            visible = isPipMode,
+            enter = fadeIn(tween(200)),
+            exit = ExitTransition.None
+        ) {
+            ListPipPlayer(state = playerState)
         }
     }
 }

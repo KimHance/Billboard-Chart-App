@@ -1,6 +1,7 @@
 package com.hancekim.billboard.core.player.pip
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.offset
@@ -12,22 +13,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.Velocity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.hypot
 import kotlin.math.roundToInt
 
-enum class PipAnchor {
-    TopLeft, TopRight, BottomLeft, BottomRight
+enum class PipHorizontalAnchor {
+    Start, End
 }
 
 @Stable
 class PipState(
-    private val initialAnchor: PipAnchor = PipAnchor.BottomRight,
-    private val animationDurationMs: Int = 300
+    private val initialAnchor: PipHorizontalAnchor = PipHorizontalAnchor.End,
+    private val velocityThreshold: Float = 500f,
+    private val flingDurationFactor: Float = 0.2f
 ) {
     var containerBounds by mutableStateOf(Size.Zero)
     var boxSize by mutableStateOf(Size.Zero)
@@ -55,27 +58,33 @@ class PipState(
     val displayOffsetY: Float
         get() = if (isDragging) dragOffsetY else animatedY.value
 
-    private fun getAnchorPosition(anchor: PipAnchor): Pair<Float, Float> {
-        val maxX = (containerBounds.width - boxSize.width).coerceAtLeast(0f)
-        val maxY = (containerBounds.height - boxSize.height).coerceAtLeast(0f)
+    private fun getAnchorX(anchor: PipHorizontalAnchor): Float {
         return when (anchor) {
-            PipAnchor.TopLeft -> 0f to 0f
-            PipAnchor.TopRight -> maxX to 0f
-            PipAnchor.BottomLeft -> 0f to maxY
-            PipAnchor.BottomRight -> maxX to maxY
+            PipHorizontalAnchor.Start -> 0f
+            PipHorizontalAnchor.End -> (containerBounds.width - boxSize.width).coerceAtLeast(0f)
         }
     }
 
-    private fun findClosestAnchor(x: Float, y: Float): PipAnchor {
-        return PipAnchor.entries.minBy { anchor ->
-            val (ax, ay) = getAnchorPosition(anchor)
-            hypot(x - ax, y - ay)
+    private fun findClosestAnchor(x: Float, velocityX: Float): PipHorizontalAnchor {
+        return when {
+            velocityX > velocityThreshold -> PipHorizontalAnchor.End
+            velocityX < -velocityThreshold -> PipHorizontalAnchor.Start
+            else -> {
+                val midX = (containerBounds.width - boxSize.width) / 2f
+                if (x < midX) PipHorizontalAnchor.Start else PipHorizontalAnchor.End
+            }
         }
+    }
+
+    private fun clampY(y: Float): Float {
+        val maxY = (containerBounds.height - boxSize.height).coerceAtLeast(0f)
+        return y.coerceIn(0f, maxY)
     }
 
     internal fun initializeIfNeeded() {
         if (!isInitialized && boxSize != Size.Zero && containerBounds != Size.Zero) {
-            val (initX, initY) = getAnchorPosition(initialAnchor)
+            val initX = getAnchorX(initialAnchor)
+            val initY = clampY(containerBounds.height - boxSize.height)
             scope?.launch {
                 animatedX.snapTo(initX)
                 animatedY.snapTo(initY)
@@ -103,13 +112,21 @@ class PipState(
         dragOffsetY = (dragOffsetY + deltaY).coerceIn(0f, maxY)
     }
 
-    fun onDragEnd() {
-        val closest = findClosestAnchor(dragOffsetX, dragOffsetY)
+    fun onDragEnd(velocity: Velocity) {
+        val closest = findClosestAnchor(dragOffsetX, velocity.x)
+        val targetX = getAnchorX(closest)
+        val predictedY = dragOffsetY + velocity.y * flingDurationFactor
+        val targetY = clampY(predictedY)
+
         scope?.launch {
             animatedX.snapTo(dragOffsetX)
             animatedY.snapTo(dragOffsetY)
             isDragging = false
-            snapToAnchor(closest)
+            currentAnchor = closest
+            coroutineScope {
+                launch { animatedX.animateTo(targetX, spring()) }
+                launch { animatedY.animateTo(targetY, spring()) }
+            }
         }
     }
 
@@ -118,22 +135,17 @@ class PipState(
             animatedX.snapTo(dragOffsetX)
             animatedY.snapTo(dragOffsetY)
             isDragging = false
-            snapToAnchor(currentAnchor)
+            val targetX = getAnchorX(currentAnchor)
+            animatedX.animateTo(targetX, spring())
         }
     }
 
-    private suspend fun snapToAnchor(anchor: PipAnchor) {
-        val (targetX, targetY) = getAnchorPosition(anchor)
-        currentAnchor = anchor
-        coroutineScope {
-            launch { animatedX.animateTo(targetX, tween(animationDurationMs)) }
-            launch { animatedY.animateTo(targetY, tween(animationDurationMs)) }
-        }
-    }
-
-    fun moveToAnchor(anchor: PipAnchor) {
+    fun moveToAnchor(anchor: PipHorizontalAnchor) {
         if (!isDragging) {
-            scope?.launch { snapToAnchor(anchor) }
+            currentAnchor = anchor
+            scope?.launch {
+                animatedX.animateTo(getAnchorX(anchor), spring())
+            }
         }
     }
 }
@@ -167,11 +179,20 @@ fun Modifier.pipDraggable(state: PipState): Modifier = this
         )
     }
     .pointerInput(state) {
+        val velocityTracker = VelocityTracker()
+
         detectDragGestures(
-            onDragStart = { state.onDragStart() },
-            onDragEnd = { state.onDragEnd() },
+            onDragStart = {
+                velocityTracker.resetTracking()
+                state.onDragStart()
+            },
+            onDragEnd = {
+                val velocity = velocityTracker.calculateVelocity()
+                state.onDragEnd(velocity)
+            },
             onDragCancel = { state.onDragCancel() },
             onDrag = { change, dragAmount ->
+                velocityTracker.addPosition(change.uptimeMillis, change.position)
                 change.consume()
                 state.onDrag(dragAmount.x, dragAmount.y)
             }
