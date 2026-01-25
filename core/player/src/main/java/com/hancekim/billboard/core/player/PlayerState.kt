@@ -63,6 +63,7 @@ class PlayerState(
         player?.let { player ->
             player.play()
             isPlay = true
+            isEnabled = true
         }
     }
 

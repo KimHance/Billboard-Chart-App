@@ -171,7 +171,7 @@ fun PlayerWithPager(
         AnimatedVisibility(
             modifier = Modifier
                 .pipDraggable(pipState),
-            visible = isPipMode,
+            visible = isPipMode && playerState.isEnabled,
             enter = fadeIn(tween(200)),
             exit = ExitTransition.None
         ) {

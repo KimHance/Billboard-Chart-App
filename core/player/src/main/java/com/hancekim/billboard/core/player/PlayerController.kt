@@ -43,14 +43,14 @@ fun PlayerControllerButtons(
         verticalAlignment = Alignment.CenterVertically
     ) {
         ControllerButton(
-            valueOnImageVector = BillboardIcons.IcoPlay,
-            valueOffImageVector = BillboardIcons.IcoPause,
+            valueOnImageVector = BillboardIcons.IcoPause,
+            valueOffImageVector = BillboardIcons.IcoPlay,
             value = isPlay,
             onValueChanged = onPlayStateChanged
         )
         ControllerButton(
-            valueOnImageVector = BillboardIcons.IcoSoundOff,
-            valueOffImageVector = BillboardIcons.IcoSoundOn,
+            valueOnImageVector = BillboardIcons.IcoSoundOn,
+            valueOffImageVector = BillboardIcons.IcoSoundOff,
             value = isMute,
             onValueChanged = onMuteStateChanged
         )
