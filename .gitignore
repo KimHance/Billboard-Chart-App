@@ -213,6 +213,8 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+CLAUDE.MD
+
 ### AndroidStudio Patch ###
 
 !/gradle/wrapper/gradle-wrapper.jar
