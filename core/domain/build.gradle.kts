@@ -10,4 +10,6 @@ dependencies {
     implementation(projects.core.data)
     implementation(libs.javax.inject)
     runtimeOnly(projects.core.dataImpl)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
