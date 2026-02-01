@@ -162,7 +162,9 @@ fun PlayerWithPager(
                             debut = item.debutPosition,
                             debutDate = item.debutDate,
                             peakDate = item.peakDate,
-                            onExpandButtonClick = { eventSink(HomeEvent.OnExpandButtonClick(index)) }
+                            enabled = chartFilter != ChartFilter.Artist100,
+                            onExpandButtonClick = { eventSink(HomeEvent.OnExpandButtonClick(index)) },
+                            onItemClick = { eventSink(HomeEvent.OnItemClick(item)) }
                         )
                     }
                 }

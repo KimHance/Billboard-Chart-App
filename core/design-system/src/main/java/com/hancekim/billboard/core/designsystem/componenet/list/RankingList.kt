@@ -2,6 +2,8 @@ package com.hancekim.billboard.core.designsystem.componenet.list
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designfoundation.icon.Album
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
+import com.hancekim.billboard.core.designfoundation.indication.OffscreenIndication
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.list.ChartStatus.Moved
@@ -84,7 +87,9 @@ fun RankingItem(
     debutDate: String,
     peakDate: String,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     onExpandButtonClick: () -> Unit,
+    onItemClick: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -101,6 +106,12 @@ fun RankingItem(
             .background(
                 color = BillboardTheme.colorScheme.bgCard,
                 shape = RoundedCornerShape(14.dp)
+            )
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                enabled = enabled,
+                indication = OffscreenIndication(Color.LightGray.copy(.1f)),
+                onClick = onItemClick,
             ),
     ) {
         DetailInfo(
@@ -198,9 +209,9 @@ internal class ChartStatusParameterProvider : PreviewParameterProvider<ChartStat
         get() = sequenceOf(
             ChartStatus.Entrance.New,
             ChartStatus.Entrance.ReEntry,
-            ChartStatus.Moved.Up,
-            ChartStatus.Moved.Down,
-            ChartStatus.Moved.Steady
+            Moved.Up,
+            Moved.Down,
+            Moved.Steady
         )
 }
 
@@ -224,9 +235,10 @@ private fun RankingItemPreview(
                 debut = 8,
                 debutDate = "08/22/24",
                 peakDate = "12/25/24",
-                expand = isExpand
+                expand = isExpand,
+                onExpandButtonClick = { isExpand = !isExpand },
             ) {
-                isExpand = !isExpand
+
             }
         }
     }

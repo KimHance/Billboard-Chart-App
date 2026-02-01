@@ -15,15 +15,12 @@ class PlayerState(
     context: Context,
 ) {
     private var player: YouTubePlayer? = null
-
     private val playerView = YouTubePlayerView(context).apply {
         enableAutomaticInitialization = false
         initialize(
             youTubePlayerListener = object : AbstractYouTubePlayerListener() {
                 override fun onReady(youTubePlayer: YouTubePlayer) {
                     player = youTubePlayer
-
-                    if (videoId.isNotEmpty()) player?.loadVideo(videoId, 0f)
                 }
 
                 override fun onStateChange(
@@ -36,13 +33,9 @@ class PlayerState(
                         else -> {}
                     }
                 }
-
-                override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
-                }
             }
         )
     }
-
     private var videoId: String = ""
     var isPlay by mutableStateOf(true)
         private set
@@ -57,6 +50,7 @@ class PlayerState(
 
     fun load(videoId: String) {
         this.videoId = videoId
+        player?.loadVideo(videoId, 0f)
     }
 
     fun play() {

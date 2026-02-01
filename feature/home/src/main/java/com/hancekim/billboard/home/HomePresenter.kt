@@ -20,8 +20,10 @@ import com.hancekim.billboard.core.domain.GetBillboard200UseCase
 import com.hancekim.billboard.core.domain.GetBillboardArtist100UseCase
 import com.hancekim.billboard.core.domain.GetBillboardGlobal200UseCase
 import com.hancekim.billboard.core.domain.GetBillboardHot100UseCase
+import com.hancekim.billboard.core.domain.GetYoutubeVideoDetailUseCase
 import com.hancekim.billboard.core.domain.model.Chart
 import com.hancekim.billboard.core.domain.model.ChartOverview
+import com.hancekim.billboard.core.domain.model.YoutubeVideoDetail
 import com.hancekim.billboard.core.player.PlayerState
 import com.hancekim.billboard.core.player.pip.PipState
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -43,30 +45,49 @@ class HomePresenter @AssistedInject constructor(
     private val getArtist100UseCase: GetBillboardArtist100UseCase,
     private val getGlobal200UseCase: GetBillboardGlobal200UseCase,
     private val getBillboard200UseCase: GetBillboard200UseCase,
+    private val getYoutubeVideoDetailUseCase: GetYoutubeVideoDetailUseCase,
 ) : Presenter<HomeState> {
     @Composable
     override fun present(): HomeState {
         val scope = rememberCoroutineScope()
         val context = LocalContext.current
+
+        // Ui StateHolder
         val snackbarHostState = rememberRetained { SnackbarHostState() }
         val lazyListState = rememberRetained { LazyListState() }
         val pipState = rememberRetained { PipState() }
         val scrollState = rememberRetained { ScrollState(0) }
         val playerState = rememberRetained { PlayerState(context) }
+
         var chartFilter by rememberRetained { mutableStateOf(ChartFilter.BillboardHot100) }
         var topTen by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
         var chartList by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
         var expandedIndex by rememberRetained { mutableStateOf<Int?>(null) }
-        var isExitSnackbarVisible by rememberRetained { mutableStateOf(false) }
+        var currentVideo by rememberRetained { mutableStateOf<YoutubeVideoDetail?>(null) }
+        var exitSnackbarVisible by rememberRetained { mutableStateOf(false) }
         var listOffsetY by rememberRetained { mutableFloatStateOf(0f) }
-
         val isFilterSticky by rememberRetained {
             derivedStateOf {
                 listOffsetY > 0f && scrollState.value >= listOffsetY
             }
         }
 
-        LaunchedEffect(scope) { pipState.setScope(scope) }
+        val loadVideo: (Chart) -> Unit = { chart ->
+            scope.launch {
+                runCatching {
+                    getYoutubeVideoDetailUseCase(chart.title, chart.artist)
+                }.onSuccess { detail ->
+                    if (currentVideo == detail) return@onSuccess
+                    if (detail.isPlayable) {
+                        currentVideo = detail
+                        playerState.load(detail.videoId)
+                        playerState.play()
+                    }
+                }.onFailure { e ->
+                    snackbarHostState.showSnackbar(e.message ?: "Unknown Error")
+                }
+            }
+        }
 
         val hot100 by produceRetainedState(
             initialValue = ChartOverview()
@@ -77,7 +98,9 @@ class HomePresenter @AssistedInject constructor(
                 value = it
                 topTen = it.topTen.toPersistentList()
                 chartList = it.chartList.toPersistentList()
-                playerState.load("4MaozyVj8-8")
+                it.chartList.firstOrNull()?.let { chart ->
+                    loadVideo(chart)
+                }
             }
         }
 
@@ -126,16 +149,20 @@ class HomePresenter @AssistedInject constructor(
             lazyListState.requestScrollToItem(0, 0)
         }
 
+        LaunchedEffect(scope) { pipState.setScope(scope) }
+
+
         return HomeState(
             topTen = topTen,
             isPipMode = isFilterSticky,
             chartList = chartList,
             chartFilter = chartFilter,
+            currentVideo = currentVideo,
             expandedIndex = expandedIndex,
             snackbarHostState = snackbarHostState,
             lazyListState = lazyListState,
             scrollState = scrollState,
-            showQuitToast = isExitSnackbarVisible,
+            showQuitToast = exitSnackbarVisible,
             playerState = playerState,
             pipState = pipState,
         ) { event ->
@@ -150,22 +177,23 @@ class HomePresenter @AssistedInject constructor(
                 }
 
                 is HomeEvent.OnBackPressed -> {
-                    if (isExitSnackbarVisible) {
+                    if (exitSnackbarVisible) {
                         navigator.pop(PopResult.QuitAppResult)
                     } else {
-                        isExitSnackbarVisible = true
+                        exitSnackbarVisible = true
                         scope.launch {
                             snackbarHostState.showSnackbar(
                                 message = "Press back again to exit",
                                 duration = SnackbarDuration.Short,
                             )
-                            isExitSnackbarVisible = false
+                            exitSnackbarVisible = false
                         }
                     }
                 }
 
                 is HomeEvent.OnListPositioned -> listOffsetY = event.y
                 HomeEvent.OnSettingIconClick -> navigator.goTo(BillboardScreen.Setting)
+                is HomeEvent.OnItemClick -> loadVideo(event.item)
             }
         }
     }

@@ -6,6 +6,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Stable
 import com.hancekim.billboard.core.designsystem.componenet.filter.ChartFilter
 import com.hancekim.billboard.core.domain.model.Chart
+import com.hancekim.billboard.core.domain.model.YoutubeVideoDetail
 import com.hancekim.billboard.core.player.PlayerState
 import com.hancekim.billboard.core.player.pip.PipState
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -23,6 +24,7 @@ data class HomeState(
     val showQuitToast: Boolean = false,
     val expandedIndex: Int? = null,
     val isPipMode: Boolean = false,
+    val currentVideo: YoutubeVideoDetail? = null,
     val topTen: ImmutableList<Chart> = persistentListOf(),
     val chartList: ImmutableList<Chart> = persistentListOf(),
     val chartFilter: ChartFilter = ChartFilter.BillboardHot100,
@@ -44,5 +46,9 @@ sealed interface HomeEvent : CircuitUiEvent {
 
     data class OnListPositioned(
         val y: Float,
+    ) : HomeEvent
+
+    data class OnItemClick(
+        val item: Chart
     ) : HomeEvent
 }
