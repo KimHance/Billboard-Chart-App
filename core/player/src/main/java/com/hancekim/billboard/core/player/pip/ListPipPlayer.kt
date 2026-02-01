@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,6 +35,7 @@ import com.hancekim.billboard.core.designfoundation.icon.IcoClose
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designfoundation.util.throttledProcess
 import com.hancekim.billboard.core.designsystem.BillboardTheme
+import com.hancekim.billboard.core.imageloader.BillboardAsyncImage
 import com.hancekim.billboard.core.player.PlayerControllerButtons
 import com.hancekim.billboard.core.player.PlayerState
 import kotlinx.coroutines.delay
@@ -46,7 +49,7 @@ fun ListPipPlayer(
     var showController by rememberSaveable { mutableStateOf(false) }
 
     val dimColor by animateColorAsState(
-        targetValue = if (showController) Color.Black.copy(.2f) else Color.Transparent
+        targetValue = if (showController || state.isPlayable.not()) Color.Black.copy(.2f) else Color.Transparent
     )
 
     LaunchedEffect(showController) {
@@ -77,23 +80,12 @@ fun ListPipPlayer(
                 .drawBehind { drawRect(color = dimColor) }
                 .noRippleClickable(
                     onClick = throttledProcess(throttledTimeMillis = 200) {
-                        showController = !showController
+                        if (state.isPlayable) showController = !showController
                     }
                 ),
         ) {
-            if (showController) {
-                PlayerControllerButtons(
-                    modifier = Modifier.align(Alignment.Center),
-                    isPlay = state.isPlay,
-                    isMute = state.isMute,
-                    onPlayStateChanged = { isPlay ->
-                        if (isPlay) state.play() else state.pause()
-                    },
-                    onMuteStateChanged = { isMute ->
-                        if (isMute) state.mute() else state.unMute()
-                    },
-                )
 
+            val closeButton: @Composable () -> Unit = {
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -109,6 +101,43 @@ fun ListPipPlayer(
                     )
                 }
             }
+
+            if (state.isPlayable) {
+                BillboardAsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = state.thumbnailUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                )
+                if (showController) {
+                    PlayerControllerButtons(
+                        modifier = Modifier.align(Alignment.Center),
+                        isPlay = state.isPlay,
+                        isMute = state.isMute,
+                        onPlayStateChanged = { isPlay ->
+                            if (isPlay) state.play() else state.pause()
+                        },
+                        onMuteStateChanged = { isMute ->
+                            if (isMute) state.mute() else state.unMute()
+                        },
+                    )
+                    closeButton()
+                }
+            } else {
+                BillboardAsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = state.thumbnailUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                )
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = "This video cannot be played",
+                    style = BillboardTheme.typography.titleMd(),
+                    color = BillboardColor.Grey300
+                )
+                closeButton()
+            }
         }
     }
 }
@@ -119,6 +148,23 @@ private fun ListPipPlayerPreview() {
     BillboardTheme {
         val context = LocalContext.current
         val state = remember { PlayerState(context) }
+        ListPipPlayer(
+            modifier = Modifier.width(320.dp),
+            state = state,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ListPipPlayerNotPlayablePreview() {
+    BillboardTheme {
+        val context = LocalContext.current
+        val state = remember {
+            PlayerState(context).apply {
+                changePlayable(false)
+            }
+        }
         ListPipPlayer(
             modifier = Modifier.width(320.dp),
             state = state,
