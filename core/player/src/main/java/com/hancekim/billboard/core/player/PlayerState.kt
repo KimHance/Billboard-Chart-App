@@ -30,7 +30,7 @@ class PlayerState(
                     when (state) {
                         PlayerConstants.PlayerState.PLAYING -> isPlay = true
                         PlayerConstants.PlayerState.PAUSED -> isPlay = false
-                        PlayerConstants.PlayerState.VIDEO_CUED -> play()
+                        PlayerConstants.PlayerState.ENDED -> play()
                         else -> {}
                     }
                 }
@@ -45,13 +45,20 @@ class PlayerState(
     var isEnabled by mutableStateOf(true)
         private set
 
+    var thumbnailUrl by mutableStateOf("")
+        private set
+
+    var isPlayable by mutableStateOf(true)
+        private set
+
     fun getPlayerView(): YouTubePlayerView {
         return playerView
     }
 
-    fun load(videoId: String) {
+    fun load(videoId: String, thumbnailUrl: String) {
         this.videoId = videoId
-        player?.loadVideo(videoId, 0f)
+        this.thumbnailUrl = thumbnailUrl
+        if (isPlayable) player?.loadVideo(videoId, 0f)
     }
 
     fun play() {
@@ -83,8 +90,10 @@ class PlayerState(
         }
     }
 
-    fun enable() {
-        isEnabled = true
+    fun changePlayable(
+        isPlayable: Boolean
+    ) {
+        this.isPlayable = isPlayable
     }
 
     fun disabled() {

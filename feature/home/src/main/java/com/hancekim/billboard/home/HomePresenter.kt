@@ -78,10 +78,18 @@ class HomePresenter @AssistedInject constructor(
                     getYoutubeVideoDetailUseCase(chart.title, chart.artist)
                 }.onSuccess { detail ->
                     if (currentVideo == detail) return@onSuccess
-                    if (detail.isPlayable) {
-                        currentVideo = detail
-                        playerState.load(detail.videoId)
-                        playerState.play()
+                    with(playerState) {
+                        changePlayable(detail.isPlayable)
+                        if (detail.isPlayable) {
+                            currentVideo = detail
+                            load(
+                                videoId = detail.videoId,
+                                thumbnailUrl = detail.thumbnailUrl,
+                            )
+                            play()
+                        } else {
+                            pause()
+                        }
                     }
                 }.onFailure { e ->
                     snackbarHostState.showSnackbar(e.message ?: "Unknown Error")
@@ -150,7 +158,6 @@ class HomePresenter @AssistedInject constructor(
         }
 
         LaunchedEffect(scope) { pipState.setScope(scope) }
-
 
         return HomeState(
             topTen = topTen,
