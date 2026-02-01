@@ -30,6 +30,7 @@ class PlayerState(
                     when (state) {
                         PlayerConstants.PlayerState.PLAYING -> isPlay = true
                         PlayerConstants.PlayerState.PAUSED -> isPlay = false
+                        PlayerConstants.PlayerState.VIDEO_CUED -> play()
                         else -> {}
                     }
                 }
