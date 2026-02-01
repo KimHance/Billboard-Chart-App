@@ -75,7 +75,7 @@ class ResultCallTest {
 
     @Test
     fun `HTTP 에러 응답에 ApiError JSON이 있으면 ApiException으로 파싱한다`() {
-        val errorJson = """{"code":"INVALID_REQUEST","message":"잘못된 요청입니다"}"""
+        val errorJson = """{"error":{"code":"INVALID_REQUEST","message":"잘못된 요청입니다"}}"""
 
         val delegateCallbackSlot = slot<Callback<String>>()
         every { delegate.enqueue(capture(delegateCallbackSlot)) } answers {

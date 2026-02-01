@@ -32,8 +32,8 @@ class ResultCall<T>(
                     val errorBody = response.errorBody()?.string()
                     val exception = try {
                         errorBody?.let {
-                            val apiError = jsonBuilder.decodeFromString(ApiError.serializer(), it)
-                            ApiException(response.code(), apiError)
+                            val errorResponse = jsonBuilder.decodeFromString(ApiErrorResponse.serializer(), it)
+                            ApiException(response.code(), errorResponse.error)
                         } ?: HttpException(response)
                     } catch (e: Exception) {
                         HttpException(response)
@@ -56,6 +56,11 @@ class ResultCall<T>(
     override fun request(): Request = delegate.request()
     override fun timeout(): Timeout = delegate.timeout()
 }
+
+@Serializable
+data class ApiErrorResponse(
+    val error: ApiError = ApiError(),
+)
 
 @Serializable
 data class ApiError(

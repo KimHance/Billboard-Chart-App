@@ -103,12 +103,6 @@ fun ListPipPlayer(
             }
 
             if (state.isPlayable) {
-                BillboardAsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = state.thumbnailUrl,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                )
                 if (showController) {
                     PlayerControllerButtons(
                         modifier = Modifier.align(Alignment.Center),
