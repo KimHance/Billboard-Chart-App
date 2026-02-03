@@ -72,5 +72,9 @@ gradlePlugin {
             id = "hance.circuit"
             implementationClass = "AndroidCircuitConventionPlugin"
         }
+        register("androidTest") {
+            id = "hance.android.test"
+            implementationClass = "AndroidTestConventionPlugin"
+        }
     }
 }
