@@ -73,26 +73,28 @@ class HomePresenter @AssistedInject constructor(
         }
 
         val loadVideo: (Chart) -> Unit = { chart ->
-            scope.launch {
-                runCatching {
-                    getYoutubeVideoDetailUseCase(chart.title, chart.artist)
-                }.onSuccess { detail ->
-                    if (currentVideo == detail) return@onSuccess
-                    with(playerState) {
-                        changePlayable(detail.isPlayable)
-                        if (detail.isPlayable) {
-                            currentVideo = detail
-                            load(
-                                videoId = detail.videoId,
-                                thumbnailUrl = detail.thumbnailUrl,
-                            )
-                            play()
-                        } else {
-                            pause()
+            if (chart.title.isNotEmpty()) {
+                scope.launch {
+                    runCatching {
+                        getYoutubeVideoDetailUseCase(chart.title, chart.artist)
+                    }.onSuccess { detail ->
+                        if (currentVideo == detail) return@onSuccess
+                        with(playerState) {
+                            changePlayable(detail.isPlayable)
+                            if (detail.isPlayable) {
+                                currentVideo = detail
+                                load(
+                                    videoId = detail.videoId,
+                                    thumbnailUrl = detail.thumbnailUrl,
+                                )
+                                play()
+                            } else {
+                                pause()
+                            }
                         }
+                    }.onFailure { e ->
+                        snackbarHostState.showSnackbar(e.message ?: "Unknown Error")
                     }
-                }.onFailure { e ->
-                    snackbarHostState.showSnackbar(e.message ?: "Unknown Error")
                 }
             }
         }
