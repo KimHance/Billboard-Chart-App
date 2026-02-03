@@ -4,9 +4,12 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.hancekim.billboard.core.circuit.BillboardScreen
@@ -46,7 +49,13 @@ fun HomeUi(
                 title = "BILLBOARD"
             ) { eventSink(HomeEvent.OnSettingIconClick) }
         },
-        snackbarHost = { SnackbarHost(state.snackbarHostState) },
+        snackbarHost = {
+            CompositionLocalProvider(
+                LocalTextStyle provides BillboardTheme.typography.labelMd()
+            ) {
+                SnackbarHost(state.snackbarHostState)
+            }
+        },
         content = { paddingValues ->
             PlayerWithPager(
                 modifier = Modifier.padding(paddingValues),
