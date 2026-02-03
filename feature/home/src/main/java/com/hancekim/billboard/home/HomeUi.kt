@@ -7,11 +7,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
@@ -42,7 +42,7 @@ fun HomeUi(
     )
 
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.testTag("home"),
         containerColor = colorScheme.bgApp,
         topBar = {
             BillboardHeader(

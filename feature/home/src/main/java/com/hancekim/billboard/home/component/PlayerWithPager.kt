@@ -31,6 +31,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designsystem.componenet.filter.ChartFilter
 import com.hancekim.billboard.core.designsystem.componenet.filter.FilterRow
@@ -110,6 +111,7 @@ fun PlayerWithPager(
                 }
                 LazyColumn(
                     modifier = Modifier
+                        .testTag("chart_list")
                         .fillMaxSize()
                         .nestedScroll(
                             remember {
@@ -150,6 +152,7 @@ fun PlayerWithPager(
                         contentType = { _, _ -> "chart" }
                     ) { index, item ->
                         RankingItem(
+                            modifier = Modifier.testTag("chart_item"),
                             rank = item.rank,
                             imgUrl = item.image,
                             status = item.status.toStatus(),

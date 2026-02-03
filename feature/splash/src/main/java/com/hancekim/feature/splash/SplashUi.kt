@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.circuit.BillboardScreen
@@ -53,7 +54,7 @@ fun SplashUi(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier.testTag("splash"),
         contentColor = Color.Unspecified,
         color = BillboardTheme.colorScheme.bgApp
     ) {

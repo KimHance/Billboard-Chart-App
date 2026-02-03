@@ -1,4 +1,5 @@
 plugins {
+    alias(libs.plugins.baselineprofile)
     alias(libs.plugins.billboard.android.test)
 }
 
