@@ -11,6 +11,7 @@ android {
         applicationId = "com.hancekim.billboard"
         versionCode = libs.versions.appVersionCode.get().toInt()
         versionName = libs.versions.appVersionName.get()
+        testInstrumentationRunner = "com.hancekim.billboard.core.testing.BillboardTestRunner"
     }
 
     buildTypes {
@@ -41,4 +42,6 @@ dependencies {
     implementation(projects.feature.splash)
     implementation(projects.feature.home)
     implementation(projects.feature.setting)
+    androidTestImplementation(projects.core.testing)
+    androidTestImplementation(projects.core.dataTest)
 }
