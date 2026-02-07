@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.billboard.android.aplication)
     alias(libs.plugins.billboard.android.aplication.compse)
     alias(libs.plugins.billboard.android.hilt)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -44,4 +45,11 @@ dependencies {
     implementation(projects.feature.setting)
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(projects.core.dataTest)
+
+    baselineProfile(projects.benchmark)
+}
+
+baselineProfile {
+    automaticGenerationDuringBuild = false
+    dexLayoutOptimization = true
 }
