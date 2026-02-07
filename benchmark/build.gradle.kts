@@ -1,3 +1,5 @@
+import com.hance.convention.configureFlavors
+
 plugins {
     alias(libs.plugins.baselineprofile)
     alias(libs.plugins.billboard.android.test)
@@ -16,6 +18,14 @@ android {
 
     buildFeatures {
         buildConfig = true
+    }
+
+    configureFlavors(this) { flavor ->
+        buildConfigField(
+            "String",
+            "APP_FLAVOR_SUFFIX",
+            "\"${flavor.applicationIdSuffix ?: ""}\""
+        )
     }
 
     testOptions.managedDevices {
@@ -54,12 +64,12 @@ baselineProfile {
     managedDevices.clear()
     managedDevices += "pixel6Api32"
     managedDevices += "pixel6Api36"
-    useConnectedDevices = false
+    useConnectedDevices = true
 }
 
 
 androidComponents {
     beforeVariants(selector().all()) {
-        it.enable = it.buildType == "benchmark"
+        it.enable = it.productFlavors.any { (_, name) -> name == "demo" }
     }
 }

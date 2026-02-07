@@ -9,6 +9,11 @@ import com.hancekim.billboard.benchmark.HasChildrenOp.AT_LEAST
 import com.hancekim.billboard.benchmark.HasChildrenOp.AT_MOST
 import com.hancekim.billboard.benchmark.HasChildrenOp.EXACTLY
 
+val PACKAGE_NAME = buildString {
+    append("com.hancekim.billboard")
+    append(BuildConfig.APP_FLAVOR_SUFFIX)
+}
+
 fun UiDevice.waitAndFindObject(selector: BySelector, timeout: Long): UiObject2 {
     if (!wait(Until.hasObject(selector), timeout)) {
         throw AssertionError("Element not found on screen in ${timeout}ms (selector=$selector)")
