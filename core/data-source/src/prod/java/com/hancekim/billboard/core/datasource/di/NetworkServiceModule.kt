@@ -1,7 +1,7 @@
-package com.hancekim.billboard.core.dataimpl.di
+package com.hancekim.billboard.core.datasource.di
 
-import com.hancekim.billboard.core.dataimpl.service.BillboardService
-import com.hancekim.billboard.core.dataimpl.service.YoutubeService
+import com.hancekim.billboard.core.datasource.service.BillboardService
+import com.hancekim.billboard.core.datasource.service.YoutubeService
 import com.hancekim.billboard.core.network.retrofit.BillboardNetworkFactory
 import dagger.Module
 import dagger.Provides

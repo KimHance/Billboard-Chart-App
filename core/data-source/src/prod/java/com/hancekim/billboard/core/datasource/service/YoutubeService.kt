@@ -1,4 +1,4 @@
-package com.hancekim.billboard.core.dataimpl.service
+package com.hancekim.billboard.core.datasource.service
 
 import com.hancekim.billboard.core.data.model.VideoListResponse
 import com.hancekim.billboard.core.data.model.YoutubeSearchResponse

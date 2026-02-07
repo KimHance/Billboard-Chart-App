@@ -1,4 +1,5 @@
 import com.android.build.api.dsl.ApplicationExtension
+import com.hance.convention.configureFlavors
 import com.hance.convention.configureKotlinAndroid
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -19,6 +20,8 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 configureKotlinAndroid(this)
                 defaultConfig.targetSdk = Integer.parseInt(libs.findVersion("targetSdk").get().requiredVersion)
                 defaultConfig.minSdk = Integer.parseInt(libs.findVersion("minSdk").get().requiredVersion)
+
+                configureFlavors(this)
             }
         }
     }

@@ -1,4 +1,5 @@
 import com.android.build.gradle.LibraryExtension
+import com.hance.convention.configureFlavors
 import com.hance.convention.configureKotlinAndroid
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -17,6 +18,8 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
                 defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+                configureFlavors(this)
             }
             dependencies {
                 add("androidTestImplementation", kotlin("test"))
