@@ -10,3 +10,9 @@ fun MacrobenchmarkScope.startActivityAndWaitForMain() {
     val contentList = device.waitAndFindObject(By.res("chart_list"), 3_000)
     contentList.wait(untilHasChildren(), 5_000)
 }
+
+fun MacrobenchmarkScope.scrollListUpAndDown() {
+    val contentList = device.waitAndFindObject(By.res("chart_list"), 3_000)
+    contentList.wait(untilHasChildren(10), 5_000)
+    device.flingElementDownUp(contentList)
+}

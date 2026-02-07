@@ -1,4 +1,4 @@
-package com.hancekim.billboard.benchmark.starup
+package com.hancekim.billboard.benchmark.benchmark
 
 import androidx.benchmark.macro.BaselineProfileMode
 import androidx.benchmark.macro.CompilationMode

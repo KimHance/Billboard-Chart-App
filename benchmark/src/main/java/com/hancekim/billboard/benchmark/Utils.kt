@@ -1,6 +1,7 @@
 package com.hancekim.billboard.benchmark
 
 import androidx.test.uiautomator.BySelector
+import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObject2Condition
@@ -21,6 +22,14 @@ fun UiDevice.waitAndFindObject(selector: BySelector, timeout: Long): UiObject2 {
 
     return findObject(selector)
 }
+
+fun UiDevice.flingElementDownUp(element: UiObject2) {
+    element.setGestureMargin(displayWidth / 5)
+    element.fling(Direction.DOWN)
+    waitForIdle()
+    element.fling(Direction.UP)
+}
+
 
 fun untilHasChildren(
     childCount: Int = 1,
