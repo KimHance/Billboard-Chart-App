@@ -3,7 +3,6 @@ package com.hancekim.billboard.core.designsystem.componenet.filter
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +31,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designfoundation.color.BillboardColor
@@ -59,6 +61,7 @@ fun FilterRow(
 
     LazyRow(
         modifier = modifier
+            .selectableGroup()
             .dropShadow(
                 shape = RectangleShape,
                 shadow = Shadow(
@@ -100,11 +103,13 @@ private fun FilterItem(
 
     Box(
         modifier = modifier
-            .clickable(
+            .selectable(
+                selected = isSelect,
                 interactionSource = remember { MutableInteractionSource() },
                 indication = OffscreenIndication(
                     color = BillboardColor.Grey500.copy(.5f),
                 ),
+                role = Role.Tab,
                 onClick = onClick
             )
             .padding(start = 6.dp, end = 6.dp),

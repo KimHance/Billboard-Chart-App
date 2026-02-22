@@ -80,6 +80,7 @@ fun PlayerWithPager(
                 )
             ) {
                 TitleSection(
+                    modifier = Modifier.testTag("title_player"),
                     title = "Trending Now",
                     size = TitleSize.Medium,
                 )
@@ -89,8 +90,10 @@ fun PlayerWithPager(
                     exit = ExitTransition.None,
                 ) {
                     YoutubePlayer(
+
                         state = playerState,
                         modifier = Modifier
+                            .testTag("player")
                             .clip(RoundedCornerShape(16.dp))
                             .fillMaxWidth()
                             .aspectRatio(16f / 9f)
@@ -105,6 +108,7 @@ fun PlayerWithPager(
                     }
             ) {
                 FilterRow(
+                    modifier = Modifier.testTag("filter"),
                     currentIndex = ChartFilter.entries.indexOf(chartFilter),
                 ) {
                     eventSink(HomeEvent.OnFilterClick(it))
@@ -142,6 +146,7 @@ fun PlayerWithPager(
                         contentType = "filterTitle"
                     ) {
                         TitleSection(
+                            modifier = Modifier.testTag("title_filter"),
                             title = chartFilter.text,
                             size = TitleSize.Large,
                         )
@@ -180,7 +185,10 @@ fun PlayerWithPager(
             enter = fadeIn(tween(200)),
             exit = ExitTransition.None
         ) {
-            ListPipPlayer(state = playerState)
+            ListPipPlayer(
+                modifier = Modifier.testTag("pip_player"),
+                state = playerState
+            )
         }
     }
 }
