@@ -195,6 +195,7 @@ circuit-navigation = { group = "com.slack.circuit", name = "circuitx-navigation"
 circuit-androidx-overlay = { group = "com.slack.circuit", name = "circuitx-overlays", version.ref = "circuit" }
 circuit-codegen-annotations = { group = "com.slack.circuit", name = "circuit-codegen-annotations", version.ref = "circuit" }
 circuit-codegen = { group = "com.slack.circuit", name = "circuit-codegen", version.ref = "circuit" }
+circuit-test = { group = "com.slack.circuit", name = "circuit-test", version.ref = "circuit" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
 
