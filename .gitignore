@@ -213,7 +213,8 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-CLAUDE.MD
+# Claude Code review reports
+docs/claude-config-review-report.md
 
 ### AndroidStudio Patch ###
 
