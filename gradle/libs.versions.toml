@@ -90,8 +90,8 @@ baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidxBase
 android-library = { id = "com.android.library", version.ref = "agp" }
 
 
-billboard-android-aplication = { id = "hance.android.application" }
-billboard-android-aplication-compse = { id = "hance.android.application.compose" }
+billboard-android-application = { id = "hance.android.application" }
+billboard-android-application-compose = { id = "hance.android.application.compose" }
 billboard-android-library = { id = "hance.android.library" }
 billboard-android-library-compose = { id = "hance.android.library.compose" }
 billboard-android-room = { id = "hance.android.room" }
@@ -164,6 +164,7 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+hilt-android-gradle-plugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
 
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-kotlin-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }

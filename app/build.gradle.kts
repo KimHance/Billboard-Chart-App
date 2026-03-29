@@ -1,6 +1,6 @@
 plugins {
-    alias(libs.plugins.billboard.android.aplication)
-    alias(libs.plugins.billboard.android.aplication.compse)
+    alias(libs.plugins.billboard.android.application)
+    alias(libs.plugins.billboard.android.application.compose)
     alias(libs.plugins.billboard.android.hilt)
     alias(libs.plugins.baselineprofile)
 }
@@ -39,6 +39,7 @@ dependencies {
     implementation(projects.core.domain)
     implementation(libs.timber)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.splash)
 
     implementation(projects.feature.splash)
     implementation(projects.feature.home)
@@ -52,4 +53,15 @@ dependencies {
 baselineProfile {
     automaticGenerationDuringBuild = false
     dexLayoutOptimization = true
+}
+
+// demo에서 수집한 베이스라인 프로파일을 src/main에 복사하여 prodRelease에도 적용
+tasks.register<Copy>("copyBaselineProfileToMain") {
+    from("src/demoRelease/generated/baselineProfiles")
+    into("src/main/generated/baselineProfiles")
+}
+
+// generateDemoBaselineProfile 실행 후 자동으로 main에 복사
+tasks.matching { it.name == "generateDemoBaselineProfile" }.configureEach {
+    finalizedBy("copyBaselineProfileToMain")
 }

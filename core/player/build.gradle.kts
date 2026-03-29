@@ -9,5 +9,5 @@ android {
 dependencies {
     implementation(projects.core.designSystem)
     implementation(libs.timber)
-    api(libs.youtube.player)
+    implementation(libs.youtube.player)
 }

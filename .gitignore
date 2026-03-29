@@ -213,8 +213,17 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+# Secrets
+secrets.properties
+
 # Claude Code review reports
 docs/claude-config-review-report.md
+
+# Kotlin compiler cache
+.kotlin/
+
+# Generated baseline profiles (원본은 demo에서 재생성 가능, main/ 복사본만 커밋)
+app/src/demoRelease/generated/
 
 ### AndroidStudio Patch ###
 

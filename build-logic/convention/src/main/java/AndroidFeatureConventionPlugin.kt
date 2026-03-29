@@ -7,8 +7,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             pluginManager.apply {
-                apply("hance.android.library")
-                apply("com.google.devtools.ksp")
+                apply("hance.android.library.compose")
             }
 
             dependencies {

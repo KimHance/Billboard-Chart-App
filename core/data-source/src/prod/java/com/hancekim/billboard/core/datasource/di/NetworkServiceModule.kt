@@ -1,5 +1,6 @@
 package com.hancekim.billboard.core.datasource.di
 
+import com.hancekim.billboard.core.datasource.BuildConfig
 import com.hancekim.billboard.core.datasource.service.BillboardService
 import com.hancekim.billboard.core.datasource.service.YoutubeService
 import com.hancekim.billboard.core.network.retrofit.BillboardNetworkFactory
@@ -13,8 +14,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkServiceModule {
-
-    private const val YOUTUBE_API_KEY = "AIzaSyDZFdZRwT3vG3Nu5RGTgcH4omdx-g0jmRw"
 
     @Provides
     @Singleton
@@ -36,7 +35,7 @@ object NetworkServiceModule {
                     Interceptor { chain ->
                         val original = chain.request()
                         val url = original.url.newBuilder()
-                            .addQueryParameter("key", YOUTUBE_API_KEY)
+                            .addQueryParameter("key", BuildConfig.YOUTUBE_API_KEY)
                             .build()
                         chain.proceed(original.newBuilder().url(url).build())
                     }

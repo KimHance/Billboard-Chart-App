@@ -5,13 +5,14 @@ plugins {
 }
 
 android {
-    namespace = "com.hancekim.billboard.coredata"
+    namespace = "com.hancekim.billboard.core.data"
 }
 
 dependencies {
     implementation(projects.core.common)
     implementation(projects.core.network)
-    api(libs.androidx.datastore)
+    implementation(libs.androidx.datastore)
+    api(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.annotation.experimental)
 }

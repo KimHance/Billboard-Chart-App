@@ -10,7 +10,7 @@ android {
 
     buildTypes {
         create("benchmark") {
-            isDebuggable = true
+            isDebuggable = false
             signingConfig = getByName("debug").signingConfig
             matchingFallbacks += listOf("release")
         }
@@ -64,7 +64,7 @@ baselineProfile {
     managedDevices.clear()
     managedDevices += "pixel6Api32"
     managedDevices += "pixel6Api36"
-    useConnectedDevices = true
+    useConnectedDevices = false
 }
 
 
