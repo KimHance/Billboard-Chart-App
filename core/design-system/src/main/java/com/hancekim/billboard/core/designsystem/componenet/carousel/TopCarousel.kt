@@ -86,16 +86,7 @@ fun TopCarousel(
                     // FADE AWAY
                     val startOffset = pagerState.startOffsetForPage(page)
                     alpha = (2f - startOffset) / 2f
-
-                    if (page == 0) {
-                        Log.d(
-                            "hi", "" +
-                                    "pageOffset: $pageOffset, startOffset: $startOffset," +
-                                    "endOffset: ${endOffset.absoluteValue}, absoluteOffset: $absoluteOffset, " +
-                                    "scale: $scale"
-                        )
-                    }
-
+                    
                 },
             item = carouselList[page]
         )

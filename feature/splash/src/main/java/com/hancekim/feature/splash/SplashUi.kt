@@ -114,8 +114,12 @@ fun SplashUi(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .graphicsLayer {
-                                    this.alpha = alpha
+                                    // blur는 고정 레이어에서 캐시
                                     renderEffect = BlurEffect(50.dp.toPx(), 50.dp.toPx())
+                                }
+                                .graphicsLayer {
+                                    // alpha만 별도 레이어에서 애니메이션
+                                    this.alpha = alpha
                                 }
                         ) {
                             drawCircle(

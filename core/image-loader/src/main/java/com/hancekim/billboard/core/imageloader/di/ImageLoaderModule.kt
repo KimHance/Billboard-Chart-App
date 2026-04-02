@@ -41,7 +41,6 @@ object ImageLoaderModule {
             .diskCache {
                 DiskCache.Builder()
                     .directory(context.cacheDir.resolve("image_cache"))
-                    .maxSizePercent(0.02)
                     .build()
             }
             .logger(coilLogger)
