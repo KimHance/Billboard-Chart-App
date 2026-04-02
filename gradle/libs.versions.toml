@@ -9,65 +9,65 @@ minSdk = "32"
 desugarJdkLibs = "2.1.5"
 
 # kotlin
-kotlin = "2.2.20"
-kotlinxSerializationJson = "1.9.0"
+kotlin = "2.3.20"
+kotlinxSerializationJson = "1.10.0"
 kotlinxImmutable = "0.4.0"
 
 # androidx
-androidxCore = "1.17.0"
+androidxCore = "1.18.0"
 androidxCoreSplash = "1.2.0"
-androidxActivity = "1.12.2"
+androidxActivity = "1.13.0"
 androidxAppCompat = "1.7.1"
 androidxLifecycle = "2.10.0"
 androidxFragment = "1.8.9"
-androidxDatastore = "1.2.0"
+androidxDatastore = "1.2.1"
 androidxBaselineprofile = "1.4.1"
 androidxRoom = "2.8.4"
 androidxNavigation = "2.8.9"
-androidxWorkManager = "2.11.0"
+androidxWorkManager = "2.11.2"
 androidxHilt = "1.3.0"
 androidxWindow = "1.5.1"
 androidxJunit = "1.3.0"
-androidxComposeBom = "2025.12.01"
+androidxComposeBom = "2026.03.01"
 androidxAnnotaion = "1.5.1"
 
 # compose
 composeMaterial3 = "1.4.0"
-composeNavigation = "2.9.6"
+composeNavigation = "2.9.7"
 
 # coroutine
 coroutine = "1.10.2"
 
 # ksp
 ksp = "2.3.4"
-kotlinPoet = "2.2.0"
+kotlinPoet = "2.3.0"
 
 # hilt
-hilt = "2.57.2"
+hilt = "2.58"
 hiltNavigationCompose = "1.3.0"
 
 # test
 junit = "4.13.2"
 espressoCore = "3.7.0"
-androidxTestRunner = "1.6.2"
-ui-test-junit4 = "1.10.0"
+androidxTestRunner = "1.7.0"
+ui-test-junit4 = "1.10.6"
 uiAutomator = "2.3.0"
 benchmarkMacroJunit4 = "1.4.1"
-mockk = "1.14.7"
-turbine = "1.2.0"
+mockk = "1.14.9"
+turbine = "1.2.1"
 
 # network
 retrofit = "3.0.0"
 okhttp = "5.3.2"
 
 # coil
-coil = "3.3.0"
+coil = "3.4.0"
 
 # lottie
 lottie = "6.7.1"
 
 # circuie
-circuit = "0.31.0"
+circuit = "0.33.1"
 
 # timber
 timber = "5.0.1"
