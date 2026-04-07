@@ -5,7 +5,7 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- 글로우 효과: 중앙 radialGradient 원 -->
+    <!-- 글로우 효과: 중앙 radialGradient 원 (주황) -->
     <path android:pathData="M0,0 L108,0 L108,108 L0,108 Z">
         <aapt:attr name="android:fillColor">
             <gradient
@@ -13,9 +13,9 @@
                 android:centerX="54"
                 android:centerY="48"
                 android:gradientRadius="45">
-                <item android:offset="0.0" android:color="#5500FF85" />
-                <item android:offset="0.5" android:color="#2200FF85" />
-                <item android:offset="1.0" android:color="#0000FF85" />
+                <item android:offset="0.0" android:color="#55FF8C00" />
+                <item android:offset="0.5" android:color="#22FF8C00" />
+                <item android:offset="1.0" android:color="#00FF8C00" />
             </gradient>
         </aapt:attr>
     </path>
@@ -30,7 +30,7 @@
 
         <!-- 바 1 (짧은 바) -->
         <path
-            android:fillColor="#00FF85"
+            android:fillColor="#FF8C00"
             android:pathData="M26.3,48.5
                 C26.3,46.3 28.1,44.6 30.3,44.6
                 L35.3,44.6
@@ -43,7 +43,7 @@
 
         <!-- 바 2 (중간 바) -->
         <path
-            android:fillColor="#00FF85"
+            android:fillColor="#FF8C00"
             android:pathData="M47.5,31.8
                 C47.5,29.6 49.3,27.9 51.5,27.9
                 L56.5,27.9
@@ -56,7 +56,7 @@
 
         <!-- 바 3 (긴 바) -->
         <path
-            android:fillColor="#00FF85"
+            android:fillColor="#FF8C00"
             android:pathData="M68.7,18
                 C68.7,15.8 70.5,14.1 72.7,14.1
                 L77.7,14.1
