@@ -1,6 +1,7 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.hance.convention.configureFlavors
 import com.hance.convention.configureKotlinAndroid
+import com.hance.convention.configureReleaseSigning
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
@@ -22,6 +23,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 defaultConfig.minSdk = Integer.parseInt(libs.findVersion("minSdk").get().requiredVersion)
 
                 configureFlavors(this)
+                configureReleaseSigning(this)
             }
         }
     }
