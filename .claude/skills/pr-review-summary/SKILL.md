@@ -202,15 +202,63 @@ Rules:
 
 - Check-level findings (confidence 70–79) are not posted as inline comments — they live only in the summary
 
-## Step 6 — Failure modes
+## Step 6 — Label and optional auto-merge
+
+After the review comment is posted, always take these finalization actions:
+
+### 6a — Always add `review-end` label
+
+```bash
+gh pr edit ${PR_NUMBER} --add-label "review-end"
+```
+
+This runs **regardless** of outcome (pass, fail, error). It marks the PR as "the reviewer bot has finished its work on this PR".
+
+### 6b — Auto-merge when the review is clean
+
+Compute the decision:
+
+```
+merge_eligible = (major_count == 0) AND (minor_count == 0)
+```
+
+Check guards. **Skip auto-merge** if any of these are true:
+- The PR has a label named `do-not-merge` or `hold` or `wip`
+- The PR is a draft (`gh pr view --json isDraft`)
+- The PR has merge conflicts (`gh pr view --json mergeable` → not `MERGEABLE`)
+- `merge_eligible` is false
+
+If all checks pass, trigger auto-merge:
+
+```bash
+gh pr merge ${PR_NUMBER} --auto --squash --delete-branch
+```
+
+The `--auto` flag means GitHub will wait for all required checks to pass before actually merging — it does not merge immediately. If there are other workflows still running (e.g., `baseline-profile.yml` in a future session), those will gate the merge.
+
+### 6c — Reflect the merge decision in the summary body
+
+Prepend a one-liner at the very top of the summary body (Step 3) so humans can see the intent without scrolling:
+
+- When auto-merge is queued:
+  > ✅ **자동 머지 예약됨** — 남은 체크를 기다린 후 자동으로 머지돼요. 원치 않으면 `do-not-merge` 라벨을 붙여주세요.
+- When auto-merge is skipped because of findings:
+  > 🛑 **수동 머지 필요** — Major <M>, Minor <N> 건 검토 후 머지해주세요.
+- When auto-merge is skipped because of a guard (draft / label / conflict):
+  > ⏸ **자동 머지 스킵** — 이유: \<draft|do-not-merge 라벨|conflict\>
+
+## Step 7 — Failure modes
 
 - If a reviewer returned zero issues → still include their row in Step 3 table with count 0
-- If the PR has zero total findings → post only the summary comment, no inline comments, with "이상 없음 ✅" in the 세부 지적 section
-- If `gh api` fails due to missing `pull-requests: write` permission → fall back to a single `gh pr comment` with the summary body and a bullet list of issues
+- If the PR has zero total findings → post only the summary comment, no inline comments, with "이상 없음 ✅" in the 세부 지적 section, and proceed to Step 6b (auto-merge eligible)
+- If `gh api` fails due to missing `pull-requests: write` permission → fall back to a single `gh pr comment` with the summary body and a bullet list of issues; still attempt Step 6a (label)
+- If `gh pr merge` fails (e.g., branch protection rejects the bot) → log the error in the summary comment, keep the `review-end` label, and continue
 
 ## Rules
 
 - Everything user-facing is in Korean
 - Mermaid diagrams must be valid — test the syntax mentally before posting
-- Never modify code — this skill only posts comments
+- Never modify code — this skill only posts comments, labels, and merges
 - Never post more than one review per workflow run (idempotency)
+- Never use `gh pr merge` without `--auto` — direct merge bypasses other CI checks
+- Never use `--admin` flag — never bypass branch protection
