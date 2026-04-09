@@ -2,11 +2,13 @@ name: Claude PR Review
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, labeled]
 
 jobs:
   review:
-    if: contains(github.event.pull_request.labels.*.name, 'release')
+    if: |
+      contains(github.event.pull_request.labels.*.name, 'release') &&
+      !contains(github.event.pull_request.labels.*.name, 'review-end')
     runs-on: ubuntu-latest
     permissions:
       contents: write        # auto-merge 용
