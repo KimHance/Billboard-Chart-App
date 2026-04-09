@@ -1,0 +1,27 @@
+name: Claude PR Review
+
+on:
+  pull_request:
+    types: [opened, labeled]
+
+jobs:
+  review:
+    if: |
+      contains(github.event.pull_request.labels.*.name, 'release') &&
+      !contains(github.event.pull_request.labels.*.name, 'review-end')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # auto-merge 용
+      pull-requests: write
+      id-token: write        # claude-code-action OIDC 토큰
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Use the pr-review skill to review PR #${{ github.event.pull_request.number }}.
