@@ -13,6 +13,7 @@ jobs:
     permissions:
       contents: write        # auto-merge 용
       pull-requests: write
+      id-token: write        # claude-code-action OIDC 토큰
 
     steps:
       - uses: actions/checkout@v4
