@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '\"::group::🚀 SPAWN \" + (.tool_input.subagent_type // \"?\") + \" — \" + (.tool_input.description // \"\")'"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '::endgroup::'"
+          }
+        ]
+      }
+    ]
+  }
+}
