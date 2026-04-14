@@ -29,9 +29,7 @@ enum class PipHorizontalAnchor {
 @Stable
 class PipState(
     private val initialAnchor: PipHorizontalAnchor = PipHorizontalAnchor.End,
-    private val velocityThreshold: Float = 500f,
     private val dismissVelocityThreshold: Float = 3000f,
-    private val flingDurationFactor: Float = 0.2f,
     private val onDismiss: () -> Unit = {},
 ) {
     var containerBounds by mutableStateOf(Size.Zero)
