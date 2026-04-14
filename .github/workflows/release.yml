@@ -37,6 +37,12 @@ jobs:
           key.password=$KEY_PASSWORD
           EOF
 
+      - name: Prepare secrets.properties
+        run: |
+          cat > secrets.properties <<EOF
+          YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}
+          EOF
+
       - name: Build prodRelease APK
         run: ./gradlew :app:assembleProdRelease
 
