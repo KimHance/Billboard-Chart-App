@@ -55,9 +55,9 @@ class HomePresenter @AssistedInject constructor(
         // Ui StateHolder
         val snackbarHostState = rememberRetained { SnackbarHostState() }
         val lazyListState = rememberRetained { LazyListState() }
-        val pipState = rememberRetained { PipState() }
         val scrollState = rememberRetained { ScrollState(0) }
         val playerState = rememberRetained { PlayerState(context) }
+        val pipState = rememberRetained { PipState(onDismiss = { playerState.disabled() }) }
 
         var chartFilter by rememberRetained { mutableStateOf(ChartFilter.BillboardHot100) }
         var topTen by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
@@ -78,7 +78,7 @@ class HomePresenter @AssistedInject constructor(
                     runCatching {
                         getYoutubeVideoDetailUseCase(chart.title, chart.artist)
                     }.onSuccess { detail ->
-                        if (currentVideo == detail) return@onSuccess
+                        if (currentVideo == detail && playerState.isEnabled) return@onSuccess
                         with(playerState) {
                             changePlayable(detail.isPlayable)
                             if (detail.isPlayable) {

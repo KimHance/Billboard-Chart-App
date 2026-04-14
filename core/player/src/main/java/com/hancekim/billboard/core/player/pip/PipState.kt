@@ -30,7 +30,9 @@ enum class PipHorizontalAnchor {
 class PipState(
     private val initialAnchor: PipHorizontalAnchor = PipHorizontalAnchor.End,
     private val velocityThreshold: Float = 500f,
-    private val flingDurationFactor: Float = 0.2f
+    private val dismissVelocityThreshold: Float = 3000f,
+    private val flingDurationFactor: Float = 0.2f,
+    private val onDismiss: () -> Unit = {},
 ) {
     var containerBounds by mutableStateOf(Size.Zero)
     var boxSize by mutableStateOf(Size.Zero)
@@ -53,10 +55,18 @@ class PipState(
     private var scope: CoroutineScope? = null
 
     val displayOffsetX: Float
-        get() = if (isDragging) dragOffsetX else animatedX.value
+        get() = when {
+            isDragging -> dragOffsetX
+            !isInitialized -> dragOffsetX
+            else -> animatedX.value
+        }
 
     val displayOffsetY: Float
-        get() = if (isDragging) dragOffsetY else animatedY.value
+        get() = when {
+            isDragging -> dragOffsetY
+            !isInitialized -> dragOffsetY
+            else -> animatedY.value
+        }
 
     private fun getAnchorX(anchor: PipHorizontalAnchor): Float {
         return when (anchor) {
@@ -65,15 +75,9 @@ class PipState(
         }
     }
 
-    private fun findClosestAnchor(x: Float, velocityX: Float): PipHorizontalAnchor {
-        return when {
-            velocityX > velocityThreshold -> PipHorizontalAnchor.End
-            velocityX < -velocityThreshold -> PipHorizontalAnchor.Start
-            else -> {
-                val midX = (containerBounds.width - boxSize.width) / 2f
-                if (x < midX) PipHorizontalAnchor.Start else PipHorizontalAnchor.End
-            }
-        }
+    private fun findClosestAnchor(x: Float): PipHorizontalAnchor {
+        val midX = (containerBounds.width - boxSize.width) / 2f
+        return if (x < midX) PipHorizontalAnchor.Start else PipHorizontalAnchor.End
     }
 
     private fun clampY(y: Float): Float {
@@ -85,12 +89,12 @@ class PipState(
         if (!isInitialized && boxSize != Size.Zero && containerBounds != Size.Zero) {
             val initX = getAnchorX(initialAnchor)
             val initY = clampY(containerBounds.height - boxSize.height)
+            dragOffsetX = initX
+            dragOffsetY = initY
             scope?.launch {
                 animatedX.snapTo(initX)
                 animatedY.snapTo(initY)
             }
-            dragOffsetX = initX
-            dragOffsetY = initY
             isInitialized = true
         }
     }
@@ -113,10 +117,35 @@ class PipState(
     }
 
     fun onDragEnd(velocity: Velocity) {
-        val closest = findClosestAnchor(dragOffsetX, velocity.x)
+        // 좌우 fling dismiss: 화면 바깥 방향으로 빠르게 fling 했을 때만
+        val midX = containerBounds.width / 2f
+        val isOutwardFling =
+            (velocity.x > dismissVelocityThreshold && dragOffsetX > midX) ||
+                    (velocity.x < -dismissVelocityThreshold && dragOffsetX < midX)
+
+        if (isOutwardFling) {
+            val targetX = if (velocity.x > 0) {
+                containerBounds.width + boxSize.width
+            } else {
+                -(boxSize.width * 2)
+            }
+            scope?.launch {
+                animatedX.snapTo(dragOffsetX)
+                animatedY.snapTo(dragOffsetY)
+                isDragging = false
+                animatedX.animateTo(targetX, tween(200))
+                onDismiss()
+                dragOffsetX = 0f
+                dragOffsetY = 0f
+                isInitialized = false
+            }
+            return
+        }
+
+        // 일반 드래그 → X 앵커 스냅, Y 는 손 뗀 위치 유지
+        val closest = findClosestAnchor(dragOffsetX)
         val targetX = getAnchorX(closest)
-        val predictedY = dragOffsetY + velocity.y * flingDurationFactor
-        val targetY = clampY(predictedY)
+        val targetY = clampY(dragOffsetY)
 
         scope?.launch {
             animatedX.snapTo(dragOffsetX)
