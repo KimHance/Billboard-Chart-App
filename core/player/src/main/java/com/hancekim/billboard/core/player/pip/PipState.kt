@@ -130,14 +130,17 @@ class PipState(
                 -(boxSize.width * 2)
             }
             scope?.launch {
-                animatedX.snapTo(dragOffsetX)
-                animatedY.snapTo(dragOffsetY)
-                isDragging = false
-                animatedX.animateTo(targetX, tween(200))
-                onDismiss()
-                dragOffsetX = 0f
-                dragOffsetY = 0f
-                isInitialized = false
+                try {
+                    animatedX.snapTo(dragOffsetX)
+                    animatedY.snapTo(dragOffsetY)
+                    isDragging = false
+                    animatedX.animateTo(targetX, tween(200))
+                } finally {
+                    onDismiss()
+                    dragOffsetX = 0f
+                    dragOffsetY = 0f
+                    isInitialized = false
+                }
             }
             return
         }
