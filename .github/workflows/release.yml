@@ -98,20 +98,6 @@ jobs:
           $(grep -oE 'Lcom/hancekim/billboard[^;]+;' "$PROFILE" | sed 's|^L||;s|;$||;s|/|.|g;s|\$.*||' | sort | uniq -c | sort -rn | head -15 | awk '{printf "| %s | %s |\n", $2, $1}')
           REPORT
 
-      - name: Commit profile and report to main
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout main
-          git add app/src/main/generated/baselineProfiles/ docs/baseline-profile-report.md
-          if git diff --cached --quiet; then
-            echo "No profile changes to commit"
-          else
-            git commit -m "baseline profile 갱신 (${{ github.ref_name }}) [skip ci]"
-            git push origin main
-          fi
-          git checkout ${{ github.sha }}
-
       - name: Build prodRelease APK
         run: ./gradlew :app:assembleProdRelease
 
@@ -123,5 +109,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: billboard-${{ github.ref_name }}.apk
+          files: |
+            billboard-${{ github.ref_name }}.apk
+            docs/baseline-profile-report.md
           generate_release_notes: true
