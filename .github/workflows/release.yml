@@ -33,8 +33,7 @@ jobs:
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
             "emulator" \
             "platform-tools" \
-            "system-images;android-32;default;x86_64" \
-            "system-images;android-36;default;x86_64"
+            "system-images;android-32;default;x86_64"
 
       - name: Prepare keystore and local.properties
         env:
@@ -61,6 +60,7 @@ jobs:
       - name: Generate baseline profile
         run: |
           ./gradlew :app:generateDemoBaselineProfile \
+            -Pci \
             -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
             --no-configuration-cache
 
