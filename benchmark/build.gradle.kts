@@ -62,8 +62,12 @@ dependencies {
 
 baselineProfile {
     managedDevices.clear()
-    managedDevices += "pixel6Api32"
-    managedDevices += "pixel6Api36"
+    if (project.hasProperty("ci")) {
+        managedDevices += "pixel6Api32"
+    } else {
+        managedDevices += "pixel6Api32"
+        managedDevices += "pixel6Api36"
+    }
     useConnectedDevices = false
 }
 
