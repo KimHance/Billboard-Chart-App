@@ -1,0 +1,55 @@
+package com.hancekim.billboard.core.designsystem.componenet.card
+
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import kotlin.math.cos
+import kotlin.math.sin
+
+@Composable
+fun SparkleEffect(
+    trigger: Boolean,
+    modifier: Modifier = Modifier,
+    particleCount: Int = 12,
+    color: Color = Color(0xFF00FF85),
+) {
+    val progress = remember { Animatable(0f) }
+
+    LaunchedEffect(trigger) {
+        if (trigger) {
+            progress.snapTo(0f)
+            progress.animateTo(1f, tween(600))
+        }
+    }
+
+    if (progress.value > 0f && progress.value < 1f) {
+        Canvas(modifier = modifier.fillMaxSize()) {
+            val centerX = size.width / 2f
+            val centerY = size.height / 2f
+            val maxRadius = size.minDimension * 0.6f
+
+            repeat(particleCount) { i ->
+                val angle = (360f / particleCount) * i
+                val rad = Math.toRadians(angle.toDouble())
+                val radius = maxRadius * progress.value
+                val alpha = 1f - progress.value
+
+                drawCircle(
+                    color = color.copy(alpha = alpha),
+                    radius = 4f * (1f - progress.value * 0.5f),
+                    center = Offset(
+                        centerX + cos(rad).toFloat() * radius,
+                        centerY + sin(rad).toFloat() * radius,
+                    ),
+                )
+            }
+        }
+    }
+}
