@@ -1,8 +1,10 @@
 package com.hancekim.billboard.core.designsystem.componenet.list
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -72,6 +74,7 @@ fun String.toStatus(): ChartStatus =
         else -> Moved.Steady
     }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RankingItem(
     rank: Int,
@@ -89,6 +92,7 @@ fun RankingItem(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onExpandButtonClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
     onItemClick: () -> Unit,
 ) {
     Column(
@@ -107,11 +111,12 @@ fun RankingItem(
                 color = BillboardTheme.colorScheme.bgCard,
                 shape = RoundedCornerShape(14.dp)
             )
-            .clickable(
+            .combinedClickable(
                 interactionSource = remember { MutableInteractionSource() },
                 enabled = enabled,
                 indication = OffscreenIndication(Color.LightGray.copy(.1f)),
                 onClick = onItemClick,
+                onLongClick = onLongClick,
             ),
     ) {
         DetailInfo(
