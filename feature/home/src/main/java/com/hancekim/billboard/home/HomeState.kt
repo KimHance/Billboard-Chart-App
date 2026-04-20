@@ -28,6 +28,10 @@ data class HomeState(
     val topTen: ImmutableList<Chart> = persistentListOf(),
     val chartList: ImmutableList<Chart> = persistentListOf(),
     val chartFilter: ChartFilter = ChartFilter.BillboardHot100,
+    val showCollectOverlay: Boolean = false,
+    val overlayChart: Chart? = null,
+    val isOverlayItemCollected: Boolean = false,
+    val collectionCount: Int = 0,
     val eventSink: (HomeEvent) -> Unit,
 ) : CircuitUiState
 
@@ -51,4 +55,10 @@ sealed interface HomeEvent : CircuitUiEvent {
     data class OnItemClick(
         val item: Chart
     ) : HomeEvent
+
+    data class OnLongPressItem(val item: Chart) : HomeEvent
+    data object OnCollectionIconClick : HomeEvent
+    data object OnCollectItem : HomeEvent
+    data object OnRemoveItem : HomeEvent
+    data object OnDismissOverlay : HomeEvent
 }

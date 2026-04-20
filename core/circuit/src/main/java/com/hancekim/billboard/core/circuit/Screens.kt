@@ -12,4 +12,7 @@ sealed interface BillboardScreen : Screen {
 
     @Parcelize
     data object Setting : BillboardScreen
+
+    @Parcelize
+    data object Collection : BillboardScreen
 }

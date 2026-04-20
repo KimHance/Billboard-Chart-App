@@ -172,7 +172,8 @@ fun PlayerWithPager(
                             peakDate = item.peakDate,
                             enabled = chartFilter != ChartFilter.Artist100,
                             onExpandButtonClick = { eventSink(HomeEvent.OnExpandButtonClick(index)) },
-                            onItemClick = { eventSink(HomeEvent.OnItemClick(item)) }
+                            onItemClick = { eventSink(HomeEvent.OnItemClick(item)) },
+                            onLongClick = { eventSink(HomeEvent.OnLongPressItem(item)) }
                         )
                     }
                 }

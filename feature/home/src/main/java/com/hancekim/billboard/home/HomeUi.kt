@@ -1,6 +1,7 @@
 package com.hancekim.billboard.home
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -18,6 +19,7 @@ import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.StateDiffLogEffect
 import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeader
 import com.hancekim.billboard.core.player.PlayerState
+import com.hancekim.billboard.home.component.CollectOverlay
 import com.hancekim.billboard.home.component.PlayerWithPager
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dagger.hilt.android.components.ActivityRetainedComponent
@@ -41,36 +43,49 @@ fun HomeUi(
         tag = "home"
     )
 
-    Scaffold(
-        modifier = modifier.testTag("home"),
-        containerColor = colorScheme.bgApp,
-        topBar = {
-            BillboardHeader(
-                title = "BILLBOARD"
-            ) { eventSink(HomeEvent.OnSettingIconClick) }
-        },
-        snackbarHost = {
-            CompositionLocalProvider(
-                LocalTextStyle provides BillboardTheme.typography.labelMd()
-            ) {
-                SnackbarHost(state.snackbarHostState)
+    Box(modifier = modifier) {
+        Scaffold(
+            modifier = Modifier.testTag("home"),
+            containerColor = colorScheme.bgApp,
+            topBar = {
+                BillboardHeader(
+                    title = "BILLBOARD",
+                    collectionCount = state.collectionCount,
+                    onTrailingIconClick = { eventSink(HomeEvent.OnSettingIconClick) },
+                    onCollectionIconClick = { state.eventSink(HomeEvent.OnCollectionIconClick) },
+                )
+            },
+            snackbarHost = {
+                CompositionLocalProvider(
+                    LocalTextStyle provides BillboardTheme.typography.labelMd()
+                ) {
+                    SnackbarHost(state.snackbarHostState)
+                }
+            },
+            content = { paddingValues ->
+                PlayerWithPager(
+                    modifier = Modifier.padding(paddingValues),
+                    isPipMode = state.isPipMode,
+                    eventSink = eventSink,
+                    chartFilter = state.chartFilter,
+                    chartList = state.chartList,
+                    expandedIndex = state.expandedIndex,
+                    playerState = state.playerState,
+                    scrollState = state.scrollState,
+                    lazyListState = state.lazyListState,
+                    pipState = state.pipState
+                )
             }
-        },
-        content = { paddingValues ->
-            PlayerWithPager(
-                modifier = Modifier.padding(paddingValues),
-                isPipMode = state.isPipMode,
-                eventSink = eventSink,
-                chartFilter = state.chartFilter,
-                chartList = state.chartList,
-                expandedIndex = state.expandedIndex,
-                playerState = state.playerState,
-                scrollState = state.scrollState,
-                lazyListState = state.lazyListState,
-                pipState = state.pipState
-            )
-        }
-    )
+        )
+        CollectOverlay(
+            visible = state.showCollectOverlay,
+            chart = state.overlayChart,
+            isAlreadyCollected = state.isOverlayItemCollected,
+            onCollect = { state.eventSink(HomeEvent.OnCollectItem) },
+            onRemove = { state.eventSink(HomeEvent.OnRemoveItem) },
+            onDismiss = { state.eventSink(HomeEvent.OnDismissOverlay) },
+        )
+    }
 }
 
 @ThemePreviews
