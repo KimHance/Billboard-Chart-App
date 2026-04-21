@@ -6,6 +6,8 @@ import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -58,7 +60,10 @@ fun CollectOverlay(
     AnimatedVisibility(
         visible = visible && chart != null,
         enter = fadeIn(tween(300)),
-        exit = fadeOut(tween(200)),
+        exit = fadeOut(tween(250)) + scaleOut(
+            targetScale = 0.8f,
+            animationSpec = tween(250),
+        ),
     ) {
         chart ?: return@AnimatedVisibility
         var showSparkle by remember { mutableStateOf(false) }

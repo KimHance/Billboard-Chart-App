@@ -34,7 +34,11 @@ fun HomeUi(
     val eventSink = state.eventSink
 
     BackHandler {
-        eventSink(HomeEvent.OnBackPressed)
+        if (state.showCollectOverlay) {
+            eventSink(HomeEvent.OnDismissOverlay)
+        } else {
+            eventSink(HomeEvent.OnBackPressed)
+        }
     }
 
     StateDiffLogEffect(
