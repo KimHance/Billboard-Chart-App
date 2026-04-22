@@ -9,57 +9,51 @@ object HoloCardShader {
         uniform float iAngle;
         uniform float iInteractive;
 
-        float4 metallicSweep(float2 uv) {
-            float angle = atan(uv.y - 0.5, uv.x - 0.5);
-            float t = (angle + 3.14159) / (2.0 * 3.14159);
-
-            float3 c1 = float3(0.863, 0.902, 0.941);
-            float3 c2 = float3(0.706, 0.784, 0.863);
-            float3 c3 = float3(0.941, 0.957, 0.980);
-            float3 c4 = float3(0.549, 0.667, 0.784);
-
-            float3 color = mix(c1, c2, smoothstep(0.11, 0.22, t));
-            color = mix(color, c3, smoothstep(0.22, 0.36, t));
-            color = mix(color, c4, smoothstep(0.36, 0.50, t));
-            color = mix(color, c1, smoothstep(0.50, 0.64, t));
-            color = mix(color, c2, smoothstep(0.64, 1.0, t));
-
-            float opacity = iInteractive > 0.5 ? 0.55 : 0.3;
-            return float4(color, opacity);
-        }
-
-        float brushedMetal(float2 uv) {
-            float stripe = fract(uv.x * iResolution.x / 3.0);
-            float line = step(0.66, stripe);
-            return line * 0.06;
-        }
-
-        float chromeSpecular(float2 uv) {
-            float gradAngle = radians(90.0 + iAngle * 0.5);
-            float t = dot(uv - 0.5, float2(cos(gradAngle), sin(gradAngle))) + 0.5;
-
-            float band = smoothstep(0.35, 0.47, t) * (1.0 - smoothstep(0.53, 0.65, t));
-            float peak = smoothstep(0.47, 0.50, t) * (1.0 - smoothstep(0.50, 0.53, t));
-
-            float intensity = band * 0.35 + peak * 0.55;
-            float opacity = iInteractive > 0.5 ? 1.0 : 0.55;
-            return intensity * opacity;
+        // 홀로그램 레인보우 색상
+        half3 rainbow(float t) {
+            half3 a = half3(0.5);
+            half3 b = half3(0.5);
+            half3 c = half3(1.0);
+            half3 d = half3(0.0, 0.33, 0.67);
+            return a + b * cos(6.28318 * (c * half(t) + d));
         }
 
         half4 main(float2 fragCoord) {
             float2 uv = fragCoord / iResolution;
+            float strength = iInteractive > 0.5 ? 1.0 : 0.5;
 
-            float4 sweep = metallicSweep(uv);
-            float metal = brushedMetal(uv);
-            float chrome = chromeSpecular(uv);
+            // 1) 홀로그램 레인보우 — 위치 + 각도에 따라 색상 변화
+            float holoPhase = (uv.x + uv.y) * 0.5 + iAngle / 360.0;
+            half3 holo = rainbow(holoPhase);
+            half holoAlpha = half(0.3 * strength);
 
-            float3 color = sweep.rgb * sweep.a;
-            color += float3(metal * 0.8);
-            color += float3(chrome);
+            // 2) 메탈릭 스윕 (원형 그라데이션, 각도에 따라 회전)
+            float sweepAngle = atan(uv.y - 0.5, uv.x - 0.5);
+            float sweepT = (sweepAngle + 3.14159) / (2.0 * 3.14159);
+            sweepT = fract(sweepT + iAngle / 360.0);
+            float sweepBright = 0.5 + 0.5 * cos(sweepT * 6.28318 * 2.0);
+            half3 sweepColor = half3(0.92, 0.95, 1.0) * half(sweepBright);
+            half sweepAlpha = half(0.2 * strength);
 
-            float alpha = max(sweep.a, max(metal, chrome));
+            // 3) 크롬 스페큘러 밴드 (움직이는 광택 줄)
+            float gradDir = radians(90.0 + iAngle * 0.7);
+            float bandPos = dot(uv - 0.5, float2(cos(gradDir), sin(gradDir))) + 0.5;
+            float chrome = smoothstep(0.43, 0.48, bandPos) * (1.0 - smoothstep(0.52, 0.57, bandPos));
+            chrome *= 0.8 * strength;
 
-            return half4(half3(color), half(alpha));
+            // 4) 브러시드 메탈 미세 줄무늬
+            float brushed = fract(uv.y * iResolution.y / 2.5);
+            brushed = step(0.75, brushed) * 0.06;
+
+            // 합성
+            half3 color = holo * holoAlpha
+                        + sweepColor * sweepAlpha
+                        + half3(half(chrome))
+                        + half3(half(brushed * 0.4));
+
+            half alpha = min(holoAlpha + sweepAlpha + half(chrome) + half(brushed), 0.75);
+
+            return half4(color, alpha);
         }
     """
 
