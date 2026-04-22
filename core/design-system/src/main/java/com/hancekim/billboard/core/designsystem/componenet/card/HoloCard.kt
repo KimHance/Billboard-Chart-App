@@ -23,11 +23,11 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.Canvas
+import android.graphics.RenderEffect
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -136,23 +136,22 @@ private fun CardFrontFace(
     widthPx: Float,
     heightPx: Float,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        // 앨범 아트 (바닥 레이어)
-        BillboardAsyncImage(
-            modifier = Modifier.fillMaxSize(),
-            model = albumArtUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-        )
-
-        // AGSL 셰이더 오버레이 (위 레이어)
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            shader.setFloatUniform("iResolution", size.width, size.height)
-            shader.setFloatUniform("iAngle", currentAngle)
-            shader.setFloatUniform("iInteractive", if (interactive) 1f else 0f)
-            drawRect(brush = ShaderBrush(shader))
-        }
-    }
+    // 이미지에 직접 RenderEffect 적용 — 후처리 방식
+    BillboardAsyncImage(
+        modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer {
+                shader.setFloatUniform("iResolution", size.width, size.height)
+                shader.setFloatUniform("iAngle", currentAngle)
+                shader.setFloatUniform("iInteractive", if (interactive) 1f else 0f)
+                renderEffect = RenderEffect
+                    .createRuntimeShaderEffect(shader, "inputShader")
+                    .asComposeRenderEffect()
+            },
+        model = albumArtUrl,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+    )
 }
 
 @Composable
