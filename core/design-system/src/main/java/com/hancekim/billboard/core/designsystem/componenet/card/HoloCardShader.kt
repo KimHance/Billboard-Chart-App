@@ -35,23 +35,16 @@ object HoloCardShader {
             half3 sweepColor = half3(0.92, 0.95, 1.0) * half(sweepBright);
             half sweepAlpha = half(0.2 * strength);
 
-            // 3) 크롬 스페큘러 밴드 (움직이는 광택 줄)
-            float gradDir = radians(90.0 + iAngle * 0.7);
-            float bandPos = dot(uv - 0.5, float2(cos(gradDir), sin(gradDir))) + 0.5;
-            float chrome = smoothstep(0.43, 0.48, bandPos) * (1.0 - smoothstep(0.52, 0.57, bandPos));
-            chrome *= 0.8 * strength;
-
-            // 4) 브러시드 메탈 미세 줄무늬
+            // 3) 브러시드 메탈 미세 줄무늬
             float brushed = fract(uv.y * iResolution.y / 2.5);
             brushed = step(0.75, brushed) * 0.06;
 
             // 합성
             half3 color = holo * holoAlpha
                         + sweepColor * sweepAlpha
-                        + half3(half(chrome))
                         + half3(half(brushed * 0.4));
 
-            half alpha = min(holoAlpha + sweepAlpha + half(chrome) + half(brushed), 0.75);
+            half alpha = min(holoAlpha + sweepAlpha + half(brushed), 0.75);
 
             return half4(color, alpha);
         }
