@@ -19,7 +19,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -85,10 +84,11 @@ fun HoloCard(
                     }
                 } else Modifier
             )
-            .clip(RoundedCornerShape(14.dp))
             .graphicsLayer {
                 rotationY = currentAngle
                 cameraDistance = 12f * density.density
+                clip = true
+                shape = RoundedCornerShape(14.dp)
             },
         contentAlignment = Alignment.Center,
     ) {
