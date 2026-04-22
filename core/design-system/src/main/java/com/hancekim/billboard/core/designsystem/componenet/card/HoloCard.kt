@@ -136,8 +136,8 @@ private fun CardFrontFace(
     widthPx: Float,
     heightPx: Float,
 ) {
-    // 이미지에 직접 RenderEffect 적용 — 후처리 방식
-    BillboardAsyncImage(
+    // graphicsLayer + RenderEffect 로 하위 전체 후처리
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .graphicsLayer {
@@ -148,10 +148,14 @@ private fun CardFrontFace(
                     .createRuntimeShaderEffect(shader, "inputShader")
                     .asComposeRenderEffect()
             },
-        model = albumArtUrl,
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-    )
+    ) {
+        BillboardAsyncImage(
+            modifier = Modifier.fillMaxSize(),
+            model = albumArtUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+        )
+    }
 }
 
 @Composable
