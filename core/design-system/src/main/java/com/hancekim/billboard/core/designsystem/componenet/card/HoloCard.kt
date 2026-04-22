@@ -20,10 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -89,12 +85,11 @@ fun HoloCard(
                     }
                 } else Modifier
             )
+            .clip(RoundedCornerShape(14.dp))
             .graphicsLayer {
                 rotationY = currentAngle
                 cameraDistance = 12f * density.density
-            }
-            .shadow(8.dp, RoundedCornerShape(14.dp))
-            .clip(RoundedCornerShape(14.dp)),
+            },
         contentAlignment = Alignment.Center,
     ) {
         if (showBack) {
@@ -103,8 +98,16 @@ fun HoloCard(
                 modifier = Modifier.graphicsLayer { rotationY = 180f },
             )
         } else {
-            CardFrontFace(
-                albumArtUrl = albumArtUrl,
+            // 앨범 아트 (바닥)
+            BillboardAsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = albumArtUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+            )
+
+            // 메탈릭 효과 오버레이들 (위에 쌓기)
+            MetallicOverlay(
                 currentAngle = currentAngle,
                 interactive = interactive,
             )
@@ -113,8 +116,7 @@ fun HoloCard(
 }
 
 @Composable
-private fun CardFrontFace(
-    albumArtUrl: String,
+private fun MetallicOverlay(
     currentAngle: Float,
     interactive: Boolean,
 ) {
@@ -122,55 +124,40 @@ private fun CardFrontFace(
     val lightOffset = sin(rad).toFloat()
     val strength = if (interactive) 1f else 0.4f
 
+    // 빛 스윕 위치 계산
+    val sweepStart = 0.35f + lightOffset * 0.3f
+    val sweepEnd = 0.65f + lightOffset * 0.3f
+
+    // 빛 스윕 — 사선으로 이동하는 밝은 줄
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .drawWithContent {
-                drawContent()
-
-                // 1) 메탈릭 틴트 — 전체를 약간 은색으로
-                drawRect(
-                    color = Color(0xFFE0E4EC).copy(alpha = 0.12f * strength),
-                    blendMode = BlendMode.SrcAtop,
-                )
-
-                // 2) 빛 스윕 — 회전에 따라 사선으로 이동하는 밝은 줄
-                val sweepCenter = size.width * (0.5f + lightOffset * 0.4f)
-                val sweepWidth = size.width * 0.35f
-                drawRect(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.White.copy(alpha = 0.08f * strength),
-                            Color.White.copy(alpha = 0.35f * strength),
-                            Color.White.copy(alpha = 0.08f * strength),
-                            Color.Transparent,
-                        ),
-                        start = Offset(sweepCenter - sweepWidth, 0f),
-                        end = Offset(sweepCenter + sweepWidth, size.height),
+            .background(
+                Brush.linearGradient(
+                    colorStops = arrayOf(
+                        0f to Color.Transparent,
+                        sweepStart to Color.Transparent,
+                        (sweepStart + sweepEnd) / 2f to BillboardColor.White.copy(alpha = 0.3f * strength),
+                        sweepEnd to Color.Transparent,
+                        1f to Color.Transparent,
                     ),
-                )
+                ),
+            ),
+    )
 
-                // 3) 가장자리 비네팅 — 메탈 테두리
-                drawRect(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.15f * strength),
-                        ),
-                        center = Offset(size.width / 2f, size.height / 2f),
-                        radius = size.minDimension * 0.7f,
+    // 가장자리 비네팅
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.radialGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        BillboardColor.Black.copy(alpha = 0.12f * strength),
                     ),
-                )
-            },
-    ) {
-        BillboardAsyncImage(
-            modifier = Modifier.fillMaxSize(),
-            model = albumArtUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-        )
-    }
+                ),
+            ),
+    )
 }
 
 @Composable
