@@ -11,52 +11,37 @@ object HoloCardShader {
 
         half4 main(float2 fragCoord) {
             float2 uv = fragCoord / iResolution;
-            float strength = iInteractive > 0.5 ? 1.0 : 0.45;
-
-            // 회전 각도를 라디안으로
+            float str = iInteractive > 0.5 ? 1.0 : 0.4;
             float rad = radians(iAngle);
 
-            // 빛 방향 벡터 (회전에 따라 변화)
-            vec3 lightDir = normalize(vec3(
-                sin(rad) * 0.6,
-                0.8,
-                cos(rad) * 0.6
-            ));
+            // 표면 노멀 (살짝 곡면)
+            vec3 N = normalize(vec3((uv - 0.5) * 0.4, 1.0));
+            // 빛 방향 (회전에 따라 이동)
+            vec3 L = normalize(vec3(sin(rad) * 0.8, cos(rad * 0.7) * 0.5, 1.0));
+            // 시선 방향
+            vec3 V = vec3(0.0, 0.0, 1.0);
+            // 반사 벡터
+            vec3 R = reflect(-L, N);
 
-            // 표면 노멀 (uv 기반 곡면 시뮬레이션)
-            vec3 normal = normalize(vec3(
-                (uv.x - 0.5) * 0.3,
-                (uv.y - 0.5) * 0.3,
-                1.0
-            ));
+            // 스페큘러 하이라이트 (좁고 강한 반사)
+            float spec = pow(max(dot(R, V), 0.0), 64.0) * str;
 
-            // 디퓨즈 라이팅
-            float diffuse = max(dot(normal, lightDir), 0.0);
+            // 프레넬 (가장자리 빛남)
+            float fresnel = pow(1.0 - max(dot(N, V), 0.0), 4.0) * 0.3 * str;
 
-            // 스페큘러 반사 (Blinn-Phong)
-            vec3 viewDir = vec3(0.0, 0.0, 1.0);
-            vec3 halfDir = normalize(lightDir + viewDir);
-            float spec = pow(max(dot(normal, halfDir), 0.0), 32.0);
+            // 홀로그램 무지개 (매우 은은하게)
+            float holoPhase = dot(uv, vec2(1.5, 1.0)) + iAngle / 90.0;
+            vec3 rainbow = 0.5 + 0.5 * cos(6.28318 * (holoPhase + vec3(0.0, 0.33, 0.67)));
 
-            // 메탈릭 베이스 색상 (은색)
-            vec3 metalBase = vec3(0.85, 0.87, 0.92);
+            // 합성: 대부분 투명, 하이라이트만 밝게
+            half3 color = half3(spec * 0.9)                  // 흰색 스페큘러
+                        + half3(rainbow) * half(0.08 * str)   // 은은한 무지개
+                        + half3(fresnel);                      // 가장자리 빛
 
-            // 홀로그램 색상 (위치+각도에 따라 무지개빛)
-            float holoPhase = (uv.x + uv.y) * 2.0 + iAngle / 60.0;
-            vec3 holoColor = 0.5 + 0.5 * cos(6.28318 * (holoPhase + vec3(0.0, 0.33, 0.67)));
+            // 알파: 스페큘러 + 프레넬 기반 (나머지는 거의 투명)
+            half alpha = half(spec * 0.7 + fresnel + 0.03 * str);
 
-            // 합성: 메탈릭 베이스 + 빛 반사 + 홀로그램
-            vec3 color = metalBase * (0.4 + 0.6 * diffuse);
-            color += vec3(spec) * 0.7 * strength;
-            color = mix(color, holoColor, 0.25 * strength);
-
-            // 프레넬 효과 (가장자리 밝게)
-            float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.0);
-            color += vec3(fresnel * 0.15 * strength);
-
-            float alpha = (0.35 + spec * 0.4 + fresnel * 0.1) * strength;
-
-            return half4(half3(color), half(alpha));
+            return half4(color, alpha);
         }
     """
 
