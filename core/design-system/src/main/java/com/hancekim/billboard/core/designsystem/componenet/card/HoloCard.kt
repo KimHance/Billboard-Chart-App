@@ -167,19 +167,21 @@ private fun CardFrontFace(
         )
 
         // 스틸 림 (인셋 보더 효과)
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.15f),
+        if (widthPx > 0f) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.15f),
+                            ),
+                            radius = widthPx * 0.8f,
                         ),
-                        radius = widthPx * 0.8f,
                     ),
-                ),
-        )
+            )
+        }
     }
 }
 
