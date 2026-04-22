@@ -9,44 +9,54 @@ object HoloCardShader {
         uniform float iAngle;
         uniform float iInteractive;
 
-        // 홀로그램 레인보우 색상
-        half3 rainbow(float t) {
-            half3 a = half3(0.5);
-            half3 b = half3(0.5);
-            half3 c = half3(1.0);
-            half3 d = half3(0.0, 0.33, 0.67);
-            return a + b * cos(6.28318 * (c * half(t) + d));
-        }
-
         half4 main(float2 fragCoord) {
             float2 uv = fragCoord / iResolution;
-            float strength = iInteractive > 0.5 ? 1.0 : 0.5;
+            float strength = iInteractive > 0.5 ? 1.0 : 0.45;
 
-            // 1) 홀로그램 레인보우 — 위치 + 각도에 따라 색상 변화
-            float holoPhase = (uv.x + uv.y) * 0.5 + iAngle / 360.0;
-            half3 holo = rainbow(holoPhase);
-            half holoAlpha = half(0.3 * strength);
+            // 회전 각도를 라디안으로
+            float rad = radians(iAngle);
 
-            // 2) 메탈릭 스윕 (원형 그라데이션, 각도에 따라 회전)
-            float sweepAngle = atan(uv.y - 0.5, uv.x - 0.5);
-            float sweepT = (sweepAngle + 3.14159) / (2.0 * 3.14159);
-            sweepT = fract(sweepT + iAngle / 360.0);
-            float sweepBright = 0.5 + 0.5 * cos(sweepT * 6.28318 * 2.0);
-            half3 sweepColor = half3(0.92, 0.95, 1.0) * half(sweepBright);
-            half sweepAlpha = half(0.2 * strength);
+            // 빛 방향 벡터 (회전에 따라 변화)
+            vec3 lightDir = normalize(vec3(
+                sin(rad) * 0.6,
+                0.8,
+                cos(rad) * 0.6
+            ));
 
-            // 3) 브러시드 메탈 미세 줄무늬
-            float brushed = fract(uv.y * iResolution.y / 2.5);
-            brushed = step(0.75, brushed) * 0.06;
+            // 표면 노멀 (uv 기반 곡면 시뮬레이션)
+            vec3 normal = normalize(vec3(
+                (uv.x - 0.5) * 0.3,
+                (uv.y - 0.5) * 0.3,
+                1.0
+            ));
 
-            // 합성
-            half3 color = holo * holoAlpha
-                        + sweepColor * sweepAlpha
-                        + half3(half(brushed * 0.4));
+            // 디퓨즈 라이팅
+            float diffuse = max(dot(normal, lightDir), 0.0);
 
-            half alpha = min(holoAlpha + sweepAlpha + half(brushed), 0.75);
+            // 스페큘러 반사 (Blinn-Phong)
+            vec3 viewDir = vec3(0.0, 0.0, 1.0);
+            vec3 halfDir = normalize(lightDir + viewDir);
+            float spec = pow(max(dot(normal, halfDir), 0.0), 32.0);
 
-            return half4(color, alpha);
+            // 메탈릭 베이스 색상 (은색)
+            vec3 metalBase = vec3(0.85, 0.87, 0.92);
+
+            // 홀로그램 색상 (위치+각도에 따라 무지개빛)
+            float holoPhase = (uv.x + uv.y) * 2.0 + iAngle / 60.0;
+            vec3 holoColor = 0.5 + 0.5 * cos(6.28318 * (holoPhase + vec3(0.0, 0.33, 0.67)));
+
+            // 합성: 메탈릭 베이스 + 빛 반사 + 홀로그램
+            vec3 color = metalBase * (0.4 + 0.6 * diffuse);
+            color += vec3(spec) * 0.7 * strength;
+            color = mix(color, holoColor, 0.25 * strength);
+
+            // 프레넬 효과 (가장자리 밝게)
+            float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.0);
+            color += vec3(fresnel * 0.15 * strength);
+
+            float alpha = (0.35 + spec * 0.4 + fresnel * 0.1) * strength;
+
+            return half4(half3(color), half(alpha));
         }
     """
 

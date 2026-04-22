@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ShaderBrush
@@ -146,7 +147,11 @@ private fun CardFrontFace(
                     shader.setFloatUniform("iResolution", widthPx, heightPx)
                     shader.setFloatUniform("iAngle", currentAngle)
                     shader.setFloatUniform("iInteractive", if (interactive) 1f else 0f)
-                    drawRect(brush = ShaderBrush(shader))
+                    drawRect(
+                        brush = ShaderBrush(shader),
+                        blendMode = BlendMode.Overlay,
+                        alpha = 0.7f,
+                    )
                 }
             },
     ) {
