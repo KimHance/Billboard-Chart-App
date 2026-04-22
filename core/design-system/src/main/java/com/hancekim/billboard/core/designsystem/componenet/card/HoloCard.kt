@@ -2,12 +2,9 @@ package com.hancekim.billboard.core.designsystem.componenet.card
 
 import android.graphics.RuntimeShader
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,11 +12,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,26 +51,31 @@ fun HoloCard(
 ) {
     val density = LocalDensity.current
     val shader = remember { HoloCardShader.create() }
+    val scope = rememberCoroutineScope()
     var widthPx by remember { mutableFloatStateOf(0f) }
     var heightPx by remember { mutableFloatStateOf(0f) }
 
-    val infiniteTransition = rememberInfiniteTransition(label = "holo_rotate")
-    val autoAngle by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = (360_000 / autoSpeed).toInt(),
-                easing = LinearEasing,
-            ),
-            repeatMode = RepeatMode.Restart,
-        ),
-        label = "auto_angle",
-    )
-
-    var dragAngle by remember { mutableFloatStateOf(0f) }
+    // 단일 각도 — 드래그/자동회전 모두 이 값 사용
+    val angle = remember { Animatable(0f) }
     var isDragging by remember { mutableStateOf(false) }
-    val currentAngle = if (isDragging) dragAngle else autoAngle
+
+    // 자동 회전: 드래그 안 할 때 현재 각도에서 계속 돌림
+    LaunchedEffect(isDragging) {
+        if (!isDragging) {
+            while (true) {
+                val cycleDuration = (360_000 / autoSpeed).toLong()
+                angle.animateTo(
+                    targetValue = angle.value + 360f,
+                    animationSpec = tween(
+                        durationMillis = cycleDuration.toInt(),
+                        easing = LinearEasing,
+                    ),
+                )
+            }
+        }
+    }
+
+    val currentAngle = angle.value
 
     val normalizedAngle = ((currentAngle % 360f) + 360f) % 360f
     val showBack = normalizedAngle in 90f..270f
@@ -86,15 +91,12 @@ fun HoloCard(
                 if (interactive) {
                     Modifier.pointerInput(Unit) {
                         detectHorizontalDragGestures(
-                            onDragStart = {
-                                isDragging = true
-                                dragAngle = currentAngle
-                            },
+                            onDragStart = { isDragging = true },
                             onDragEnd = { isDragging = false },
                             onDragCancel = { isDragging = false },
                             onHorizontalDrag = { change, amount ->
                                 change.consume()
-                                dragAngle += amount * 0.6f
+                                scope.launch { angle.snapTo(angle.value + amount * 0.6f) }
                             },
                         )
                     }
