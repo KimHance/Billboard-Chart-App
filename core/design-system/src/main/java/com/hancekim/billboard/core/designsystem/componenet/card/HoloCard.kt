@@ -23,7 +23,8 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.CacheDrawScope
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
@@ -140,19 +141,18 @@ private fun CardFrontFace(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .drawWithContent {
-                // 앨범 아트 먼저 그리기
-                drawContent()
+            .drawWithCache {
+                shader.setFloatUniform("iResolution", size.width, size.height)
+                shader.setFloatUniform("iAngle", currentAngle)
+                shader.setFloatUniform("iInteractive", if (interactive) 1f else 0f)
+                val shaderBrush = ShaderBrush(shader)
 
-                // AGSL 셰이더 오버레이
-                if (widthPx > 0f && heightPx > 0f) {
-                    shader.setFloatUniform("iResolution", widthPx, heightPx)
-                    shader.setFloatUniform("iAngle", currentAngle)
-                    shader.setFloatUniform("iInteractive", if (interactive) 1f else 0f)
+                onDrawWithContent {
+                    drawContent()
                     drawRect(
-                        brush = ShaderBrush(shader),
-                        blendMode = BlendMode.Overlay,
-                        alpha = 0.7f,
+                        brush = shaderBrush,
+                        blendMode = BlendMode.SrcAtop,
+                        alpha = 0.6f,
                     )
                 }
             },
