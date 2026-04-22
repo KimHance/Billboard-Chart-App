@@ -28,7 +28,7 @@ object HoloCardShader {
 
             // ── 3. 라이팅 계산 ──
             vec3 N = normalize(vec3((uv - 0.5) * 0.3, 1.0));
-            vec3 L = normalize(vec3(sin(rad) * 0.5, 0.6, 1.0));
+            vec3 L = normalize(vec3(sin(rad) * 0.5, 0.4 + sin(rad) * 0.2, 1.0));
             vec3 V = vec3(0.0, 0.0, 1.0);
             vec3 R = reflect(-L, N);
 
