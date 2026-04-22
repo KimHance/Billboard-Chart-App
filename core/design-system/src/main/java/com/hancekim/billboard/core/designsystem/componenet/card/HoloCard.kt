@@ -1,7 +1,5 @@
 package com.hancekim.billboard.core.designsystem.componenet.card
 
-import android.graphics.RenderEffect
-import android.graphics.RuntimeShader
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -22,10 +20,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -37,6 +37,7 @@ import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.icon.Logo
 import com.hancekim.billboard.core.imageloader.BillboardAsyncImage
 import kotlinx.coroutines.launch
+import kotlin.math.sin
 
 @Composable
 fun HoloCard(
@@ -47,7 +48,6 @@ fun HoloCard(
     autoSpeed: Float = 24f,
 ) {
     val density = LocalDensity.current
-    val shader = remember { HoloCardShader.create() }
     val scope = rememberCoroutineScope()
 
     val angle = remember { Animatable(0f) }
@@ -71,7 +71,6 @@ fun HoloCard(
     val normalizedAngle = ((currentAngle % 360f) + 360f) % 360f
     val showBack = normalizedAngle in 90f..270f
 
-    // 3D 회전 + 셰이더를 하나의 graphicsLayer 에서 처리
     Box(
         modifier = modifier
             .size(cardSize)
@@ -91,21 +90,8 @@ fun HoloCard(
                 } else Modifier
             )
             .graphicsLayer {
-                // 3D 회전
                 rotationY = currentAngle
                 cameraDistance = 12f * density.density
-
-                // 앞면일 때만 셰이더 적용
-                if (!showBack && size.width > 0f && size.height > 0f) {
-                    shader.setFloatUniform("iResolution", size.width, size.height)
-                    shader.setFloatUniform("iAngle", currentAngle)
-                    shader.setFloatUniform("iInteractive", if (interactive) 1f else 0f)
-                    renderEffect = RenderEffect
-                        .createRuntimeShaderEffect(shader, "inputShader")
-                        .asComposeRenderEffect()
-                } else {
-                    renderEffect = null
-                }
             }
             .shadow(8.dp, RoundedCornerShape(14.dp))
             .clip(RoundedCornerShape(14.dp)),
@@ -117,14 +103,73 @@ fun HoloCard(
                 modifier = Modifier.graphicsLayer { rotationY = 180f },
             )
         } else {
-            // 앨범 아트 직접 렌더 — 중간 Box/레이어 없음
-            BillboardAsyncImage(
-                modifier = Modifier.fillMaxSize(),
-                model = albumArtUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
+            CardFrontFace(
+                albumArtUrl = albumArtUrl,
+                currentAngle = currentAngle,
+                interactive = interactive,
             )
         }
+    }
+}
+
+@Composable
+private fun CardFrontFace(
+    albumArtUrl: String,
+    currentAngle: Float,
+    interactive: Boolean,
+) {
+    val rad = Math.toRadians(currentAngle.toDouble())
+    val lightOffset = sin(rad).toFloat()
+    val strength = if (interactive) 1f else 0.4f
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .drawWithContent {
+                drawContent()
+
+                // 1) 메탈릭 틴트 — 전체를 약간 은색으로
+                drawRect(
+                    color = Color(0xFFE0E4EC).copy(alpha = 0.12f * strength),
+                    blendMode = BlendMode.SrcAtop,
+                )
+
+                // 2) 빛 스윕 — 회전에 따라 사선으로 이동하는 밝은 줄
+                val sweepCenter = size.width * (0.5f + lightOffset * 0.4f)
+                val sweepWidth = size.width * 0.35f
+                drawRect(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            Color.White.copy(alpha = 0.08f * strength),
+                            Color.White.copy(alpha = 0.35f * strength),
+                            Color.White.copy(alpha = 0.08f * strength),
+                            Color.Transparent,
+                        ),
+                        start = Offset(sweepCenter - sweepWidth, 0f),
+                        end = Offset(sweepCenter + sweepWidth, size.height),
+                    ),
+                )
+
+                // 3) 가장자리 비네팅 — 메탈 테두리
+                drawRect(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.15f * strength),
+                        ),
+                        center = Offset(size.width / 2f, size.height / 2f),
+                        radius = size.minDimension * 0.7f,
+                    ),
+                )
+            },
+    ) {
+        BillboardAsyncImage(
+            modifier = Modifier.fillMaxSize(),
+            model = albumArtUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+        )
     }
 }
 
