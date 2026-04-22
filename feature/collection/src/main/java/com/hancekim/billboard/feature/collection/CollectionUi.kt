@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hancekim.billboard.core.circuit.BillboardScreen
+import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.icon.ArrowBack
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeader
@@ -32,7 +33,7 @@ fun CollectionUi(state: CollectionState, modifier: Modifier = Modifier) {
             .fillMaxSize()
             .background(
                 Brush.radialGradient(
-                    colors = listOf(Color(0xFF0F1729), Color(0xFF020618)),
+                    colors = listOf(BillboardColor.Grey900, BillboardColor.Slate950),
                     radius = 1200f,
                 ),
             ),
@@ -63,7 +64,7 @@ fun CollectionUi(state: CollectionState, modifier: Modifier = Modifier) {
                 textAlign = TextAlign.Center,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF98A2B3),
+                color = BillboardColor.Grey400,
                 letterSpacing = 1.5.sp,
             )
         }

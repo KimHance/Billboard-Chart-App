@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.icon.Album
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 
@@ -41,14 +42,14 @@ fun EmptySlot(
     Box(
         modifier = modifier
             .size(size)
-            .border(1.5.dp, Color.White.copy(alpha = 0.18f * alpha / 0.65f), RoundedCornerShape(14.dp))
-            .background(Color.White.copy(alpha = 0.02f), RoundedCornerShape(14.dp)),
+            .border(1.5.dp, BillboardColor.White.copy(alpha = 0.18f * alpha / 0.65f), RoundedCornerShape(14.dp))
+            .background(BillboardColor.White.copy(alpha = 0.02f), RoundedCornerShape(14.dp)),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
             imageVector = BillboardIcons.Album,
             contentDescription = null,
-            tint = Color.White.copy(alpha = 0.25f * alpha / 0.65f),
+            tint = BillboardColor.White.copy(alpha = 0.25f * alpha / 0.65f),
             modifier = Modifier.size(size * 0.35f),
         )
     }

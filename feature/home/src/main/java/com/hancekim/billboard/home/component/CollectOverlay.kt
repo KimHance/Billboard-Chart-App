@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.card.HoloCard
 import com.hancekim.billboard.core.designsystem.componenet.card.SparkleEffect
@@ -87,7 +88,7 @@ fun CollectOverlay(
         Box(
             modifier = modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.75f))
+                .background(BillboardColor.Black.copy(alpha = 0.75f))
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
@@ -145,13 +146,13 @@ fun CollectOverlay(
                     Text(
                         text = chart.title,
                         style = BillboardTheme.typography.titleMd(),
-                        color = Color.White,
+                        color = BillboardColor.White,
                         textAlign = TextAlign.Center,
                     )
                     Text(
                         text = chart.artist,
                         style = BillboardTheme.typography.bodySm(),
-                        color = Color(0xFFD0D5DD),
+                        color = BillboardColor.Grey300,
                         textAlign = TextAlign.Center,
                     )
 
@@ -163,7 +164,7 @@ fun CollectOverlay(
                                 .height(48.dp)
                                 .border(
                                     1.dp,
-                                    Color.White.copy(alpha = 0.3f),
+                                    BillboardColor.White.copy(alpha = 0.3f),
                                     RoundedCornerShape(24.dp)
                                 )
                                 .clickable { onRemove() }
@@ -172,7 +173,7 @@ fun CollectOverlay(
                         ) {
                             Text(
                                 text = "REMOVE FROM COLLECTION",
-                                color = Color.White,
+                                color = BillboardColor.White,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Black,
                                 letterSpacing = 1.5.sp,
@@ -195,7 +196,7 @@ fun CollectOverlay(
                         ) {
                             Text(
                                 text = "ADD TO COLLECTION",
-                                color = Color.Black,
+                                color = BillboardColor.Black,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Black,
                                 letterSpacing = 1.5.sp,
@@ -209,7 +210,7 @@ fun CollectOverlay(
                         text = "drag card to rotate · tap backdrop to cancel",
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF98A2B3),
+                        color = BillboardColor.Grey400,
                     )
                 }
             }

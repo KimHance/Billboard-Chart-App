@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hancekim.billboard.core.circuit.BillboardScreen
+import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.icon.IcoClose
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
@@ -43,7 +44,7 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
             .fillMaxSize()
             .background(
                 Brush.radialGradient(
-                    colors = listOf(Color(0xFF0F1729), Color(0xFF020618)),
+                    colors = listOf(BillboardColor.Grey900, BillboardColor.Slate950),
                     radius = 1200f,
                 ),
             ),
@@ -53,14 +54,14 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
                 .align(Alignment.TopEnd)
                 .padding(16.dp)
                 .size(36.dp)
-                .background(Color.White.copy(alpha = 0.12f), CircleShape)
+                .background(BillboardColor.White.copy(alpha = 0.12f), CircleShape)
                 .noRippleClickable { state.eventSink(CardDetailEvent.OnCloseClick) },
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = BillboardIcons.IcoClose,
                 contentDescription = null,
-                tint = Color.White,
+                tint = BillboardColor.White,
                 modifier = Modifier.size(18.dp),
             )
         }
@@ -106,14 +107,14 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .height(44.dp)
-                    .border(1.dp, Color.White.copy(alpha = 0.25f), RoundedCornerShape(22.dp))
+                    .border(1.dp, BillboardColor.White.copy(alpha = 0.25f), RoundedCornerShape(22.dp))
                     .clickable { state.eventSink(CardDetailEvent.OnRemoveClick) }
                     .padding(horizontal = 22.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = "REMOVE FROM COLLECTION",
-                    color = Color.White,
+                    color = BillboardColor.White,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.2.sp,
@@ -126,8 +127,8 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
 @Composable
 private fun StatItem(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = value, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Black)
+        Text(text = value, color = BillboardColor.White, fontSize = 20.sp, fontWeight = FontWeight.Black)
         Spacer(modifier = Modifier.height(6.dp))
-        Text(text = label, color = Color(0xFF98A2B3), fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+        Text(text = label, color = BillboardColor.Grey400, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
     }
 }
