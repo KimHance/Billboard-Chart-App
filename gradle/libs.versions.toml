@@ -1,6 +1,6 @@
 [versions]
-appVersionCode = "2"
-appVersionName = "1.0.1"
+appVersionCode = "3"
+appVersionName = "1.1.0"
 agp = "8.13.2"
 material = "1.13.0"
 compileSdk = "36"
