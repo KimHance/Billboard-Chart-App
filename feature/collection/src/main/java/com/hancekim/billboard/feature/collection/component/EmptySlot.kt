@@ -15,12 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.icon.Album
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
+import com.hancekim.billboard.core.designsystem.BillboardTheme
 
 @Composable
 fun EmptySlot(
@@ -28,6 +27,7 @@ fun EmptySlot(
     index: Int,
     modifier: Modifier = Modifier,
 ) {
+    val colorScheme = BillboardTheme.colorScheme
     val infiniteTransition = rememberInfiniteTransition(label = "pulse_$index")
     val alpha by infiniteTransition.animateFloat(
         initialValue = 0.3f,
@@ -42,14 +42,21 @@ fun EmptySlot(
     Box(
         modifier = modifier
             .size(size)
-            .border(1.5.dp, BillboardColor.White.copy(alpha = 0.18f * alpha / 0.65f), RoundedCornerShape(14.dp))
-            .background(BillboardColor.White.copy(alpha = 0.02f), RoundedCornerShape(14.dp)),
+            .border(
+                1.5.dp,
+                colorScheme.textPrimary.copy(alpha = 0.18f * alpha / 0.65f),
+                RoundedCornerShape(14.dp),
+            )
+            .background(
+                colorScheme.textPrimary.copy(alpha = 0.02f),
+                RoundedCornerShape(14.dp),
+            ),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
             imageVector = BillboardIcons.Album,
             contentDescription = null,
-            tint = BillboardColor.White.copy(alpha = 0.25f * alpha / 0.65f),
+            tint = colorScheme.textPrimary.copy(alpha = 0.25f * alpha / 0.65f),
             modifier = Modifier.size(size * 0.35f),
         )
     }

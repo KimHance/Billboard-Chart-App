@@ -3,7 +3,6 @@ package com.hancekim.billboard.core.designsystem.componenet.card
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -16,7 +15,7 @@ import kotlin.math.sin
 
 @Composable
 fun SparkleEffect(
-    trigger: Boolean,
+    trigger: Int,
     modifier: Modifier = Modifier,
     particleCount: Int = 12,
     color: Color = BillboardColor.Green400,
@@ -24,14 +23,14 @@ fun SparkleEffect(
     val progress = remember { Animatable(0f) }
 
     LaunchedEffect(trigger) {
-        if (trigger) {
+        if (trigger > 0) {
             progress.snapTo(0f)
             progress.animateTo(1f, tween(600))
         }
     }
 
     if (progress.value > 0f && progress.value < 1f) {
-        Canvas(modifier = modifier.fillMaxSize()) {
+        Canvas(modifier = modifier) {
             val centerX = size.width / 2f
             val centerY = size.height / 2f
             val maxRadius = size.minDimension * 0.6f

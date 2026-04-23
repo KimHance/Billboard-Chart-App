@@ -85,6 +85,7 @@ fun HomeUi(
             visible = state.showCollectOverlay,
             chart = state.overlayChart,
             isAlreadyCollected = state.isOverlayItemCollected,
+            isCollectionFull = state.isCollectionFull,
             onCollect = { state.eventSink(HomeEvent.OnCollectItem) },
             onRemove = { state.eventSink(HomeEvent.OnRemoveItem) },
             onDismiss = { state.eventSink(HomeEvent.OnDismissOverlay) },

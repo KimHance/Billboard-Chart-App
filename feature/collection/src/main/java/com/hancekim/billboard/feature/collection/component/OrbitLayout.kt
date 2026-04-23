@@ -1,6 +1,5 @@
 package com.hancekim.billboard.feature.collection.component
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -11,7 +10,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.hancekim.billboard.core.data.model.CollectedCard
+import com.hancekim.billboard.core.domain.model.CollectedCard
+import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designsystem.componenet.card.HoloCard
 import kotlinx.collections.immutable.ImmutableList
 import kotlin.math.cos
@@ -66,7 +66,9 @@ fun OrbitLayout(
                         albumArtUrl = card.albumArtUrl,
                         cardSize = slot.size,
                         interactive = false,
-                        modifier = Modifier.clickable { onCardClick(card.key) },
+                        initialAngle = index * 40f,
+                        autoSpeed = 20f + index * 2f,
+                        modifier = Modifier.noRippleClickable { onCardClick(card.key) },
                     )
                 } else {
                     EmptySlot(size = slot.size, index = index)

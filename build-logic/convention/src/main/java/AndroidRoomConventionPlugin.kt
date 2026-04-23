@@ -1,4 +1,4 @@
-import androidx.room.gradle.RoomExtension
+import androidx.room3.gradle.RoomExtension
 import com.hance.convention.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -10,7 +10,7 @@ class AndroidRoomConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
-                apply("androidx.room")
+                apply("androidx.room3")
                 apply("com.google.devtools.ksp")
             }
 
@@ -19,9 +19,8 @@ class AndroidRoomConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                add("implementation", libs.findLibrary("androidx.room.runtime").get())
-                add("implementation", libs.findLibrary("androidx.room.ktx").get())
-                add("ksp", libs.findLibrary("androidx.room.compiler").get())
+                add("implementation", libs.findLibrary("androidx.room3.runtime").get())
+                add("ksp", libs.findLibrary("androidx.room3.compiler").get())
             }
         }
     }

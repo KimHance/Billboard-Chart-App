@@ -1,7 +1,7 @@
 package com.hancekim.billboard.feature.collection
 
 import androidx.compose.runtime.Stable
-import com.hancekim.billboard.core.data.model.CollectedCard
+import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import kotlinx.collections.immutable.ImmutableList

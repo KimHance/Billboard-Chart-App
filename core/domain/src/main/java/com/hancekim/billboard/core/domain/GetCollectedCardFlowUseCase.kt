@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class GetCollectionFlowUseCase @Inject constructor(
+class GetCollectedCardFlowUseCase @Inject constructor(
     private val repository: CollectionRepository,
 ) {
-    operator fun invoke(): Flow<List<CollectedCard>> =
-        repository.getCollectionFlow().map { list -> list.map { it.toDomain() } }
+    operator fun invoke(key: String): Flow<CollectedCard?> =
+        repository.getByKeyFlow(key).map { it?.toDomain() }
 }

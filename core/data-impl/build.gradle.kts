@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.billboard.android.library)
     alias(libs.plugins.billboard.android.hilt)
+    alias(libs.plugins.billboard.android.room)
 }
 
 android {
