@@ -202,6 +202,10 @@ private fun FallbackFrontFace(
     shape: RoundedCornerShape,
 ) {
     val sheenOpacity = if (interactive) 0.45f else 0.25f
+    // 0..360 정규화된 angle — 양쪽 람다(graphicsLayer / drawWithContent)에서 호출, draw phase read 유지
+    val normAngleProvider = remember<() -> Float> {
+        { ((angleProvider() % 360f) + 360f) % 360f }
+    }
 
     Box(
         modifier = Modifier
@@ -220,9 +224,7 @@ private fun FallbackFrontFace(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .graphicsLayer {
-                    rotationZ = ((angleProvider() % 360f) + 360f) % 360f
-                }
+                .graphicsLayer { rotationZ = normAngleProvider() }
                 .background(
                     brush = Brush.sweepGradient(
                         colorStops = arrayOf(
@@ -258,8 +260,7 @@ private fun FallbackFrontFace(
                         x += lineSpacing
                     }
                     // 스펙큘러 하이라이트 — drawWithContent (draw phase) 안에서 angle 직접 read
-                    val normAngle = ((angleProvider() % 360f) + 360f) % 360f
-                    val rad = Math.toRadians(normAngle.toDouble())
+                    val rad = Math.toRadians(normAngleProvider().toDouble())
                     val cx = size.width / 2f
                     val cy = size.height / 2f
                     val hx = cx + (cos(rad) * cx * 0.4f).toFloat()
