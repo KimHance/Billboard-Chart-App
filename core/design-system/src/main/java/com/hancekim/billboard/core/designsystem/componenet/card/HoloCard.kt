@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -86,9 +87,15 @@ fun HoloCard(
         }
     }
 
-    val currentAngle = angle.value
-    val normalizedAngle = ((currentAngle % 360f) + 360f) % 360f
-    val showFront = normalizedAngle < 90f || normalizedAngle > 270f
+    // showFront 는 90° / 270° 통과 시에만 토글되므로 derivedStateOf 로 recomposition 최소화
+    val showFront by remember {
+        derivedStateOf {
+            val n = ((angle.value % 360f) + 360f) % 360f
+            n !in 90f..270f
+        }
+    }
+    // angle.value 는 graphicsLayer / drawScope 람다 내부에서 직접 read → draw phase 로 격리
+    val angleProvider = remember<() -> Float> { { angle.value } }
 
     Box(
         modifier = modifier
@@ -114,7 +121,7 @@ fun HoloCard(
                 } else Modifier,
             )
             .graphicsLayer {
-                rotationY = currentAngle
+                rotationY = angleProvider()
                 cameraDistance = 12f * density.density
             },
         contentAlignment = Alignment.Center,
@@ -122,7 +129,7 @@ fun HoloCard(
         if (showFront) {
             FrontFace(
                 albumArtUrl = albumArtUrl,
-                currentAngle = currentAngle,
+                angleProvider = angleProvider,
                 interactive = interactive,
                 shape = shape,
             )
@@ -136,14 +143,14 @@ fun HoloCard(
 @Composable
 private fun FrontFace(
     albumArtUrl: String,
-    currentAngle: Float,
+    angleProvider: () -> Float,
     interactive: Boolean,
     shape: RoundedCornerShape,
 ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        AgslFrontFace(albumArtUrl, currentAngle, interactive, shape)
+        AgslFrontFace(albumArtUrl, angleProvider, interactive, shape)
     } else {
-        FallbackFrontFace(albumArtUrl, currentAngle, interactive, shape)
+        FallbackFrontFace(albumArtUrl, angleProvider, interactive, shape)
     }
 }
 
@@ -152,7 +159,7 @@ private fun FrontFace(
 @Composable
 private fun AgslFrontFace(
     albumArtUrl: String,
-    currentAngle: Float,
+    angleProvider: () -> Float,
     interactive: Boolean,
     shape: RoundedCornerShape,
 ) {
@@ -165,7 +172,7 @@ private fun AgslFrontFace(
             .graphicsLayer {
                 if (size.width > 0f && size.height > 0f) {
                     shader.setFloatUniform("iResolution", size.width, size.height)
-                    shader.setFloatUniform("iAngle", currentAngle)
+                    shader.setFloatUniform("iAngle", angleProvider())
                     shader.setFloatUniform(
                         "iInteractive",
                         if (interactive) 1f else 0f,
@@ -190,11 +197,10 @@ private fun AgslFrontFace(
 @Composable
 private fun FallbackFrontFace(
     albumArtUrl: String,
-    currentAngle: Float,
+    angleProvider: () -> Float,
     interactive: Boolean,
     shape: RoundedCornerShape,
 ) {
-    val normAngle = ((currentAngle % 360f) + 360f) % 360f
     val sheenOpacity = if (interactive) 0.45f else 0.25f
 
     Box(
@@ -210,11 +216,13 @@ private fun FallbackFrontFace(
             contentDescription = null,
             contentScale = ContentScale.Crop,
         )
-        // Conic sheen 근사: SweepGradient
+        // Conic sheen 근사: SweepGradient — graphicsLayer 람다 내에서 angle 직접 read
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .graphicsLayer { rotationZ = normAngle }
+                .graphicsLayer {
+                    rotationZ = ((angleProvider() % 360f) + 360f) % 360f
+                }
                 .background(
                     brush = Brush.sweepGradient(
                         colorStops = arrayOf(
@@ -249,7 +257,8 @@ private fun FallbackFrontFace(
                         )
                         x += lineSpacing
                     }
-                    // 스펙큘러 하이라이트
+                    // 스펙큘러 하이라이트 — drawWithContent (draw phase) 안에서 angle 직접 read
+                    val normAngle = ((angleProvider() % 360f) + 360f) % 360f
                     val rad = Math.toRadians(normAngle.toDouble())
                     val cx = size.width / 2f
                     val cy = size.height / 2f
