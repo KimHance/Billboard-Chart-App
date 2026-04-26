@@ -56,13 +56,15 @@ Walk the changed file list and build three bucket sets. A single file may land i
 - `gradle/libs.versions.toml`
 - `build-logic/convention/src/main/**`
 
-Do not worry about overlap across buckets — each reviewer has explicit "What NOT to review" boundaries that prevent duplicate issues.
+Overlap across buckets is expected and OK. Each reviewer carries the **same** rule set (`.claude/rules/01~07.md`) — buckets only decide where each reviewer **starts**. Findings in another reviewer's primary scope (discovered while traversing) are tagged `[cross-cutting]` by the reviewer and dedup'd in Step 4.
 
 If **no bucket** matches any file, exit early: post a single summary comment via `pr-review-summary` saying "리뷰 대상 파일 없음 — 스킵".
 
 ## Step 3 — Dispatch reviewers in parallel
 
-Spawn only the buckets that have at least one file. Use the `Task` tool, one call per reviewer, **in the same assistant turn** so they run in parallel.
+**Always dispatch all three reviewers** as long as at least one bucket has a matching file. A reviewer whose primary-scope bucket is empty will respond with a one-line "스킵" message — that's expected and cheap. The "always dispatch" policy ensures no rule violation is missed even if our bucket classification missed a file.
+
+Use the `Task` tool, one call per reviewer, **in the same assistant turn** so they run in parallel.
 
 For each spawned agent, the prompt should include:
 - The list of files in that bucket (relative paths)
@@ -77,7 +79,20 @@ You are being dispatched by pr-review to review the following files in PR #${PR_
 
 <file list>
 
-Run your standard review scope. Return findings as a Korean-language list where each item has:
+STEP 0 (mandatory, before anything else):
+Use the Read tool to load all 7 rule files into your context:
+  - .claude/rules/01-architecture.md
+  - .claude/rules/02-circuit.md
+  - .claude/rules/03-compose-state.md
+  - .claude/rules/04-di-hilt.md
+  - .claude/rules/05-error-handling.md
+  - .claude/rules/06-testing.md
+  - .claude/rules/07-design-system.md
+Do not skip this step. The rules are the source of truth for HOW to judge issues.
+
+STEP 1: Run your standard review scope on the file list above. While traversing, if you spot a high-confidence violation outside your primary scope, report it with a `[cross-cutting]` tag.
+
+Return findings as a Korean-language list where each item has:
 - severity: "major" (confidence 91-100) | "minor" (80-90) | "check" (70-79)
 - file: <path>
 - line: <line number in the new file>
@@ -85,13 +100,20 @@ Run your standard review scope. Return findings as a Korean-language list where 
 - why: one-paragraph reasoning, Korean (this becomes the <details> body)
 - suggestion: the fix code (no prose)
 - reviewer: "<your agent name>"
+- cross_cutting: true | false
 
 Only return findings. Do not post anything to the PR.
 ```
 
 ## Step 4 — Collect results
 
-Wait for all spawned agents to return. Aggregate into a single list of findings. Deduplicate if two agents reported the exact same `file` + `line` + a semantically equivalent `what` (rare, but possible if boundaries drift).
+Wait for all spawned agents to return. Aggregate into a single list of findings.
+
+**Dedup rules** (apply in order):
+1. Group findings by (`file`, `line`, semantically equivalent `what`).
+2. Within a group, prefer the finding from the reviewer whose **primary scope** owns that file (no `[cross-cutting]` tag) over a `[cross-cutting]` finding.
+3. If a group contains only `[cross-cutting]` findings (i.e. the primary-scope reviewer didn't flag it), keep the highest-confidence one and strip the tag in the final aggregated list.
+4. Findings in different files / lines are never dedup'd, even if `what` is similar.
 
 Also compute:
 - `major_count` = findings with severity `major`
