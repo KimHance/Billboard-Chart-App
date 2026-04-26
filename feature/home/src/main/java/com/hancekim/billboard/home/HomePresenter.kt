@@ -22,6 +22,7 @@ import com.hancekim.billboard.core.domain.GetBillboardGlobal200UseCase
 import com.hancekim.billboard.core.domain.GetBillboardHot100UseCase
 import com.hancekim.billboard.core.domain.GetYoutubeVideoDetailUseCase
 import com.hancekim.billboard.core.domain.model.Chart
+import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.domain.model.ChartOverview
 import com.hancekim.billboard.core.domain.model.YoutubeVideoDetail
 import com.hancekim.billboard.core.player.PlayerState
@@ -46,6 +47,7 @@ class HomePresenter @AssistedInject constructor(
     private val getGlobal200UseCase: GetBillboardGlobal200UseCase,
     private val getBillboard200UseCase: GetBillboard200UseCase,
     private val getYoutubeVideoDetailUseCase: GetYoutubeVideoDetailUseCase,
+    private val collectionActions: CollectionActions,
 ) : Presenter<HomeState> {
     @Composable
     override fun present(): HomeState {
@@ -64,6 +66,14 @@ class HomePresenter @AssistedInject constructor(
         var chartList by rememberRetained { mutableStateOf(persistentListOf<Chart>()) }
         var expandedIndex by rememberRetained { mutableStateOf<Int?>(null) }
         var currentVideo by rememberRetained { mutableStateOf<YoutubeVideoDetail?>(null) }
+        var showCollectOverlay by rememberRetained { mutableStateOf(false) }
+        var overlayChart by rememberRetained { mutableStateOf<Chart?>(null) }
+        var isOverlayItemCollected by rememberRetained { mutableStateOf(false) }
+
+        val collectionCount by produceRetainedState(0) {
+            collectionActions.observeAll().collect { value = it.size }
+        }
+
         var exitSnackbarVisible by rememberRetained { mutableStateOf(false) }
         var listOffsetY by rememberRetained { mutableFloatStateOf(0f) }
         val isFilterSticky by rememberRetained {
@@ -174,6 +184,11 @@ class HomePresenter @AssistedInject constructor(
             showQuitToast = exitSnackbarVisible,
             playerState = playerState,
             pipState = pipState,
+            showCollectOverlay = showCollectOverlay,
+            overlayChart = overlayChart,
+            isOverlayItemCollected = isOverlayItemCollected,
+            collectionCount = collectionCount,
+            isCollectionFull = collectionCount >= CollectedCard.MAX_SLOTS,
         ) { event ->
             when (event) {
                 is HomeEvent.OnFilterClick -> onFilterChanged(event.filter)
@@ -203,6 +218,65 @@ class HomePresenter @AssistedInject constructor(
                 is HomeEvent.OnListPositioned -> listOffsetY = event.y
                 HomeEvent.OnSettingIconClick -> navigator.goTo(BillboardScreen.Setting)
                 is HomeEvent.OnItemClick -> loadVideo(event.item)
+                is HomeEvent.OnLongPressItem -> {
+                    overlayChart = event.item
+                    scope.launch {
+                        runCatching {
+                            collectionActions.isCollected(CollectedCard.createKey(event.item.title, event.item.artist))
+                        }.onSuccess { collected ->
+                            isOverlayItemCollected = collected
+                            showCollectOverlay = true
+                        }.onFailure {
+                            snackbarHostState.showSnackbar("Failed to check collection")
+                        }
+                    }
+                }
+                HomeEvent.OnCollectionIconClick -> navigator.goTo(BillboardScreen.Collection)
+                HomeEvent.OnCollectItem -> {
+                    overlayChart?.let { chart ->
+                        scope.launch {
+                            runCatching {
+                                collectionActions.add(
+                                    CollectedCard(
+                                        key = CollectedCard.createKey(chart.title, chart.artist),
+                                        title = chart.title,
+                                        artist = chart.artist,
+                                        albumArtUrl = chart.image,
+                                        collectedAt = System.currentTimeMillis(),
+                                        lastWeek = chart.lastWeek,
+                                        peakPosition = chart.peakPosition,
+                                        weeksOnChart = chart.weekOnChart,
+                                    ),
+                                )
+                            }.onSuccess { added ->
+                                if (added) {
+                                    isOverlayItemCollected = true
+                                } else {
+                                    snackbarHostState.showSnackbar(
+                                        message = "Collection is full (max ${CollectedCard.MAX_SLOTS})",
+                                        duration = SnackbarDuration.Short,
+                                    )
+                                }
+                            }.onFailure {
+                                snackbarHostState.showSnackbar("Failed to save card")
+                            }
+                        }
+                    }
+                }
+                HomeEvent.OnRemoveItem -> {
+                    overlayChart?.let { chart ->
+                        scope.launch {
+                            runCatching {
+                                collectionActions.remove(CollectedCard.createKey(chart.title, chart.artist))
+                            }.onSuccess {
+                                isOverlayItemCollected = false
+                            }.onFailure {
+                                snackbarHostState.showSnackbar("Failed to remove card")
+                            }
+                        }
+                    }
+                }
+                HomeEvent.OnDismissOverlay -> showCollectOverlay = false
             }
         }
     }

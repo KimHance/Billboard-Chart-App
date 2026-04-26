@@ -9,8 +9,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.circuit)
-    implementation(projects.core.domain)
     implementation(projects.core.player)
 
     androidTestImplementation(projects.core.dataTest)

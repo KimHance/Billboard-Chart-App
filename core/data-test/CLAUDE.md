@@ -3,9 +3,18 @@
 ## Responsibility
 Fake/in-memory implementations of `:core:data` repository interfaces for use in tests. Provides predictable, controllable test doubles without network or disk access.
 
+## Structure
+```
+datatest/
+  repository/    ← Fake repository implementations (Fake<Resource>Repository)
+  fixture/       ← Test data factories (e.g., fakeCollectedCard)
+  di/            ← Hilt test modules
+```
+
 ## Rules
 - Each fake must implement the corresponding interface from `:core:data`.
 - Fakes should expose mutable properties so tests can set up specific return values.
+- Provide fixture factories in `fixture/` so tests do not import `:core:data` models directly.
 - This module is `androidTestImplementation` only — **never** link it as a runtime production dependency.
 - Use `api(projects.core.data)` so consumers get the data interfaces transitively.
 

@@ -16,6 +16,7 @@ sealed interface BillboardColorScheme {
     val textTertiary: Color
     val textOnDark: Color
     val textOnDarkMuted: Color
+    val textOnDarkDisabled: Color
     val accent: Color
     val onAccent: Color
     val borderButton: Color
@@ -23,6 +24,9 @@ sealed interface BillboardColorScheme {
     val bgSurface: Color
     val bgImageFallback: Color
     val borderCard: Color
+    // 컬렉션 모달의 어두운 backdrop / 카드 글로우
+    val scrim: Color
+    val holoGlow: Color
 }
 
 data class BillboardLightColorScheme(
@@ -37,13 +41,16 @@ data class BillboardLightColorScheme(
     override val textTertiary: Color = BillboardColor.Grey450,
     override val textOnDark: Color = BillboardColor.White,
     override val textOnDarkMuted: Color = BillboardColor.Grey300,
+    override val textOnDarkDisabled: Color = BillboardColor.Grey400,
     override val accent: Color = BillboardColor.Green400,
     override val onAccent: Color = BillboardColor.Black,
     override val borderButton: Color = BillboardColor.Grey300,
     override val borderAppbar: Color = BillboardColor.Grey100,
     override val bgSurface: Color = BillboardColor.Grey800,
     override val bgImageFallback: Color = BillboardColor.Grey200,
-    override val borderCard: Color = BillboardColor.Grey100
+    override val borderCard: Color = BillboardColor.Grey100,
+    override val scrim: Color = BillboardColor.Black,
+    override val holoGlow: Color = BillboardColor.HoloBlue,
 ) : BillboardColorScheme
 
 data class BillboardDarkColorScheme(
@@ -58,13 +65,16 @@ data class BillboardDarkColorScheme(
     override val textTertiary: Color = BillboardColor.Grey500,
     override val textOnDark: Color = BillboardColor.White,
     override val textOnDarkMuted: Color = BillboardColor.Grey300,
+    override val textOnDarkDisabled: Color = BillboardColor.Grey400,
     override val accent: Color = BillboardColor.Green400,
     override val onAccent: Color = BillboardColor.Black,
     override val borderButton: Color = BillboardColor.Grey600,
     override val borderAppbar: Color = BillboardColor.Slate800,
     override val bgSurface: Color = BillboardColor.Grey800,
     override val bgImageFallback: Color = BillboardColor.Slate800,
-    override val borderCard: Color = BillboardColor.Grey700
+    override val borderCard: Color = BillboardColor.Grey700,
+    override val scrim: Color = BillboardColor.Black,
+    override val holoGlow: Color = BillboardColor.HoloBlue,
 ) : BillboardColorScheme
 
 @SuppressLint("ComposeCompositionLocalUsage")

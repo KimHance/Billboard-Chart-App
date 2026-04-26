@@ -9,6 +9,4 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.circuit)
-    implementation(projects.core.domain)
 }

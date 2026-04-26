@@ -69,7 +69,7 @@ Screen (sealed interface, Parcelable) — defined in :core:circuit
 | `:core:domain` | UseCases (no framework deps, only `javax.inject`) |
 | `:core:data` | Repository interfaces, data models, DataStore serializers |
 | `:core:data-impl` | Repository implementations (Hilt bindings) |
-| `:core:data-source` | DataSource interfaces + prod/demo flavor implementations |
+| `:core:data-source` | DataSource interfaces + prod/demo flavor implementations (including Room for `CollectionDataSource` in prod) |
 | `:core:network` | Retrofit, OkHttp, `ResultCall` / `ResultCallAdapter` |
 | `:core:design-foundation` | Color tokens, typography tokens, icons, modifiers, utilities |
 | `:core:design-system` | `BillboardTheme`, shared Compose components |

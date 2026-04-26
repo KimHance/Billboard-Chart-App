@@ -10,6 +10,5 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.splash)
-    implementation(projects.core.circuit)
     implementation(projects.core.network)
 }

@@ -12,4 +12,10 @@ sealed interface BillboardScreen : Screen {
 
     @Parcelize
     data object Setting : BillboardScreen
+
+    @Parcelize
+    data object Collection : BillboardScreen
+
+    @Parcelize
+    data class CardDetail(val cardKey: String) : BillboardScreen
 }

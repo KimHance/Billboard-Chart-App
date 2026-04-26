@@ -33,7 +33,7 @@ build-logic/
 | `hance.android.application.compose` | `:app` | Compose compiler, tooling |
 | `hance.android.library` | all library modules | AGP library, Kotlin, flavors |
 | `hance.android.library.compose` | Compose libraries | Compose compiler |
-| `hance.android.feature` | `:feature:*` | library + KSP + design-system + lifecycle + coroutines + Timber |
+| `hance.android.feature` | `:feature:*` | library + KSP + design-system + circuit + domain + lifecycle + coroutines + Timber |
 | `hance.android.hilt` | any Hilt module | Hilt plugin, kapt/ksp, dependencies |
 | `hance.android.room` | Room modules | Room plugin, schema export dir |
 | `hance.circuit` | Circuit screens | KSP + parcelize + codegen arg `hilt` |

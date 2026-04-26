@@ -12,12 +12,18 @@ DataSource layer. Provides concrete data access implementations: Retrofit API ca
 ## Flavor-Specific Files
 ```
 src/main/       ← shared DataSource interfaces
-src/prod/       ← Retrofit implementations, real DataStore
+src/prod/       ← Retrofit implementations, real DataStore, Room (CollectionDataSource)
+  db/             ← Room Entity / DAO / Database (prod-only)
+  di/DatabaseModule.kt ← Room provider
 src/demo/       ← in-memory / hardcoded stub implementations
 ```
 
+## Persistence
+- Room belongs to this module (prod flavor only). `CollectionDataSource` interface lives in `src/main/`; the Room-backed implementation lives in `src/prod/`. Demo flavor uses an in-memory `MutableStateFlow` implementation.
+- Schema export directory: `core/data-source/schemas/`.
+
 ## Build Configuration
-Plugins: `billboard.android.library`, `billboard.android.hilt`.
+Plugins: `billboard.android.library`, `billboard.android.hilt`, `billboard.android.room`.
 ```kotlin
 prodImplementation(projects.core.network)
 prodImplementation(libs.retrofit.core)

@@ -45,6 +45,7 @@ dependencies {
     implementation(projects.feature.splash)
     implementation(projects.feature.home)
     implementation(projects.feature.setting)
+    implementation(projects.feature.collection)
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(projects.core.dataTest)
 
