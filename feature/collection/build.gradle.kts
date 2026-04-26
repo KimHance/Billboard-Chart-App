@@ -9,10 +9,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.designSystem)
-    implementation(projects.core.domain)
-    implementation(projects.core.circuit)
-
     androidTestImplementation(projects.core.dataTest)
     androidTestImplementation(libs.circuit.test)
     androidTestImplementation(libs.kotlinx.coroutines.test)
