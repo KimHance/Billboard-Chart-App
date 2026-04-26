@@ -1,20 +1,60 @@
-name: Release APK
+name: Auto Release on Merge
+
+# release/v* 브랜치가 main 으로 머지되면 자동으로 태그 push + APK 빌드 + GitHub Release 생성
+# - 수동 태그 push 가 필요 없도록 sync-develop 스킬과 책임 분리
+# - workflow_dispatch 로 hotfix / 재실행 지원
 
 on:
-  push:
-    tags:
-      - 'v*'
+  pull_request:
+    types: [closed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '강제 릴리즈할 태그 (예: v1.1.1)'
+        required: true
+        type: string
 
 jobs:
-  build:
+  release:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true &&
+       startsWith(github.event.pull_request.head.ref, 'release/v'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
+      - name: Compute tag and ref
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag }}"
+            REF="main"
+          else
+            BRANCH="${{ github.event.pull_request.head.ref }}"
+            TAG="${BRANCH#release/}"
+            REF="${{ github.event.pull_request.merge_commit_sha }}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "ref=$REF" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
         with:
+          ref: ${{ steps.meta.outputs.ref }}
           fetch-depth: 0
+
+      - name: Create and push tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git rev-parse "${{ steps.meta.outputs.tag }}" >/dev/null 2>&1; then
+            echo "Tag ${{ steps.meta.outputs.tag }} already exists — skipping create"
+          else
+            git tag "${{ steps.meta.outputs.tag }}"
+            git push origin "${{ steps.meta.outputs.tag }}"
+          fi
 
       - uses: actions/setup-java@v4
         with:
@@ -79,7 +119,7 @@ jobs:
           # Baseline Profile Report
 
           **Generated**: $(date -u +"%Y-%m-%d %H:%M UTC")
-          **Tag**: ${{ github.ref_name }}
+          **Tag**: ${{ steps.meta.outputs.tag }}
           **Device**: Pixel 6 API 32 (Gradle Managed Device, CI)
 
           ## Summary
@@ -104,12 +144,13 @@ jobs:
       - name: Rename APK
         run: |
           mv app/build/outputs/apk/prod/release/app-prod-release.apk \
-             billboard-${{ github.ref_name }}.apk
+             billboard-${{ steps.meta.outputs.tag }}.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.meta.outputs.tag }}
           files: |
-            billboard-${{ github.ref_name }}.apk
+            billboard-${{ steps.meta.outputs.tag }}.apk
             docs/baseline-profile-report.md
           generate_release_notes: true
