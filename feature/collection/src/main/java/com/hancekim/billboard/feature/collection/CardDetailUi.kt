@@ -32,7 +32,9 @@ import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.icon.IcoClose
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
+import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designfoundation.util.throttledProcess
+import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.card.HoloCard
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -152,6 +154,28 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
                 }
             }
         }
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun CardDetailUiPreview() {
+    BillboardTheme {
+        CardDetailUi(
+            state = CardDetailState(
+                card = CollectedCard(
+                    key = "preview",
+                    title = "Preview Title",
+                    artist = "Preview Artist",
+                    albumArtUrl = "",
+                    collectedAt = 0L,
+                    lastWeek = 5,
+                    peakPosition = 1,
+                    weeksOnChart = 12,
+                ),
+                eventSink = {},
+            ),
+        )
     }
 }
 

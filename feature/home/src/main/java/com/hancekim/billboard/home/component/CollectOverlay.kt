@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
+import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.card.HoloCard
 import com.hancekim.billboard.core.designsystem.componenet.card.SparkleEffect
@@ -236,5 +237,21 @@ fun CollectOverlay(
                 }
             }
         }
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun CollectOverlayPreview() {
+    BillboardTheme {
+        CollectOverlay(
+            visible = true,
+            chart = Chart(title = "Preview Title", artist = "Preview Artist", rank = 1),
+            isAlreadyCollected = false,
+            isCollectionFull = false,
+            onCollect = {},
+            onRemove = {},
+            onDismiss = {},
+        )
     }
 }

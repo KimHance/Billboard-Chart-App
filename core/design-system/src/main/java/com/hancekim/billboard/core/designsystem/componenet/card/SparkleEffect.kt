@@ -6,9 +6,12 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import kotlin.math.cos
 import kotlin.math.sin
@@ -51,5 +54,16 @@ fun SparkleEffect(
                 )
             }
         }
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun SparkleEffectPreview() {
+    BillboardTheme {
+        SparkleEffect(
+            trigger = 1,
+            modifier = Modifier.size(120.dp),
+        )
     }
 }

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designfoundation.icon.Album
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
+import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 
 @Composable
@@ -61,5 +62,13 @@ fun EmptySlot(
             tint = colorScheme.textPrimary.copy(alpha = 0.25f),
             modifier = Modifier.size(size * 0.35f),
         )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun EmptySlotPreview() {
+    BillboardTheme {
+        EmptySlot(size = 82.dp, index = 0)
     }
 }

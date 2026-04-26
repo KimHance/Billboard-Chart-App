@@ -11,10 +11,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
+import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
+import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.card.HoloCard
+import com.hancekim.billboard.core.domain.model.CollectedCard
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -81,5 +84,16 @@ fun OrbitLayout(
                 }
             }
         }
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun OrbitLayoutPreview() {
+    BillboardTheme {
+        OrbitLayout(
+            cards = persistentListOf(),
+            onCardClick = {},
+        )
     }
 }

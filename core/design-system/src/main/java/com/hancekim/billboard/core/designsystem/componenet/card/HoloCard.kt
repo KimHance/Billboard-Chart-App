@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.icon.Logo
+import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
+import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.imageloader.BillboardAsyncImage
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -339,6 +341,18 @@ private fun BackFace(
             contentDescription = null,
             modifier = Modifier.size(logoSize),
             colorFilter = ColorFilter.tint(Color(0xB3DCE6F5)),
+        )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun HoloCardPreview() {
+    BillboardTheme {
+        HoloCard(
+            albumArtUrl = "",
+            cardSize = 200.dp,
+            interactive = false,
         )
     }
 }
