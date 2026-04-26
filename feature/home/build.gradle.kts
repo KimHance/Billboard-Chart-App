@@ -10,7 +10,6 @@ android {
 
 dependencies {
     implementation(projects.core.circuit)
-    implementation(projects.core.data)
     implementation(projects.core.domain)
     implementation(projects.core.player)
 

@@ -16,6 +16,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.components.ActivityRetainedComponent
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class CardDetailPresenter @AssistedInject constructor(
     @Assisted private val navigator: Navigator,
@@ -37,8 +38,9 @@ class CardDetailPresenter @AssistedInject constructor(
                 CardDetailEvent.OnCloseClick -> navigator.pop()
                 CardDetailEvent.OnRemoveClick -> {
                     scope.launch {
-                        removeFromCollectionUseCase(screen.cardKey)
-                        navigator.pop()
+                        runCatching { removeFromCollectionUseCase(screen.cardKey) }
+                            .onSuccess { navigator.pop() }
+                            .onFailure { Timber.e(it, "Failed to remove card: ${screen.cardKey}") }
                     }
                 }
             }
