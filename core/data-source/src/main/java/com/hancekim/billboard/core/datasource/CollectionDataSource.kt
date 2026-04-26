@@ -8,6 +8,7 @@ interface CollectionDataSource {
     fun observeByKey(key: String): Flow<CollectedCard?>
     suspend fun insert(card: CollectedCard)
     suspend fun deleteByKey(key: String)
+    suspend fun deleteAll()
     suspend fun exists(key: String): Boolean
     suspend fun count(): Int
 }

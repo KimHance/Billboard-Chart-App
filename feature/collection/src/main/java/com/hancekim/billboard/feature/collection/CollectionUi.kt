@@ -6,19 +6,26 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.designfoundation.icon.ArrowBack
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
+import com.hancekim.billboard.core.designfoundation.util.throttledProcess
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeader
 import com.hancekim.billboard.feature.collection.component.OrbitLayout
@@ -72,13 +79,43 @@ fun CollectionUi(state: CollectionState, modifier: Modifier = Modifier) {
                 }
 
                 Text(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
                     text = if (state.cards.isEmpty()) "Long-press a track to collect it as a card."
                     else "TAP A CARD TO INSPECT",
                     textAlign = TextAlign.Center,
                     style = BillboardTheme.typography.labelMd(),
                     color = colorScheme.textTertiary,
                 )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 8.dp)
+                        .height(48.dp),
+                ) {
+                    if (state.cards.isNotEmpty()) {
+                        TextButton(
+                            onClick = throttledProcess(
+                                id = "collection_remove_all",
+                                onProcessed = { state.eventSink(CollectionEvent.OnRemoveAllClick) },
+                            ),
+                            modifier = Modifier.fillMaxSize(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonColors(
+                                containerColor = colorScheme.borderButton,
+                                contentColor = Color.Unspecified,
+                                disabledContainerColor = Color.Unspecified,
+                                disabledContentColor = Color.Unspecified,
+                            ),
+                        ) {
+                            Text(
+                                text = "REMOVE ALL",
+                                style = BillboardTheme.typography.buttonMd(),
+                                color = colorScheme.textPrimary,
+                            )
+                        }
+                    }
+                }
             }
         }
     }

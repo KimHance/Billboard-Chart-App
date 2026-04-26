@@ -17,6 +17,9 @@ interface CollectionDao {
     @Query("DELETE FROM collected_cards WHERE `key` = :key")
     suspend fun deleteByKey(key: String)
 
+    @Query("DELETE FROM collected_cards")
+    suspend fun deleteAll()
+
     @Query("SELECT * FROM collected_cards WHERE `key` = :key LIMIT 1")
     fun observeByKey(key: String): Flow<CollectedCardEntity?>
 

@@ -28,6 +28,10 @@ class CollectionDataSourceImpl @Inject constructor() : CollectionDataSource {
         cards.value = cards.value.filter { it.key != key }
     }
 
+    override suspend fun deleteAll() {
+        cards.value = emptyList()
+    }
+
     override suspend fun exists(key: String): Boolean =
         cards.value.any { it.key == key }
 
