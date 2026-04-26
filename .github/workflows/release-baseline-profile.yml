@@ -64,7 +64,7 @@ jobs:
 
       - name: Generate baseline profile
         run: |
-          ./gradlew :app:generateBaselineProfile \
+          ./gradlew :app:generateDemoBaselineProfile \
             -Pci \
             -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
             --no-configuration-cache
