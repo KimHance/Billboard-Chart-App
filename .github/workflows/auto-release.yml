@@ -1,8 +1,8 @@
 name: Auto Release on Merge
 
 # release/v* 브랜치가 main 으로 머지되면 자동으로 태그 push + APK 빌드 + GitHub Release 생성
-# - 수동 태그 push 가 필요 없도록 sync-develop 스킬과 책임 분리
-# - workflow_dispatch 로 hotfix / 재실행 지원
+# baseline profile 은 release-baseline-profile.yml 에서 PR 단계에 미리 커밋되므로
+# 이 workflow 는 APK 빌드와 Release 발행만 담당한다 (slim).
 
 on:
   pull_request:
@@ -63,20 +63,6 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Enable KVM
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-      - name: Pre-install Android Emulator and system images
-        run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
-            "emulator" \
-            "platform-tools" \
-            "system-images;android-32;default;x86_64"
-
       - name: Prepare keystore and local.properties
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -99,45 +85,6 @@ jobs:
           YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}
           EOF
 
-      - name: Generate baseline profile
-        run: |
-          ./gradlew :app:generateDemoBaselineProfile \
-            -Pci \
-            -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
-            --no-configuration-cache
-
-      - name: Generate baseline profile report
-        run: |
-          mkdir -p docs
-          PROFILE="app/src/main/generated/baselineProfiles/baseline-prof.txt"
-          TOTAL=$(wc -l < "$PROFILE" | tr -d ' ')
-          STARTUP=$(grep -c "^HSP\|^HS\|^S" "$PROFILE" || echo "0")
-          INTERACTION=$((TOTAL - STARTUP))
-          SIZE=$(du -h "$PROFILE" | cut -f1)
-
-          cat > docs/baseline-profile-report.md <<REPORT
-          # Baseline Profile Report
-
-          **Generated**: $(date -u +"%Y-%m-%d %H:%M UTC")
-          **Tag**: ${{ steps.meta.outputs.tag }}
-          **Device**: Pixel 6 API 32 (Gradle Managed Device, CI)
-
-          ## Summary
-
-          | Metric | Value |
-          |---|---|
-          | Total rules | $TOTAL |
-          | Startup rules | $STARTUP |
-          | Interaction rules | $INTERACTION |
-          | File size | $SIZE |
-
-          ## Top 15 App Classes
-
-          | Class | Rules |
-          |---|---|
-          $(grep -oE 'Lcom/hancekim/billboard[^;]+;' "$PROFILE" | sed 's|^L||;s|;$||;s|/|.|g;s|\$.*||' | sort | uniq -c | sort -rn | head -15 | awk '{printf "| %s | %s |\n", $2, $1}')
-          REPORT
-
       - name: Build prodRelease APK
         run: ./gradlew :app:assembleProdRelease
 
@@ -152,5 +99,4 @@ jobs:
           tag_name: ${{ steps.meta.outputs.tag }}
           files: |
             billboard-${{ steps.meta.outputs.tag }}.apk
-            docs/baseline-profile-report.md
           generate_release_notes: true

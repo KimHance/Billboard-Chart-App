@@ -20,7 +20,7 @@ git status --porcelain
 ## Step 2 — Generate baseline profile
 
 ```bash
-./gradlew :app:generateDemoBaselineProfile \
+./gradlew :app:generateBaselineProfile \
   -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
   --no-configuration-cache
 ```
@@ -30,12 +30,12 @@ Notes:
 - `--no-configuration-cache` because managed device tasks don't support it
 - This automatically runs `copyBaselineProfileToMain` (finalized task in app/build.gradle.kts)
 - Takes 10-25 minutes depending on machine
+- For release branches, `release-baseline-profile.yml` runs this automatically on PR open / sync — local invocation is for develop / hotfix work
 
 Show progress:
 ```
 ⏳ 베이스라인 프로파일 생성 중... (10~25분 소요)
    Device: Pixel 6 API 32 (Gradle Managed Device)
-   Flavor: demo
 ```
 
 ## Step 3 — Verify output
