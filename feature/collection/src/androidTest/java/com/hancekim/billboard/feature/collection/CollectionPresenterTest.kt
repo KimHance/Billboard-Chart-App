@@ -3,9 +3,9 @@ package com.hancekim.billboard.feature.collection
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.hancekim.billboard.core.circuit.BillboardScreen
+import com.hancekim.billboard.core.datatest.fixture.fakeCollectedCard
 import com.hancekim.billboard.core.datatest.repository.FakeCollectionRepository
 import com.hancekim.billboard.core.domain.GetCollectionFlowUseCase
-import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.slack.circuit.test.FakeNavigator
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -60,8 +60,8 @@ class CollectionPresenterTest {
 
     @Test
     fun repository에_카드가_있으면_state에_반영된다() = runTest {
-        fakeRepository.add(createFakeCard("key1"))
-        fakeRepository.add(createFakeCard("key2"))
+        fakeRepository.add(fakeCollectedCard("key1"))
+        fakeRepository.add(fakeCollectedCard("key2"))
 
         launchPresenter()
         composeTestRule.waitUntil(timeoutMillis = 3_000) {
@@ -93,14 +93,3 @@ class CollectionPresenterTest {
         )
     }
 }
-
-private fun createFakeCard(key: String) = com.hancekim.billboard.core.data.model.CollectedCard(
-    key = key,
-    title = "Title",
-    artist = "Artist",
-    albumArtUrl = "",
-    collectedAt = System.currentTimeMillis(),
-    lastWeek = 1,
-    peakPosition = 1,
-    weeksOnChart = 1,
-)

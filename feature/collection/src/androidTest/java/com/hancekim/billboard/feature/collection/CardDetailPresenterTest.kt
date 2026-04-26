@@ -3,6 +3,7 @@ package com.hancekim.billboard.feature.collection
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.hancekim.billboard.core.circuit.BillboardScreen
+import com.hancekim.billboard.core.datatest.fixture.fakeCollectedCard
 import com.hancekim.billboard.core.datatest.repository.FakeCollectionRepository
 import com.hancekim.billboard.core.domain.GetCollectedCardFlowUseCase
 import com.hancekim.billboard.core.domain.RemoveFromCollectionUseCase
@@ -52,7 +53,7 @@ class CardDetailPresenterTest {
 
     @Test
     fun 카드가_존재하면_state에_반영된다() = runTest {
-        fakeRepository.add(createFakeCard(testCardKey))
+        fakeRepository.add(fakeCollectedCard(testCardKey))
 
         launchPresenter()
         composeTestRule.waitUntil(timeoutMillis = 3_000) {
@@ -77,7 +78,7 @@ class CardDetailPresenterTest {
 
     @Test
     fun OnCloseClick으로_navigator_pop이_호출된다() = runTest {
-        fakeRepository.add(createFakeCard(testCardKey))
+        fakeRepository.add(fakeCollectedCard(testCardKey))
         launchPresenter()
         composeTestRule.waitUntil(timeoutMillis = 3_000) {
             currentState?.card != null
@@ -94,7 +95,7 @@ class CardDetailPresenterTest {
 
     @Test
     fun OnRemoveClick으로_카드가_삭제되고_pop이_호출된다() = runTest {
-        fakeRepository.add(createFakeCard(testCardKey))
+        fakeRepository.add(fakeCollectedCard(testCardKey))
         launchPresenter()
         composeTestRule.waitUntil(timeoutMillis = 3_000) {
             currentState?.card != null
@@ -109,13 +110,3 @@ class CardDetailPresenterTest {
     }
 }
 
-private fun createFakeCard(key: String) = com.hancekim.billboard.core.data.model.CollectedCard(
-    key = key,
-    title = "TestTitle",
-    artist = "TestArtist",
-    albumArtUrl = "",
-    collectedAt = System.currentTimeMillis(),
-    lastWeek = 5,
-    peakPosition = 3,
-    weeksOnChart = 10,
-)

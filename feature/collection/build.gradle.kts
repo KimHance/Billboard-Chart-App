@@ -13,7 +13,6 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.circuit)
 
-    androidTestImplementation(projects.core.data)
     androidTestImplementation(projects.core.dataTest)
     androidTestImplementation(libs.circuit.test)
     androidTestImplementation(libs.kotlinx.coroutines.test)
