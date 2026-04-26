@@ -16,6 +16,15 @@ Billboard is an Android app that displays Billboard chart data (Hot 100, Billboa
 
 ---
 
+## Quick Navigation
+- **Cross-cutting rules (auto-imported):** [.claude/rules/](.claude/rules/) — `01-architecture` … `07-design-system`
+- **Module responsibilities:** each module directory's `CLAUDE.md` (auto-loaded when entering that path)
+- **Automation:** [.github/workflows/](.github/workflows/) — `claude-review.yml`, `auto-release.yml`
+- **Skills:** `pr-review`, `create-release-pr`, `sync-develop`, `generate-baseline-profile`
+- **Subagents:** `billboard-reviewer`, `compose-reviewer`, `module-boundary-checker`
+
+---
+
 ## Rules
 
 @.claude/rules/01-architecture.md
@@ -54,6 +63,38 @@ Billboard is an Android app that displays Billboard chart data (Hot 100, Billboa
 | `:build-logic` | Convention plugins for all modules |
 
 Each module has its own `CLAUDE.md` describing its specific responsibility. Refer to those for module-internal details.
+
+---
+
+## Common Commands
+
+| Task | Command |
+|---|---|
+| Build (prod debug) | `./gradlew assembleProdDebug` |
+| Build (demo debug) | `./gradlew assembleDemoDebug` |
+| Unit tests (domain) | `./gradlew :core:domain:test` |
+| Instrumented tests (feature) | `./gradlew :feature:<name>:connectedDemoDebugAndroidTest` |
+| Generate Baseline Profile | `./gradlew :app:generateBaselineProfile` (or `generate-baseline-profile` skill) |
+| Open release PR | `create-release-pr` skill |
+| Sync develop after merge | `sync-develop` skill |
+
+---
+
+## Workflow
+
+```
+Feature work
+  develop → feature/<name> → PR → squash merge → develop
+
+Release
+  develop → release/v<X.Y.Z>   (create-release-pr skill)
+        → PR (release label auto-attached)   (claude-review.yml runs auto-review)
+        → squash merge → main
+        → auto-release.yml runs: tag push + Baseline Profile + APK + GitHub Release
+        → sync-develop skill: reset develop ← main, delete release branch
+```
+
+Tag push and APK build are handled automatically by `auto-release.yml` on PR merge — no manual tag push required.
 
 ---
 

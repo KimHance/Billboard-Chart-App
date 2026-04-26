@@ -47,3 +47,30 @@ private fun Child(angleProvider: () -> Float) {
 ## Side Effects
 - `StateDiffLogEffect` (from `:core:design-system`) is enabled with a screen-specific tag for debugging — keep it in development.
 - `BackHandler` placement: at the top of the `@Composable` Ui function, dispatching the corresponding `Event`.
+
+## Custom Modifier Authoring
+When implementing a reusable custom `Modifier`, prefer the Modifier.Node API. `Modifier.composed { }` is **forbidden** — it allocates a new instance on every recomposition, breaks Modifier equality, and prevents skipping.
+
+Priority order (use the first one that fits):
+
+1. **Plain `Modifier` extension that returns `this.then(...)` of stock modifiers** — when the behavior is purely composition of existing modifiers (e.g., `Modifier.padding(...).background(...)`). No Node needed.
+
+2. **`Modifier.Node` + `ModifierNodeElement<T>`** — the default for custom drawing, layout, pointer input, focus, semantics, or any behavior that needs lifecycle / coroutine scope / `currentValueOf(LocalX)`. This is the modern, allocation-free path.
+   ```kotlin
+   private data class FooElement(val arg: Int) : ModifierNodeElement<FooNode>() {
+       override fun create() = FooNode(arg)
+       override fun update(node: FooNode) { node.arg = arg }
+   }
+   private class FooNode(var arg: Int) : Modifier.Node(), DrawModifierNode { … }
+   fun Modifier.foo(arg: Int): Modifier = this then FooElement(arg)
+   ```
+
+3. **`@Composable fun Modifier.foo(): Modifier` (composable Modifier extension)** — only when the behavior fundamentally requires **composition-time access** that Node can't satisfy cleanly: e.g., calling other `@Composable` functions, observing `MutableState` reads via `remember`, or animating with `Animatable` returned from `remember`. Even here, prefer reading state inside Node lambdas (`graphicsLayer { … }`, `drawBehind { … }`) when possible, and pass the state in as a parameter or `() -> T` provider.
+
+4. **`Modifier.composed { … }`** — **forbidden.** If you find yourself reaching for it, rewrite as Node (option 2) or composable Modifier (option 3). Existing usages should be migrated.
+
+### Quick decision
+- Need `LocalDensity` / `LocalLayoutDirection` only? → Node (`currentValueOf(LocalDensity)`).
+- Need `remember { Animatable(...) }` driving the modifier? → Composable Modifier (option 3).
+- Need to compose stock modifiers conditionally? → Plain `Modifier` extension.
+- Tempted to write `composed { … }`? → Stop and pick option 2 or 3.
