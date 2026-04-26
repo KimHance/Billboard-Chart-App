@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import com.hancekim.billboard.core.designfoundation.color.BillboardColor
+import com.hancekim.billboard.core.designsystem.BillboardTheme
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -18,7 +18,7 @@ fun SparkleEffect(
     trigger: Int,
     modifier: Modifier = Modifier,
     particleCount: Int = 12,
-    color: Color = BillboardColor.Green400,
+    color: Color = BillboardTheme.colorScheme.accent,
 ) {
     val progress = remember { Animatable(0f) }
 

@@ -23,11 +23,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.icon.IcoClose
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
+import com.hancekim.billboard.core.designfoundation.util.throttledProcess
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.card.HoloCard
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -63,6 +68,10 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
                     .padding(end = 16.dp, top = 12.dp)
                     .size(36.dp)
                     .background(colorScheme.textPrimary.copy(alpha = 0.12f), CircleShape)
+                    .semantics {
+                        role = Role.Button
+                        contentDescription = "닫기"
+                    }
                     .noRippleClickable { state.eventSink(CardDetailEvent.OnCloseClick) },
                 contentAlignment = Alignment.Center,
             ) {
@@ -88,7 +97,7 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
                             .background(
                                 Brush.radialGradient(
                                     colors = listOf(
-                                        Color(0xFFC8DCF0).copy(alpha = 0.3f),
+                                        colorScheme.holoGlow.copy(alpha = 0.3f),
                                         Color.Transparent,
                                     ),
                                 ),
@@ -123,7 +132,15 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
                             colorScheme.textPrimary.copy(alpha = 0.25f),
                             RoundedCornerShape(22.dp),
                         )
-                        .noRippleClickable { state.eventSink(CardDetailEvent.OnRemoveClick) }
+                        .semantics {
+                            role = Role.Button
+                            contentDescription = "REMOVE FROM COLLECTION"
+                        }
+                        .noRippleClickable(
+                            onClick = throttledProcess(id = "card_detail_remove") {
+                                state.eventSink(CardDetailEvent.OnRemoveClick)
+                            },
+                        )
                         .padding(horizontal = 22.dp),
                     contentAlignment = Alignment.Center,
                 ) {

@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.card.HoloCard
@@ -62,6 +61,7 @@ fun CollectOverlay(
         exit = fadeOut(tween(250)),
     ) {
         chart ?: return@AnimatedVisibility
+        val colorScheme = BillboardTheme.colorScheme
         var sparkleKey by remember { mutableIntStateOf(0) }
 
         // 카드 entry 애니메이션: scale 0.21 → 1.0 + translationY 아래→제자리
@@ -83,7 +83,7 @@ fun CollectOverlay(
         Box(
             modifier = modifier
                 .fillMaxSize()
-                .background(BillboardColor.Black.copy(alpha = 0.75f))
+                .background(colorScheme.scrim.copy(alpha = 0.75f))
                 .noRippleClickable(onClick = onDismiss),
             contentAlignment = Alignment.TopCenter,
         ) {
@@ -109,7 +109,7 @@ fun CollectOverlay(
                             .background(
                                 brush = Brush.radialGradient(
                                     colors = listOf(
-                                        Color(0xFFC8DCF0).copy(alpha = 0.3f),
+                                        colorScheme.holoGlow.copy(alpha = 0.3f),
                                         Color.Transparent,
                                     ),
                                 ),
@@ -132,13 +132,13 @@ fun CollectOverlay(
                     Text(
                         text = chart.title,
                         style = BillboardTheme.typography.titleMd(),
-                        color = BillboardColor.White,
+                        color = colorScheme.textOnDark,
                         textAlign = TextAlign.Center,
                     )
                     Text(
                         text = chart.artist,
                         style = BillboardTheme.typography.bodySm(),
-                        color = BillboardColor.Grey300,
+                        color = colorScheme.textOnDarkMuted,
                         textAlign = TextAlign.Center,
                     )
 
@@ -162,7 +162,7 @@ fun CollectOverlay(
                                         modifier = buttonModifier
                                             .border(
                                                 1.dp,
-                                                BillboardColor.White.copy(alpha = 0.3f),
+                                                colorScheme.textOnDark.copy(alpha = 0.3f),
                                                 RoundedCornerShape(24.dp),
                                             )
                                             .noRippleClickable { onRemove() },
@@ -171,7 +171,7 @@ fun CollectOverlay(
                                         Text(
                                             text = "REMOVE FROM COLLECTION",
                                             style = BillboardTheme.typography.buttonMd(),
-                                            color = BillboardColor.White,
+                                            color = colorScheme.textOnDark,
                                         )
                                     }
                                 }
@@ -180,7 +180,7 @@ fun CollectOverlay(
                                         modifier = buttonModifier
                                             .border(
                                                 1.dp,
-                                                BillboardColor.Grey400.copy(alpha = 0.3f),
+                                                colorScheme.textOnDarkDisabled.copy(alpha = 0.3f),
                                                 RoundedCornerShape(24.dp),
                                             ),
                                         contentAlignment = Alignment.Center,
@@ -188,7 +188,7 @@ fun CollectOverlay(
                                         Text(
                                             text = "COLLECTION FULL",
                                             style = BillboardTheme.typography.buttonMd(),
-                                            color = BillboardColor.Grey400,
+                                            color = colorScheme.textOnDarkDisabled,
                                         )
                                     }
                                 }
@@ -196,7 +196,7 @@ fun CollectOverlay(
                                     Box(
                                         modifier = buttonModifier
                                             .background(
-                                                BillboardTheme.colorScheme.accent,
+                                                colorScheme.accent,
                                                 RoundedCornerShape(24.dp),
                                             )
                                             .noRippleClickable {
@@ -208,7 +208,7 @@ fun CollectOverlay(
                                         Text(
                                             text = "ADD TO COLLECTION",
                                             style = BillboardTheme.typography.buttonMd(),
-                                            color = BillboardColor.Black,
+                                            color = colorScheme.onAccent,
                                         )
                                     }
                                 }
@@ -227,7 +227,7 @@ fun CollectOverlay(
                     Text(
                         text = "drag card to rotate · tap backdrop to cancel",
                         style = BillboardTheme.typography.labelMd(),
-                        color = BillboardColor.Grey400,
+                        color = colorScheme.textOnDarkDisabled,
                     )
                 }
             }

@@ -18,7 +18,7 @@ class FakeCollectionRepository @Inject constructor() : CollectionRepository {
 
     override suspend fun add(card: CollectedCard): Boolean {
         val current = cards.value
-        if (current.size >= MAX_SLOTS) return false
+        if (current.size >= CollectedCard.MAX_SLOTS) return false
         if (current.any { it.key == card.key }) return false
         cards.value = current + card
         return true
@@ -32,8 +32,4 @@ class FakeCollectionRepository @Inject constructor() : CollectionRepository {
         cards.value.any { it.key == key }
 
     override suspend fun count(): Int = cards.value.size
-
-    companion object {
-        const val MAX_SLOTS = 9
-    }
 }

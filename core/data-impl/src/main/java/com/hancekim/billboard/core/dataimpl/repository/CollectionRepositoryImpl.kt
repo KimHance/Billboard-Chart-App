@@ -19,7 +19,7 @@ class CollectionRepositoryImpl @Inject constructor(
         dao.observeByKey(key).map { it?.toModel() }
 
     override suspend fun add(card: CollectedCard): Boolean {
-        if (dao.count() >= MAX_SLOTS) return false
+        if (dao.count() >= CollectedCard.MAX_SLOTS) return false
         dao.insert(card.toEntity())
         return true
     }
@@ -32,10 +32,6 @@ class CollectionRepositoryImpl @Inject constructor(
         dao.exists(key)
 
     override suspend fun count(): Int = dao.count()
-
-    companion object {
-        const val MAX_SLOTS = 9
-    }
 }
 
 private fun CollectedCardEntity.toModel() = CollectedCard(
