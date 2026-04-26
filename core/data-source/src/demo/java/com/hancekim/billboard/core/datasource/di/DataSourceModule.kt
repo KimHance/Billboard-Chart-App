@@ -2,6 +2,8 @@ package com.hancekim.billboard.core.datasource.di
 
 import com.hancekim.billboard.core.datasource.ChartDataSource
 import com.hancekim.billboard.core.datasource.ChartDataSourceImpl
+import com.hancekim.billboard.core.datasource.CollectionDataSource
+import com.hancekim.billboard.core.datasource.CollectionDataSourceImpl
 import com.hancekim.billboard.core.datasource.PreferenceDataSource
 import com.hancekim.billboard.core.datasource.PreferenceDataSourceImpl
 import com.hancekim.billboard.core.datasource.YoutubeDataSource
@@ -26,4 +28,8 @@ abstract class DataSourceModule {
     @Binds
     @Singleton
     abstract fun bindPreferenceDataSource(impl: PreferenceDataSourceImpl): PreferenceDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindCollectionDataSource(impl: CollectionDataSourceImpl): CollectionDataSource
 }

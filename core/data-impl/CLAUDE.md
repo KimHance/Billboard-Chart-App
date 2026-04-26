@@ -10,9 +10,12 @@ data-impl/
     ChartRepositoryImpl.kt
     YoutubeRepositoryImpl.kt
     PreferenceRepositoryImpl.kt
+    CollectionRepositoryImpl.kt
   di/
     RepositoryModule.kt   ← @Binds Hilt module
 ```
+
+Repositories delegate to DataSources from `:core:data-source` (including Room-backed `CollectionDataSource` in the `prod` flavor). This module never applies the Room plugin.
 
 ## Rules
 - Each `*RepositoryImpl` takes its corresponding `*DataSource` as a constructor parameter.

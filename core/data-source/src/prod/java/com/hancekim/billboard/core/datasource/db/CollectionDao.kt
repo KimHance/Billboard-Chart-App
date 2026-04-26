@@ -1,4 +1,4 @@
-package com.hancekim.billboard.core.dataimpl.db
+package com.hancekim.billboard.core.datasource.db
 
 import androidx.room3.Dao
 import androidx.room3.Insert

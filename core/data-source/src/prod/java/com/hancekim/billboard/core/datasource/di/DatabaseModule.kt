@@ -1,9 +1,9 @@
-package com.hancekim.billboard.core.dataimpl.di
+package com.hancekim.billboard.core.datasource.di
 
 import android.content.Context
 import androidx.room3.Room
-import com.hancekim.billboard.core.dataimpl.db.CollectionDao
-import com.hancekim.billboard.core.dataimpl.db.CollectionDatabase
+import com.hancekim.billboard.core.datasource.db.CollectionDao
+import com.hancekim.billboard.core.datasource.db.CollectionDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
