@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -42,24 +43,29 @@ fun OrbitLayout(
     onCardClick: (String) -> Unit,
 ) {
     val density = LocalDensity.current
+    // 슬롯 오프셋은 density 가 바뀔 때만 재계산 — 매 recomposition 의 cos/sin/toPx 반복 제거
+    val slotOffsets = remember(density) {
+        ALL_SLOTS.map { slot ->
+            with(density) {
+                if (slot.radius > 0.dp) {
+                    val rad = Math.toRadians(slot.angle.toDouble())
+                    IntOffset(
+                        x = (cos(rad).toFloat() * slot.radius.toPx()).roundToInt(),
+                        y = (sin(rad).toFloat() * slot.radius.toPx() * 0.75f).roundToInt(),
+                    )
+                } else IntOffset.Zero
+            }
+        }
+    }
 
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         ALL_SLOTS.forEachIndexed { index, slot ->
-            val offsetX = with(density) {
-                if (slot.radius > 0.dp) {
-                    (cos(Math.toRadians(slot.angle.toDouble())).toFloat() * slot.radius.toPx()).roundToInt()
-                } else 0
-            }
-            val offsetY = with(density) {
-                if (slot.radius > 0.dp) {
-                    (sin(Math.toRadians(slot.angle.toDouble())).toFloat() * slot.radius.toPx() * 0.75f).roundToInt()
-                } else 0
-            }
+            val offset = slotOffsets[index]
 
-            Box(modifier = Modifier.offset { IntOffset(offsetX, offsetY) }) {
+            Box(modifier = Modifier.offset { offset }) {
                 if (index < cards.size) {
                     val card = cards[index]
                     HoloCard(

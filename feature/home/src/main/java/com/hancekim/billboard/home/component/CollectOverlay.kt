@@ -69,7 +69,11 @@ fun CollectOverlay(
         val cardTranslationY = remember { Animatable(400f) }
         val contentAlpha = remember { Animatable(0f) }
 
-        LaunchedEffect(Unit) {
+        // chart 가 바뀌면 entry 애니메이션 재실행 (다른 곡 롱프레스 시 재진입 효과 보장)
+        LaunchedEffect(chart.title, chart.artist) {
+            cardScale.snapTo(0.21f)
+            cardTranslationY.snapTo(400f)
+            contentAlpha.snapTo(0f)
             coroutineScope {
                 launch { cardScale.animateTo(1f, tween(380, easing = OverlayEasing)) }
                 launch { cardTranslationY.animateTo(0f, tween(380, easing = OverlayEasing)) }

@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designfoundation.icon.Album
@@ -29,9 +29,10 @@ fun EmptySlot(
 ) {
     val colorScheme = BillboardTheme.colorScheme
     val infiniteTransition = rememberInfiniteTransition(label = "pulse_$index")
-    val alpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 0.65f,
+    // 0.46 (= 0.3/0.65) ↔ 1.0 사이로 layer alpha 펄스 — graphicsLayer 람다에서 read 하여 draw phase 로 격리
+    val pulseAlpha = infiniteTransition.animateFloat(
+        initialValue = 0.46f,
+        targetValue = 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 2600, delayMillis = index * 180),
             repeatMode = RepeatMode.Reverse,
@@ -42,9 +43,10 @@ fun EmptySlot(
     Box(
         modifier = modifier
             .size(size)
+            .graphicsLayer { alpha = pulseAlpha.value }
             .border(
                 1.5.dp,
-                colorScheme.textPrimary.copy(alpha = 0.18f * alpha / 0.65f),
+                colorScheme.textPrimary.copy(alpha = 0.18f),
                 RoundedCornerShape(14.dp),
             )
             .background(
@@ -56,7 +58,7 @@ fun EmptySlot(
         Icon(
             imageVector = BillboardIcons.Album,
             contentDescription = null,
-            tint = colorScheme.textPrimary.copy(alpha = 0.25f * alpha / 0.65f),
+            tint = colorScheme.textPrimary.copy(alpha = 0.25f),
             modifier = Modifier.size(size * 0.35f),
         )
     }
