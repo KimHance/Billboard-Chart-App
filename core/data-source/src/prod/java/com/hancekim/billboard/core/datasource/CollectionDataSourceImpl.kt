@@ -25,6 +25,10 @@ class CollectionDataSourceImpl @Inject constructor(
         dao.deleteByKey(key)
     }
 
+    override suspend fun deleteAll() {
+        dao.deleteAll()
+    }
+
     override suspend fun exists(key: String): Boolean = dao.exists(key)
 
     override suspend fun count(): Int = dao.count()

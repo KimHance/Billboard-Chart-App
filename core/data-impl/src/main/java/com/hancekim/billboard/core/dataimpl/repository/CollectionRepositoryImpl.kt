@@ -26,6 +26,10 @@ class CollectionRepositoryImpl @Inject constructor(
         dataSource.deleteByKey(key)
     }
 
+    override suspend fun removeAll() {
+        dataSource.deleteAll()
+    }
+
     override suspend fun isCollected(key: String): Boolean =
         dataSource.exists(key)
 

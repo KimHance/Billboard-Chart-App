@@ -6,6 +6,7 @@ import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.datatest.fixture.fakeCollectedCard
 import com.hancekim.billboard.core.datatest.repository.FakeCollectionRepository
 import com.hancekim.billboard.core.domain.GetCollectionFlowUseCase
+import com.hancekim.billboard.core.domain.RemoveAllFromCollectionUseCase
 import com.slack.circuit.test.FakeNavigator
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -33,6 +34,7 @@ class CollectionPresenterTest {
         presenter = CollectionPresenter(
             navigator = fakeNavigator,
             getCollectionFlowUseCase = GetCollectionFlowUseCase(fakeRepository),
+            removeAllFromCollectionUseCase = RemoveAllFromCollectionUseCase(fakeRepository),
         )
     }
 
@@ -91,5 +93,27 @@ class CollectionPresenterTest {
             BillboardScreen.CardDetail("test_key"),
             fakeNavigator.awaitNextScreen(),
         )
+    }
+
+    // ── Remove All ─────────────────────────────────────────────────────────────
+
+    @Test
+    fun OnRemoveAllClick으로_모든_카드가_즉시_제거된다() = runTest {
+        fakeRepository.add(fakeCollectedCard("key1"))
+        fakeRepository.add(fakeCollectedCard("key2"))
+
+        launchPresenter()
+        composeTestRule.waitUntil(timeoutMillis = 3_000) {
+            currentState?.cards?.size == 2
+        }
+
+        sendEvent(CollectionEvent.OnRemoveAllClick)
+
+        composeTestRule.waitUntil(timeoutMillis = 3_000) {
+            currentState?.cards?.isEmpty() == true
+        }
+        composeTestRule.runOnIdle {
+            assertEquals(0, fakeRepository.count())
+        }
     }
 }

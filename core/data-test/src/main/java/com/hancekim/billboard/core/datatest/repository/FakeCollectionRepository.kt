@@ -28,6 +28,10 @@ class FakeCollectionRepository @Inject constructor() : CollectionRepository {
         cards.value = cards.value.filter { it.key != key }
     }
 
+    override suspend fun removeAll() {
+        cards.value = emptyList()
+    }
+
     override suspend fun isCollected(key: String): Boolean =
         cards.value.any { it.key == key }
 
