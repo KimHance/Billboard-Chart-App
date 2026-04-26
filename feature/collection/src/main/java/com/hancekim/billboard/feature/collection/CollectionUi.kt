@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.circuit.BillboardScreen
@@ -87,34 +86,30 @@ fun CollectionUi(state: CollectionState, modifier: Modifier = Modifier) {
                     color = colorScheme.textTertiary,
                 )
 
-                Box(
+                val isEnabled = state.cards.isNotEmpty()
+                TextButton(
+                    onClick = throttledProcess(
+                        id = "collection_remove_all",
+                        onProcessed = { state.eventSink(CollectionEvent.OnRemoveAllClick) },
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 8.dp)
                         .height(48.dp),
+                    enabled = isEnabled,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonColors(
+                        containerColor = colorScheme.borderButton,
+                        contentColor = colorScheme.textPrimary,
+                        disabledContainerColor = colorScheme.bgImageFallback,
+                        disabledContentColor = colorScheme.textTertiary,
+                    ),
                 ) {
-                    if (state.cards.isNotEmpty()) {
-                        TextButton(
-                            onClick = throttledProcess(
-                                id = "collection_remove_all",
-                                onProcessed = { state.eventSink(CollectionEvent.OnRemoveAllClick) },
-                            ),
-                            modifier = Modifier.fillMaxSize(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonColors(
-                                containerColor = colorScheme.borderButton,
-                                contentColor = Color.Unspecified,
-                                disabledContainerColor = Color.Unspecified,
-                                disabledContentColor = Color.Unspecified,
-                            ),
-                        ) {
-                            Text(
-                                text = "REMOVE ALL",
-                                style = BillboardTheme.typography.buttonMd(),
-                                color = colorScheme.textPrimary,
-                            )
-                        }
-                    }
+                    Text(
+                        text = "REMOVE ALL",
+                        style = BillboardTheme.typography.buttonMd(),
+                        color = if (isEnabled) colorScheme.textPrimary else colorScheme.textTertiary,
+                    )
                 }
             }
         }
