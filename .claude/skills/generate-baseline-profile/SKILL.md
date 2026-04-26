@@ -20,10 +20,12 @@ git status --porcelain
 ## Step 2 — Generate baseline profile
 
 ```bash
-./gradlew :app:generateBaselineProfile \
+./gradlew :app:generateDemoBaselineProfile \
   -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
   --no-configuration-cache
 ```
+
+`:benchmark` 모듈은 demo 플레이버만 활성화 (`benchmark/build.gradle.kts` 의 `beforeVariants` 가드) 되어 있으므로 umbrella 태스크 (`generateBaselineProfile`) 대신 **demo 한정 태스크**를 사용해야 함. prod APK 도 demo 에서 생성한 동일한 baseline-prof.txt 를 src/main 에서 공유함.
 
 Notes:
 - `swiftshader_indirect` for headless/CI environments without GPU
