@@ -1664,7 +1664,7 @@ EOF
 **Files:**
 - Modify: `feature/home/src/main/java/com/hancekim/billboard/home/HomeUi.kt`
 
-- [ ] **Step 1: Pass new params to `BillboardHeader`**
+- [x] **Step 1: Pass new params to `BillboardHeader`**
 
 ```kotlin
 BillboardHeader(
@@ -1674,7 +1674,7 @@ BillboardHeader(
 )
 ```
 
-- [ ] **Step 2: Pass per-row props to RankingRow callsite**
+- [x] **Step 2: Pass per-row props to RankingRow callsite**
 
 ```kotlin
 RankingRow(
@@ -1684,7 +1684,7 @@ RankingRow(
 )
 ```
 
-- [ ] **Step 3: Pass new params to `CollectOverlay`**
+- [x] **Step 3: Pass new params to `CollectOverlay`**
 
 ```kotlin
 CollectOverlay(
@@ -1705,12 +1705,12 @@ CollectOverlay(
 )
 ```
 
-- [ ] **Step 4: Build prod debug variant**
+- [x] **Step 4: Build prod debug variant**
 
 Run: `./gradlew :feature:home:assembleProdDebug`
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add feature/home/

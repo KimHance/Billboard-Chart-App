@@ -39,7 +39,9 @@ import com.hancekim.billboard.core.designsystem.componenet.list.RankingItem
 import com.hancekim.billboard.core.designsystem.componenet.list.toStatus
 import com.hancekim.billboard.core.designsystem.componenet.title.TitleSection
 import com.hancekim.billboard.core.designsystem.componenet.title.TitleSize
+import androidx.compose.ui.graphics.Color
 import com.hancekim.billboard.core.domain.model.Chart
+import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.player.PlayerState
 import com.hancekim.billboard.core.player.YoutubePlayer
 import com.hancekim.billboard.core.player.pip.ListPipPlayer
@@ -47,6 +49,7 @@ import com.hancekim.billboard.core.player.pip.PipState
 import com.hancekim.billboard.core.player.pip.pipDraggable
 import com.hancekim.billboard.home.HomeEvent
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 
 @Composable
 fun PlayerWithPager(
@@ -58,6 +61,7 @@ fun PlayerWithPager(
     scrollState: ScrollState,
     lazyListState: LazyListState,
     pipState: PipState,
+    collectedGroupColorByKey: ImmutableMap<String, Int>,
     modifier: Modifier = Modifier,
     eventSink: (HomeEvent) -> Unit,
 ) {
@@ -171,7 +175,7 @@ fun PlayerWithPager(
                             debutDate = item.debutDate,
                             peakDate = item.peakDate,
                             enabled = chartFilter != ChartFilter.Artist100,
-                            collectedGroupColor = null, // Task 14/15 에서 실제 wiring
+                            collectedGroupColor = collectedGroupColorByKey[CollectedCard.createKey(item.title, item.artist)]?.let(::Color),
                             onExpandButtonClick = { eventSink(HomeEvent.OnExpandButtonClick(index)) },
                             onItemClick = { eventSink(HomeEvent.OnItemClick(item)) },
                             onLongClick = { eventSink(HomeEvent.OnLongPressItem(item)) }

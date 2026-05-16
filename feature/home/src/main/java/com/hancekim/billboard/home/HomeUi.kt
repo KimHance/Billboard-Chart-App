@@ -78,7 +78,8 @@ fun HomeUi(
                     playerState = state.playerState,
                     scrollState = state.scrollState,
                     lazyListState = state.lazyListState,
-                    pipState = state.pipState
+                    pipState = state.pipState,
+                    collectedGroupColorByKey = state.collectedGroupColorByKey,
                 )
             }
         )
