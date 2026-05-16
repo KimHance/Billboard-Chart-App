@@ -19,9 +19,8 @@ class CollectionDataSourceImpl @Inject constructor() : CollectionDataSource {
         cards.map { list -> list.find { it.key == key } }
 
     override suspend fun insert(card: CollectedCard) {
-        val current = cards.value
-        if (current.any { it.key == card.key }) return
-        cards.value = current + card
+        // 동일 key 카드가 존재하면 교체 — 그룹 이동 시 기존 항목 덮어씀
+        cards.value = cards.value.filterNot { it.key == card.key } + card
     }
 
     override suspend fun deleteByKey(key: String) {
