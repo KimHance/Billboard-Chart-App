@@ -1758,19 +1758,19 @@ EOF
 **Files:**
 - Modify: `feature/collection/build.gradle.kts`
 
-- [ ] **Step 1: Add dependency**
+- [x] **Step 1: Add dependency**
 
 Inside `dependencies { ... }`:
 ```kotlin
 implementation(projects.core.player)
 ```
 
-- [ ] **Step 2: Sync + compile**
+- [x] **Step 2: Sync + compile**
 
 Run: `./gradlew :feature:collection:dependencies --configuration prodDebugRuntimeClasspath | grep player`
 Expected: `:core:player` listed.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git commit -am "$(cat <<'EOF'
