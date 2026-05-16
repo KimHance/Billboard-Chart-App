@@ -84,7 +84,7 @@ EOF
 **Files:**
 - Modify: `core/data/src/main/java/com/hancekim/billboard/core/data/model/CollectedCard.kt`
 
-- [ ] **Step 1: Replace model**
+- [x] **Step 1: Replace model**
 
 ```kotlin
 package com.hancekim.billboard.core.data.model
@@ -106,17 +106,17 @@ data class CollectedCard(
 
 Default value keeps existing call sites compiling until they are updated explicitly. MAX_SLOTS constant is removed.
 
-- [ ] **Step 2: Find and fix every reference to `MAX_SLOTS`**
+- [x] **Step 2: Find and fix every reference to `MAX_SLOTS`**
 
 Run: `grep -rn "MAX_SLOTS" --include="*.kt"`
 For each hit (expected in `:core:domain`, `:feature:collection`, tests), delete the reference (slot-full guards become no-ops). Compilation will guide the rest.
 
-- [ ] **Step 3: Verify compilation across data + domain + feature**
+- [x] **Step 3: Verify compilation across data + domain + feature**
 
 Run: `./gradlew :core:data:compileDebugKotlin :core:domain:compileKotlin :core:data-impl:compileDebugKotlin`
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git commit -am "$(cat <<'EOF'
