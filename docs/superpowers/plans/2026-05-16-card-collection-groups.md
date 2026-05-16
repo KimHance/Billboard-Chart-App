@@ -1518,7 +1518,7 @@ EOF
 **Files:**
 - Modify: `feature/home/src/main/java/com/hancekim/billboard/home/component/CollectOverlay.kt`
 
-- [ ] **Step 1: Replace function signature**
+- [x] **Step 1: Replace function signature**
 
 ```kotlin
 @Composable
@@ -1541,11 +1541,11 @@ fun CollectOverlay(
 )
 ```
 
-- [ ] **Step 2: Replace 360.dp radial glow color source**
+- [x] **Step 2: Replace 360.dp radial glow color source**
 
 Drive the glow brush colors from `selectedGroupColor = groups.firstOrNull { it.id == selectedGroupId }?.colorArgb?.let(::Color) ?: Color.White`. Animate with `animateColorAsState`. Read inside `drawBehind` / `graphicsLayer` lambdas to keep on draw phase per `03-compose-state.md`.
 
-- [ ] **Step 3: Replace dropdown + action button block**
+- [x] **Step 3: Replace dropdown + action button block**
 
 ```kotlin
 if (newGroupForm != null) {
@@ -1582,7 +1582,7 @@ if (newGroupForm != null) {
 
 `NewGroupForm` will be created in Task 23. For now, since this is a foreward reference inside Home, declare a temporary `expect`-style stub: instead, **block Task 16 commit** until Task 23 is done, OR copy the `NewGroupForm` composable into `:feature:home/component/NewGroupForm.kt` first. **Recommended:** create `:feature:home/component/NewGroupForm.kt` now as a sibling to CollectOverlay (single-file copy is acceptable — feature modules don't share components per `07-design-system.md`).
 
-- [ ] **Step 4: Add `:feature:home/component/NewGroupForm.kt`**
+- [x] **Step 4: Add `:feature:home/component/NewGroupForm.kt`**
 
 ```kotlin
 package com.hancekim.billboard.home.component
@@ -1640,12 +1640,12 @@ fun NewGroupForm(
 }
 ```
 
-- [ ] **Step 5: Compile**
+- [x] **Step 5: Compile**
 
 Run: `./gradlew :feature:home:compileProdDebugKotlin`
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add feature/home/

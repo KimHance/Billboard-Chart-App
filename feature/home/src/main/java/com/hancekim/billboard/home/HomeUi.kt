@@ -21,6 +21,7 @@ import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeade
 import com.hancekim.billboard.core.player.PlayerState
 import com.hancekim.billboard.home.component.CollectOverlay
 import com.hancekim.billboard.home.component.PlayerWithPager
+import kotlinx.collections.immutable.toImmutableList
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dagger.hilt.android.components.ActivityRetainedComponent
 
@@ -84,10 +85,18 @@ fun HomeUi(
         CollectOverlay(
             visible = state.showCollectOverlay,
             chart = state.overlayChart,
-            isAlreadyCollected = state.isOverlayItemCollected,
-            onCollect = { state.eventSink(HomeEvent.OnCollectItem) },
-            onRemove = { state.eventSink(HomeEvent.OnRemoveItem) },
-            onDismiss = { state.eventSink(HomeEvent.OnDismissOverlay) },
+            overlayState = state.overlayState,
+            groups = state.groups.values.toImmutableList(),
+            selectedGroupId = state.selectedGroupIdInOverlay,
+            newGroupForm = state.newGroupFormInOverlay,
+            onSelectGroup = { eventSink(HomeEvent.OnSelectGroupInOverlay(it)) },
+            onCreateNewGroupClick = { eventSink(HomeEvent.OnCreateNewGroupClickInOverlay) },
+            onNewGroupNameChange = { eventSink(HomeEvent.OnNewGroupNameChangeInOverlay(it)) },
+            onNewGroupHexChange = { eventSink(HomeEvent.OnNewGroupHexChangeInOverlay(it)) },
+            onSubmitNewGroup = { eventSink(HomeEvent.OnSubmitNewGroupInOverlay) },
+            onCancelNewGroup = { eventSink(HomeEvent.OnCancelNewGroupInOverlay) },
+            onCommit = { eventSink(HomeEvent.OnCommitOverlay) },
+            onDismiss = { eventSink(HomeEvent.OnDismissOverlay) },
         )
     }
 }

@@ -28,4 +28,5 @@ object BillboardColor {
     val HoloGreen = Color(0xFF00FF85)
     val HoloAmber = Color(0xFFFFB400)
     val HoloMagenta = Color(0xFFE879F9)
+    val Red500 = Color(0xFFEF4444)
 }
