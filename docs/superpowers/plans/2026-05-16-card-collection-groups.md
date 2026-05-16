@@ -317,7 +317,7 @@ EOF
 - Modify: `core/data-source/src/prod/java/com/hancekim/billboard/core/datasource/di/DataSourceModule.kt`
 - Modify: `core/data-source/src/demo/java/com/hancekim/billboard/core/datasource/di/DataSourceModule.kt`
 
-- [ ] **Step 1: Add shared `GroupDataSource` interface**
+- [x] **Step 1: Add shared `GroupDataSource` interface**
 
 ```kotlin
 package com.hancekim.billboard.core.datasource
@@ -334,7 +334,7 @@ interface GroupDataSource {
 }
 ```
 
-- [ ] **Step 2: Add prod `GroupDataSourceImpl` (Room)**
+- [x] **Step 2: Add prod `GroupDataSourceImpl` (Room)**
 
 ```kotlin
 package com.hancekim.billboard.core.datasource
@@ -380,7 +380,7 @@ class GroupDataSourceImpl @Inject constructor(
 }
 ```
 
-- [ ] **Step 3: Add demo `GroupDataSourceImpl` (in-memory, Default seeded)**
+- [x] **Step 3: Add demo `GroupDataSourceImpl` (in-memory, Default seeded)**
 
 ```kotlin
 package com.hancekim.billboard.core.datasource
@@ -426,7 +426,7 @@ class GroupDataSourceImpl @Inject constructor() : GroupDataSource {
 }
 ```
 
-- [ ] **Step 4: Update prod `CollectionDataSourceImpl` to map `groupId`**
+- [x] **Step 4: Update prod `CollectionDataSourceImpl` to map `groupId`**
 
 (In the prod impl, anywhere `CollectedCardEntity` is constructed or mapped to/from `CollectedCard`, add `groupId`. Use `upsert` instead of `insert`.)
 
@@ -451,7 +451,7 @@ private fun CollectedCardEntity.toDomain() = CollectedCard(
 )
 ```
 
-- [ ] **Step 5: Update demo `CollectionDataSourceImpl` semantics — REPLACE on same key**
+- [x] **Step 5: Update demo `CollectionDataSourceImpl` semantics — REPLACE on same key**
 
 ```kotlin
 override suspend fun insert(card: CollectedCard) {
@@ -459,7 +459,7 @@ override suspend fun insert(card: CollectedCard) {
 }
 ```
 
-- [ ] **Step 6: Update prod `DatabaseModule` with destructive migration + Default seed callback**
+- [x] **Step 6: Update prod `DatabaseModule` with destructive migration + Default seed callback**
 
 ```kotlin
 package com.hancekim.billboard.core.datasource.di
@@ -517,7 +517,7 @@ object DatabaseModule {
 
 If the Room version in use doesn't expose `SQLiteConnection`, fall back to `SupportSQLiteDatabase` (`override fun onCreate(db: SupportSQLiteDatabase)`) — pick whichever the existing room3 dependency supports (check the imports already present).
 
-- [ ] **Step 7: Bind `GroupDataSource` in both flavor `DataSourceModule.kt`**
+- [x] **Step 7: Bind `GroupDataSource` in both flavor `DataSourceModule.kt`**
 
 prod:
 ```kotlin
@@ -526,12 +526,12 @@ abstract fun bindGroupDataSource(impl: GroupDataSourceImpl): GroupDataSource
 ```
 demo: same `@Binds`.
 
-- [ ] **Step 8: Compile both flavors**
+- [x] **Step 8: Compile both flavors**
 
 Run: `./gradlew :core:data-source:compileProdDebugKotlin :core:data-source:compileDemoDebugKotlin`
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add core/data-source/
