@@ -1732,7 +1732,7 @@ EOF
 - Delete: `feature/collection/src/main/java/com/hancekim/billboard/feature/collection/component/OrbitLayout.kt`
 - Delete: `feature/collection/src/main/java/com/hancekim/billboard/feature/collection/component/EmptySlot.kt`
 
-- [ ] **Step 1: Delete + remove `OrbitLayout` usage from `CollectionUi.kt`**
+- [x] **Step 1: Delete + remove `OrbitLayout` usage from `CollectionUi.kt`**
 
 ```bash
 git rm feature/collection/src/main/java/com/hancekim/billboard/feature/collection/component/OrbitLayout.kt
@@ -1740,7 +1740,7 @@ git rm feature/collection/src/main/java/com/hancekim/billboard/feature/collectio
 ```
 Edit `CollectionUi.kt` and delete the `OrbitLayout(...)` call (will be re-built in Task 24). Module will break compilation temporarily — fixed by end of Phase D.
 
-- [ ] **Step 2: Commit (intentionally breaking — squash with later task if not preferred)**
+- [x] **Step 2: Commit (intentionally breaking — squash with later task if not preferred)**
 
 ```bash
 git commit -m "$(cat <<'EOF'
