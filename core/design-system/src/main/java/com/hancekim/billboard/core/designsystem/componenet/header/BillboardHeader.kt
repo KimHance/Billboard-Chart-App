@@ -1,17 +1,16 @@
 package com.hancekim.billboard.core.designsystem.componenet.header
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
@@ -30,6 +29,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -52,10 +53,10 @@ fun BillboardHeader(
     isLogoVisible: Boolean = true,
     leadingIcon: ImageVector? = null,
     trailingIcon: ImageVector? = BillboardIcons.Setting,
-    collectionCount: Int = 0,
     onLeadingIconClick: (() -> Unit)? = null,
     onTrailingIconClick: (() -> Unit)? = null,
-    onCollectionIconClick: (() -> Unit)? = null,
+    collectionCount: Int? = null,
+    onCollectionClick: (() -> Unit)? = null,
 ) {
     val bgColor = BillboardTheme.colorScheme.bgAppbar
     val contentColor = BillboardTheme.colorScheme.textPrimary
@@ -129,28 +130,42 @@ fun BillboardHeader(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
-                    onCollectionIconClick?.let {
-                        BadgedBox(
-                            badge = {
-                                if (collectionCount > 0) {
-                                    Badge(
-                                        containerColor = BillboardTheme.colorScheme.accent,
-                                        contentColor = Color.Black,
-                                    ) {
-                                        Text(text = collectionCount.toString())
-                                    }
-                                }
-                            }
+                    if (collectionCount != null && onCollectionClick != null) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .noRippleClickable(onClick = onCollectionClick)
+                                .semantics {
+                                    role = Role.Button
+                                    contentDescription = "컬렉션 열기"
+                                },
+                            contentAlignment = Alignment.Center,
                         ) {
                             Icon(
-                                modifier = Modifier
-                                    .size(26.dp)
-                                    .noRippleClickable(onClick = it),
                                 imageVector = BillboardIcons.Collection,
-                                contentDescription = "collection_button"
+                                contentDescription = null,
+                                tint = BillboardTheme.colorScheme.textPrimary,
                             )
+                            if (collectionCount > 0) {
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .size(16.dp)
+                                        .background(
+                                            BillboardTheme.colorScheme.holoGlow,
+                                            RoundedCornerShape(50)
+                                        )
+                                        .padding(horizontal = 4.dp),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Text(
+                                        text = collectionCount.toString(),
+                                        style = BillboardTheme.typography.caption(),
+                                        color = BillboardTheme.colorScheme.textOnAccent,
+                                    )
+                                }
+                            }
                         }
-                        Spacer(modifier = Modifier.size(12.dp))
                     }
                     trailingIcon?.let { icon ->
                         Icon(

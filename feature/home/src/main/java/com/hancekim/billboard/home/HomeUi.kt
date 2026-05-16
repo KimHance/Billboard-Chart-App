@@ -56,7 +56,7 @@ fun HomeUi(
                     title = "BILLBOARD",
                     collectionCount = state.collectionCount,
                     onTrailingIconClick = { eventSink(HomeEvent.OnSettingIconClick) },
-                    onCollectionIconClick = { state.eventSink(HomeEvent.OnCollectionIconClick) },
+                    onCollectionClick = { state.eventSink(HomeEvent.OnCollectionIconClick) },
                 )
             },
             snackbarHost = {

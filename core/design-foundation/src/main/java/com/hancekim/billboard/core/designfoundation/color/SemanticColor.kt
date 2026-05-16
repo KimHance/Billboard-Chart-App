@@ -27,6 +27,8 @@ sealed interface BillboardColorScheme {
     // 컬렉션 모달의 어두운 backdrop / 카드 글로우
     val scrim: Color
     val holoGlow: Color
+    // 배지 등 강조색 위에 올라가는 텍스트
+    val textOnAccent: Color
 }
 
 data class BillboardLightColorScheme(
@@ -51,6 +53,7 @@ data class BillboardLightColorScheme(
     override val borderCard: Color = BillboardColor.Grey100,
     override val scrim: Color = BillboardColor.Black,
     override val holoGlow: Color = BillboardColor.HoloBlue,
+    override val textOnAccent: Color = BillboardColor.Black,
 ) : BillboardColorScheme
 
 data class BillboardDarkColorScheme(
@@ -75,6 +78,7 @@ data class BillboardDarkColorScheme(
     override val borderCard: Color = BillboardColor.Grey700,
     override val scrim: Color = BillboardColor.Black,
     override val holoGlow: Color = BillboardColor.HoloBlue,
+    override val textOnAccent: Color = BillboardColor.Black,
 ) : BillboardColorScheme
 
 @SuppressLint("ComposeCompositionLocalUsage")
