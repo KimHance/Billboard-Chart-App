@@ -618,7 +618,7 @@ EOF
 - Test: `core/domain/src/test/java/com/hancekim/billboard/core/domain/AddGroupUseCaseTest.kt`
 - Test: `core/domain/src/test/java/com/hancekim/billboard/core/domain/RemoveGroupUseCaseTest.kt`
 
-- [ ] **Step 1: Write `AddGroupUseCaseTest` (failing)**
+- [x] **Step 1: Write `AddGroupUseCaseTest` (failing)**
 
 ```kotlin
 package com.hancekim.billboard.core.domain
@@ -667,12 +667,12 @@ class AddGroupUseCaseTest {
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `./gradlew :core:domain:test --tests "*.AddGroupUseCaseTest"`
 Expected: FAIL — `AddGroupUseCase` and `GroupValidationError` do not exist.
 
-- [ ] **Step 3: Implement `GroupValidationError`**
+- [x] **Step 3: Implement `GroupValidationError`**
 
 ```kotlin
 package com.hancekim.billboard.core.domain
@@ -690,7 +690,7 @@ sealed class GroupValidationError(message: String) : Throwable(message) {
 }
 ```
 
-- [ ] **Step 4: Implement `AddGroupUseCase`**
+- [x] **Step 4: Implement `AddGroupUseCase`**
 
 ```kotlin
 package com.hancekim.billboard.core.domain
@@ -716,12 +716,12 @@ class AddGroupUseCase @Inject constructor(
 }
 ```
 
-- [ ] **Step 5: Run test to verify it passes**
+- [x] **Step 5: Run test to verify it passes**
 
 Run: `./gradlew :core:domain:test --tests "*.AddGroupUseCaseTest"`
 Expected: PASS.
 
-- [ ] **Step 6: Write `RemoveGroupUseCaseTest`**
+- [x] **Step 6: Write `RemoveGroupUseCaseTest`**
 
 ```kotlin
 package com.hancekim.billboard.core.domain
@@ -754,7 +754,7 @@ class RemoveGroupUseCaseTest {
 }
 ```
 
-- [ ] **Step 7: Implement `RemoveGroupUseCase` and `GetGroupsFlowUseCase`**
+- [x] **Step 7: Implement `RemoveGroupUseCase` and `GetGroupsFlowUseCase`**
 
 ```kotlin
 // RemoveGroupUseCase.kt
@@ -790,12 +790,12 @@ class GetGroupsFlowUseCase @Inject constructor(
 }
 ```
 
-- [ ] **Step 8: Run all domain tests**
+- [x] **Step 8: Run all domain tests**
 
 Run: `./gradlew :core:domain:test`
 Expected: PASS.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add core/domain/
