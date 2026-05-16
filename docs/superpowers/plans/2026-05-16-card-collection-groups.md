@@ -1307,7 +1307,7 @@ EOF
 - Modify: `feature/home/src/main/java/com/hancekim/billboard/home/HomeState.kt`
 - Create: `feature/home/src/main/java/com/hancekim/billboard/home/component/OverlayCollectState.kt`
 
-- [ ] **Step 1: Create `OverlayCollectState`**
+- [x] **Step 1: Create `OverlayCollectState`**
 
 ```kotlin
 package com.hancekim.billboard.home.component
@@ -1318,7 +1318,7 @@ sealed interface OverlayCollectState {
 }
 ```
 
-- [ ] **Step 2: Extend `HomeState`**
+- [x] **Step 2: Extend `HomeState`**
 
 Append the new fields to the `HomeState` data class (keep `eventSink` last):
 
@@ -1343,7 +1343,7 @@ data class NewGroupFormState(
 )
 ```
 
-- [ ] **Step 3: Extend `HomeEvent`**
+- [x] **Step 3: Extend `HomeEvent`**
 
 ```kotlin
 data class OnLongPressItem(val item: Chart) : HomeEvent
@@ -1357,12 +1357,12 @@ data object OnCommitOverlay : HomeEvent
 data object OnCollectionHeaderClick : HomeEvent
 ```
 
-- [ ] **Step 4: Compile (presenter will be red — fix in next task)**
+- [x] **Step 4: Compile (presenter will be red — fix in next task)**
 
 Run: `./gradlew :feature:home:compileProdDebugKotlin`
 Expected: errors will reference `HomePresenter` not yet handling new fields. Proceed.
 
-- [ ] **Step 5: Commit (skip if build fully red; squash into Task 15)**
+- [x] **Step 5: Commit (skip if build fully red; squash into Task 15)**
 
 If the module still compiles, commit:
 ```bash
@@ -1383,7 +1383,9 @@ Otherwise carry these changes forward into Task 15's commit.
 **Files:**
 - Modify: `feature/home/src/main/java/com/hancekim/billboard/home/HomePresenter.kt`
 
-- [ ] **Step 1: Inject `GetGroupsFlowUseCase` and `AddGroupUseCase`**
+> **Adaptation note:** `OnCollectionHeaderClick` was removed from `HomeEvent` — pre-existing `OnCollectionIconClick` already navigates to `BillboardScreen.Collection`, so Task 17 should wire `BillboardHeader.onCollectionClick` to that event.
+
+- [x] **Step 1: Inject `GetGroupsFlowUseCase` and `AddGroupUseCase`**
 
 Add to constructor:
 ```kotlin
@@ -1391,7 +1393,7 @@ private val getGroupsFlow: GetGroupsFlowUseCase,
 private val addGroupUseCase: AddGroupUseCase,
 ```
 
-- [ ] **Step 2: Collect groups + combine with collection**
+- [x] **Step 2: Collect groups + combine with collection**
 
 Inside `present()`:
 ```kotlin
@@ -1422,7 +1424,7 @@ val overlayState: OverlayCollectState = remember(collection, currentOverlayChart
 
 (Where `currentOverlayChart` is the existing state that drives the overlay's `chart` param. If the existing presenter stores it differently, adapt — variable name is illustrative.)
 
-- [ ] **Step 3: Wire new events**
+- [x] **Step 3: Wire new events**
 
 ```kotlin
 is HomeEvent.OnLongPressItem -> {
@@ -1492,12 +1494,12 @@ HomeEvent.OnCollectionHeaderClick -> navigator.goTo(BillboardScreen.Collection)
 
 Add a top-of-file constant: `private val HEX_REGEX = Regex("^#[0-9A-Fa-f]{6}$")`.
 
-- [ ] **Step 4: Compile**
+- [x] **Step 4: Compile**
 
 Run: `./gradlew :feature:home:compileProdDebugKotlin`
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add feature/home/

@@ -78,5 +78,4 @@ sealed interface HomeEvent : CircuitUiEvent {
     data object OnSubmitNewGroupInOverlay : HomeEvent
     data object OnCancelNewGroupInOverlay : HomeEvent
     data object OnCommitOverlay : HomeEvent
-    data object OnCollectionHeaderClick : HomeEvent
 }
