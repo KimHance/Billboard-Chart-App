@@ -5,7 +5,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.datatest.fixture.fakeCollectedCard
 import com.hancekim.billboard.core.datatest.repository.FakeCollectionRepository
+import com.hancekim.billboard.core.datatest.repository.FakeGroupRepository
 import com.hancekim.billboard.core.domain.GetCollectedCardFlowUseCase
+import com.hancekim.billboard.core.domain.GetGroupsFlowUseCase
 import com.hancekim.billboard.core.domain.RemoveFromCollectionUseCase
 import com.slack.circuit.test.FakeNavigator
 import kotlinx.coroutines.test.runTest
@@ -25,6 +27,7 @@ class CardDetailPresenterTest {
 
     private lateinit var fakeNavigator: FakeNavigator
     private lateinit var fakeRepository: FakeCollectionRepository
+    private lateinit var fakeGroupRepository: FakeGroupRepository
     private var currentState: CardDetailState? = null
 
     private val testCardKey = "TestTitle::TestArtist"
@@ -32,6 +35,7 @@ class CardDetailPresenterTest {
     @Before
     fun setUp() {
         fakeRepository = FakeCollectionRepository()
+        fakeGroupRepository = FakeGroupRepository()
         fakeNavigator = FakeNavigator(BillboardScreen.CardDetail(testCardKey))
     }
 
@@ -39,6 +43,7 @@ class CardDetailPresenterTest {
         navigator = fakeNavigator,
         screen = BillboardScreen.CardDetail(cardKey),
         getCollectedCardFlowUseCase = GetCollectedCardFlowUseCase(fakeRepository),
+        getGroupsFlowUseCase = GetGroupsFlowUseCase(fakeGroupRepository),
         removeFromCollectionUseCase = RemoveFromCollectionUseCase(fakeRepository),
     )
 

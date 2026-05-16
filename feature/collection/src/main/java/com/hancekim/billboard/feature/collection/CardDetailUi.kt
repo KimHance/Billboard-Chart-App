@@ -37,6 +37,7 @@ import com.hancekim.billboard.core.designfoundation.util.throttledProcess
 import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.card.HoloCard
+import com.hancekim.billboard.core.designsystem.componenet.group.GroupChip
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dagger.hilt.android.components.ActivityRetainedComponent
 
@@ -123,6 +124,10 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
                     StatItem(label = "PEAK", value = card.peakPosition.toString())
                     StatItem(label = "WEEKS", value = card.weeksOnChart.toString())
                 }
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                state.group?.let { GroupChip(it) }
 
                 Spacer(modifier = Modifier.height(18.dp))
 

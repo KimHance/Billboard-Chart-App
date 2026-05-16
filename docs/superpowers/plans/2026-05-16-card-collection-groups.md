@@ -2661,19 +2661,19 @@ EOF
 - Modify: `feature/collection/src/main/java/com/hancekim/billboard/feature/collection/CardDetailState.kt`
 - Modify: `feature/collection/src/main/java/com/hancekim/billboard/feature/collection/CardDetailPresenter.kt`
 
-- [ ] **Step 1: Add `group: Group?` to `CardDetailState`**
+- [x] **Step 1: Add `group: Group?` to `CardDetailState`**
 
 Append `val group: Group?` (above `eventSink`).
 
-- [ ] **Step 2: Resolve in `CardDetailPresenter`**
+- [x] **Step 2: Resolve in `CardDetailPresenter`**
 
 Combine `GetCollectedCardFlowUseCase` with `GetGroupsFlowUseCase` (inject) to resolve `card.groupId` → `Group`.
 
-- [ ] **Step 3: Render `GroupChip(group)` above title in `CardDetailUi`**
+- [x] **Step 3: Render `GroupChip(group)` above title in `CardDetailUi`**
 
 Add `state.group?.let { GroupChip(it) }` immediately above the existing title `Text`.
 
-- [ ] **Step 4: Test + commit**
+- [x] **Step 4: Test + commit**
 
 ```bash
 ./gradlew :feature:collection:connectedDemoDebugAndroidTest
