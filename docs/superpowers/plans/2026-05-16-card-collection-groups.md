@@ -138,7 +138,7 @@ EOF
 - Modify: `core/data-source/src/prod/java/com/hancekim/billboard/core/datasource/db/CollectionDao.kt`
 - Modify: `core/data-source/src/prod/java/com/hancekim/billboard/core/datasource/db/CollectionDatabase.kt`
 
-- [ ] **Step 1: Create `GroupEntity`**
+- [x] **Step 1: Create `GroupEntity`**
 
 ```kotlin
 package com.hancekim.billboard.core.datasource.db
@@ -160,7 +160,7 @@ data class GroupEntity(
 )
 ```
 
-- [ ] **Step 2: Create `GroupDao`**
+- [x] **Step 2: Create `GroupDao`**
 
 ```kotlin
 package com.hancekim.billboard.core.datasource.db
@@ -190,7 +190,7 @@ interface GroupDao {
 }
 ```
 
-- [ ] **Step 3: Update `CollectedCardEntity` with `groupId` + FK CASCADE**
+- [x] **Step 3: Update `CollectedCardEntity` with `groupId` + FK CASCADE**
 
 ```kotlin
 package com.hancekim.billboard.core.datasource.db
@@ -223,7 +223,7 @@ data class CollectedCardEntity(
 )
 ```
 
-- [ ] **Step 4: Update `CollectionDao` — add `observeByGroup`, replace `insert` with `upsert`, add `deleteByGroup`**
+- [x] **Step 4: Update `CollectionDao` — add `observeByGroup`, replace `insert` with `upsert`, add `deleteByGroup`**
 
 Replace the existing DAO with:
 ```kotlin
@@ -267,7 +267,7 @@ interface CollectionDao {
 }
 ```
 
-- [ ] **Step 5: Bump database to v2**
+- [x] **Step 5: Bump database to v2**
 
 ```kotlin
 package com.hancekim.billboard.core.datasource.db
@@ -286,12 +286,12 @@ abstract class CollectionDatabase : RoomDatabase() {
 }
 ```
 
-- [ ] **Step 6: Compile**
+- [x] **Step 6: Compile**
 
 Run: `./gradlew :core:data-source:compileProdDebugKotlin`
 Expected: BUILD SUCCESSFUL (existing entity-mapper code in `CollectionDataSourceImpl` will need a `groupId` field — fixed in Task 4).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add core/data-source/src/prod/java/com/hancekim/billboard/core/datasource/db/
