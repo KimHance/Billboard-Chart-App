@@ -15,9 +15,11 @@ import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeader
+import com.hancekim.billboard.core.data.model.Group
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dagger.hilt.android.components.ActivityRetainedComponent
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 
 @CircuitInject(BillboardScreen.Collection::class, ActivityRetainedComponent::class)
 @Composable
@@ -58,7 +60,18 @@ fun CollectionUi(state: CollectionState, modifier: Modifier = Modifier) {
 private fun CollectionUiPreview() {
     BillboardTheme {
         CollectionUi(
-            state = CollectionState(cards = persistentListOf(), eventSink = {}),
+            state = CollectionState(
+                groups = persistentListOf(),
+                currentGroupId = Group.DEFAULT_ID,
+                cardsInCurrentGroup = persistentListOf(),
+                countsByGroupId = persistentMapOf(),
+                nowPlayingKey = null,
+                playerState = null,
+                sidebarOpen = false,
+                newGroupForm = null,
+                pendingDeleteGroupId = null,
+                eventSink = {},
+            ),
         )
     }
 }

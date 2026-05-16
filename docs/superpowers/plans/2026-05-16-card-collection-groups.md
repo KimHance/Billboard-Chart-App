@@ -2023,7 +2023,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 **Files:**
 - Create: `feature/collection/src/main/java/com/hancekim/billboard/feature/collection/component/GroupSidebar.kt`
 
-- [ ] **Step 1: Implement (closed peek + open panel + delete confirm)**
+- [x] **Step 1: Implement (closed peek + open panel + delete confirm)**
 
 ```kotlin
 package com.hancekim.billboard.feature.collection.component
@@ -2180,7 +2180,7 @@ fun GroupSidebar(
 }
 ```
 
-- [ ] **Step 2: Compile + commit**
+- [x] **Step 2: Compile + commit**
 
 ```bash
 ./gradlew :feature:collection:compileProdDebugKotlin
@@ -2197,7 +2197,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 **Files:**
 - Modify: `feature/collection/src/main/java/com/hancekim/billboard/feature/collection/CollectionState.kt`
 
-- [ ] **Step 1: Replace state + events**
+- [x] **Step 1: Replace state + events**
 
 ```kotlin
 package com.hancekim.billboard.feature.collection
@@ -2243,7 +2243,7 @@ sealed interface CollectionEvent : CircuitUiEvent {
 }
 ```
 
-- [ ] **Step 2: Commit (will not yet compile until presenter updates — chain into next task)**
+- [x] **Step 2: Commit (will not yet compile until presenter updates — chain into next task)**
 
 Skip commit here; bundle with Task 26.
 
@@ -2255,7 +2255,7 @@ Skip commit here; bundle with Task 26.
 - Modify: `feature/collection/src/main/java/com/hancekim/billboard/feature/collection/CollectionPresenter.kt`
 - Modify: `feature/collection/src/androidTest/java/com/hancekim/billboard/feature/collection/CollectionPresenterTest.kt`
 
-- [ ] **Step 1: Write failing test cases**
+- [x] **Step 1: Write failing test cases**
 
 Replace the existing test file:
 ```kotlin
@@ -2341,12 +2341,12 @@ class CollectionPresenterTest {
 
 (Adapt constructor injection to whatever matches `:core:domain` use case constructors exactly.)
 
-- [ ] **Step 2: Run tests — they fail (constructor / signature mismatch)**
+- [x] **Step 2: Run tests — they fail (constructor / signature mismatch)**
 
 Run: `./gradlew :feature:collection:connectedDemoDebugAndroidTest`
 Expected: COMPILE FAIL or test failure due to old presenter signature.
 
-- [ ] **Step 3: Rewrite `CollectionPresenter`**
+- [x] **Step 3: Rewrite `CollectionPresenter`**
 
 ```kotlin
 package com.hancekim.billboard.feature.collection
@@ -2523,12 +2523,12 @@ class CollectionPresenter @AssistedInject constructor(
 
 (`return@CollectionState` is illustrative — actual non-local return inside lambda uses `return@eventSink` or guards via `?.let { … }`. Use whichever compiles with the target Kotlin version.)
 
-- [ ] **Step 4: Re-run tests**
+- [x] **Step 4: Re-run tests**
 
 Run: `./gradlew :feature:collection:connectedDemoDebugAndroidTest`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add feature/collection/

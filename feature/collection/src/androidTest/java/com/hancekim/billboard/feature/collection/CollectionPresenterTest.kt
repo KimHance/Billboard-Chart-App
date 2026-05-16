@@ -3,15 +3,20 @@ package com.hancekim.billboard.feature.collection
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.hancekim.billboard.core.circuit.BillboardScreen
-import com.hancekim.billboard.core.datatest.fixture.fakeCollectedCard
+import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.datatest.repository.FakeCollectionRepository
+import com.hancekim.billboard.core.datatest.repository.FakeGroupRepository
+import com.hancekim.billboard.core.datatest.repository.FakeYoutubeRepository
+import com.hancekim.billboard.core.domain.AddGroupUseCase
 import com.hancekim.billboard.core.domain.GetCollectionFlowUseCase
-import com.hancekim.billboard.core.domain.RemoveAllFromCollectionUseCase
+import com.hancekim.billboard.core.domain.GetGroupsFlowUseCase
+import com.hancekim.billboard.core.domain.GetYoutubeVideoDetailUseCase
+import com.hancekim.billboard.core.domain.RemoveGroupUseCase
 import com.slack.circuit.test.FakeNavigator
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,98 +27,91 @@ class CollectionPresenterTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private lateinit var fakeNavigator: FakeNavigator
-    private lateinit var fakeRepository: FakeCollectionRepository
-    private lateinit var presenter: CollectionPresenter
     private var currentState: CollectionState? = null
 
-    @Before
-    fun setUp() {
-        fakeRepository = FakeCollectionRepository()
-        fakeNavigator = FakeNavigator(BillboardScreen.Collection)
-        presenter = CollectionPresenter(
-            navigator = fakeNavigator,
-            getCollectionFlowUseCase = GetCollectionFlowUseCase(fakeRepository),
-            removeAllFromCollectionUseCase = RemoveAllFromCollectionUseCase(fakeRepository),
-        )
-    }
+    private fun buildPresenter(
+        groupRepo: FakeGroupRepository = FakeGroupRepository(),
+        collectionRepo: FakeCollectionRepository = FakeCollectionRepository(),
+    ): CollectionPresenter = CollectionPresenter(
+        navigator = FakeNavigator(BillboardScreen.Collection),
+        getGroupsFlow = GetGroupsFlowUseCase(groupRepo),
+        getCollectionFlow = GetCollectionFlowUseCase(collectionRepo),
+        addGroupUseCase = AddGroupUseCase(groupRepo),
+        removeGroupUseCase = RemoveGroupUseCase(groupRepo),
+        getYoutubeVideoDetailUseCase = GetYoutubeVideoDetailUseCase(FakeYoutubeRepository()),
+    )
 
-    private fun launchPresenter() {
-        composeTestRule.setContent {
-            currentState = presenter.present()
-        }
+    private fun launchPresenter(presenter: CollectionPresenter) {
+        composeTestRule.setContent { currentState = presenter.present() }
     }
 
     private fun sendEvent(event: CollectionEvent) {
         composeTestRule.runOnIdle { checkNotNull(currentState).eventSink(event) }
     }
 
-    // ── 초기 상태 ──────────────────────────────────────────────────────────────
-
     @Test
-    fun 초기_cards는_비어있다() {
-        launchPresenter()
-        composeTestRule.runOnIdle {
-            assertTrue(checkNotNull(currentState).cards.isEmpty())
-        }
-    }
-
-    // ── 컬렉션 데이터 로드 ──────────────────────────────────────────────────────
-
-    @Test
-    fun repository에_카드가_있으면_state에_반영된다() = runTest {
-        fakeRepository.add(fakeCollectedCard("key1"))
-        fakeRepository.add(fakeCollectedCard("key2"))
-
-        launchPresenter()
+    fun `초기 currentGroupId 는 DEFAULT_ID`() = runTest {
+        launchPresenter(buildPresenter())
         composeTestRule.waitUntil(timeoutMillis = 3_000) {
-            currentState?.cards?.size == 2
-        }
-        assertEquals(2, checkNotNull(currentState).cards.size)
-    }
-
-    // ── 네비게이션 ──────────────────────────────────────────────────────────────
-
-    @Test
-    fun OnBackClick으로_navigator_pop이_호출된다() = runTest {
-        launchPresenter()
-
-        sendEvent(CollectionEvent.OnBackClick)
-
-        fakeNavigator.awaitPop()
-    }
-
-    @Test
-    fun OnCardClick으로_CardDetail_화면으로_이동한다() = runTest {
-        launchPresenter()
-
-        sendEvent(CollectionEvent.OnCardClick("test_key"))
-
-        assertEquals(
-            BillboardScreen.CardDetail("test_key"),
-            fakeNavigator.awaitNextScreen(),
-        )
-    }
-
-    // ── Remove All ─────────────────────────────────────────────────────────────
-
-    @Test
-    fun OnRemoveAllClick으로_모든_카드가_즉시_제거된다() = runTest {
-        fakeRepository.add(fakeCollectedCard("key1"))
-        fakeRepository.add(fakeCollectedCard("key2"))
-
-        launchPresenter()
-        composeTestRule.waitUntil(timeoutMillis = 3_000) {
-            currentState?.cards?.size == 2
-        }
-
-        sendEvent(CollectionEvent.OnRemoveAllClick)
-
-        composeTestRule.waitUntil(timeoutMillis = 3_000) {
-            currentState?.cards?.isEmpty() == true
+            currentState?.currentGroupId == Group.DEFAULT_ID
         }
         composeTestRule.runOnIdle {
-            assertEquals(0, fakeRepository.count())
+            assertEquals(Group.DEFAULT_ID, checkNotNull(currentState).currentGroupId)
+        }
+    }
+
+    @Test
+    fun `OnSelectGroup 으로 currentGroupId 변경되고 sidebar 닫힘`() = runTest {
+        val groupRepo = FakeGroupRepository().apply { add("Workout", 0xFFFFB400.toInt()) }
+        launchPresenter(buildPresenter(groupRepo = groupRepo))
+        composeTestRule.waitUntil(timeoutMillis = 3_000) {
+            currentState?.groups?.any { it.id == 2L } == true
+        }
+        sendEvent(CollectionEvent.OnSidebarToggle(true))
+        sendEvent(CollectionEvent.OnSelectGroup(2L))
+        composeTestRule.waitUntil(timeoutMillis = 3_000) {
+            currentState?.currentGroupId == 2L
+        }
+        composeTestRule.runOnIdle {
+            val s = checkNotNull(currentState)
+            assertEquals(2L, s.currentGroupId)
+            assertEquals(false, s.sidebarOpen)
+        }
+    }
+
+    @Test
+    fun `빈 그룹이면 cards 빈 리스트 nowPlayingKey null`() = runTest {
+        launchPresenter(buildPresenter())
+        composeTestRule.runOnIdle {
+            val s = checkNotNull(currentState)
+            assertTrue(s.cardsInCurrentGroup.isEmpty())
+            assertNull(s.nowPlayingKey)
+        }
+    }
+
+    @Test
+    fun `OnRequestDeleteGroup 카드 0개면 즉시 삭제`() = runTest {
+        val groupRepo = FakeGroupRepository().apply { add("Workout", 0) }
+        launchPresenter(buildPresenter(groupRepo = groupRepo))
+        composeTestRule.waitUntil(timeoutMillis = 3_000) {
+            currentState?.groups?.any { it.id == 2L } == true
+        }
+        sendEvent(CollectionEvent.OnRequestDeleteGroup(2L))
+        composeTestRule.waitUntil(timeoutMillis = 3_000) {
+            currentState?.groups?.none { it.id == 2L } == true
+        }
+    }
+
+    @Test
+    fun `Default 삭제 시도는 무시`() = runTest {
+        launchPresenter(buildPresenter())
+        composeTestRule.waitUntil(timeoutMillis = 3_000) {
+            currentState != null
+        }
+        sendEvent(CollectionEvent.OnRequestDeleteGroup(Group.DEFAULT_ID))
+        composeTestRule.runOnIdle {
+            val s = checkNotNull(currentState)
+            assertTrue(s.groups.any { it.id == Group.DEFAULT_ID })
         }
     }
 }
