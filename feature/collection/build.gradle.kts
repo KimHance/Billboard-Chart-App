@@ -9,6 +9,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.player)
     androidTestImplementation(projects.core.dataTest)
     androidTestImplementation(libs.circuit.test)
     androidTestImplementation(libs.kotlinx.coroutines.test)
