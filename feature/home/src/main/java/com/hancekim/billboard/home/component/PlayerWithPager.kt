@@ -171,6 +171,7 @@ fun PlayerWithPager(
                             debutDate = item.debutDate,
                             peakDate = item.peakDate,
                             enabled = chartFilter != ChartFilter.Artist100,
+                            collectedGroupColor = null, // Task 14/15 에서 실제 wiring
                             onExpandButtonClick = { eventSink(HomeEvent.OnExpandButtonClick(index)) },
                             onItemClick = { eventSink(HomeEvent.OnItemClick(item)) },
                             onLongClick = { eventSink(HomeEvent.OnLongPressItem(item)) }

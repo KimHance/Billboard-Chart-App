@@ -1256,7 +1256,7 @@ EOF
 - Modify: `feature/home/src/main/java/com/hancekim/billboard/.../RankingList.kt` (locate the row composable used in `HomeUi`)
 - Modify: `feature/home/src/main/java/com/hancekim/billboard/home/HomeUi.kt` call site
 
-- [ ] **Step 1: Add `collectedGroupColor: Color?` parameter and group-dot overlay**
+- [x] **Step 1: Add `collectedGroupColor: Color?` parameter and group-dot overlay**
 
 Find the row composable. Add parameter:
 ```kotlin
@@ -1274,7 +1274,7 @@ collectedGroupColor?.let {
 }
 ```
 
-- [ ] **Step 2: Replace `clickable` with `combinedClickable(onClick, onLongClick)`**
+- [x] **Step 2: Replace `clickable` with `combinedClickable(onClick, onLongClick)`**
 
 ```kotlin
 modifier = Modifier
@@ -1282,12 +1282,12 @@ modifier = Modifier
 ```
 Add `onLongClick: () -> Unit` parameter, propagate from `HomeUi`.
 
-- [ ] **Step 3: Compile**
+- [x] **Step 3: Compile**
 
 Run: `./gradlew :feature:home:compileProdDebugKotlin`
 Expected: BUILD SUCCESSFUL (HomeUi call sites updated next task).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add feature/home/
