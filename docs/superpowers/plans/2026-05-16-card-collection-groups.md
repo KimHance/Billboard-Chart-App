@@ -1788,7 +1788,7 @@ EOF
 **Files:**
 - Create: `feature/collection/src/main/java/com/hancekim/billboard/feature/collection/component/NowPlayingPlayer.kt`
 
-- [ ] **Step 1: Implement**
+- [x] **Step 1: Implement**
 
 ```kotlin
 package com.hancekim.billboard.feature.collection.component
@@ -1844,7 +1844,7 @@ fun NowPlayingPlayer(
 
 (Match the actual `YoutubePlayer` / `PlayerControllerButtons` signatures from `:core:player` — `core/player/src/main/java/.../YoutubePlayer.kt` uses `state: PlayerState`; verify and adapt if different.)
 
-- [ ] **Step 2: Compile + commit**
+- [x] **Step 2: Compile + commit**
 
 ```bash
 ./gradlew :feature:collection:compileProdDebugKotlin
