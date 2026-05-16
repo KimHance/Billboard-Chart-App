@@ -1183,7 +1183,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 **Files:**
 - Modify: `core/design-system/src/main/java/com/hancekim/billboard/core/designsystem/componenet/header/BillboardHeader.kt`
 
-- [ ] **Step 1: Add optional parameters**
+- [x] **Step 1: Add optional parameters**
 
 Locate the existing `BillboardHeader` function. Add two parameters with default `null`:
 ```kotlin
@@ -1229,12 +1229,12 @@ if (collectionCount != null && onCollectionClick != null) {
 
 If `holoGlow` / `textOnAccent` semantic tokens don't exist in `BillboardColorScheme`, add them first (light + dark variants both) in `:core:design-foundation/color/BillboardColorScheme.kt` per `07-design-system.md` — badge bg `BillboardColor.HoloGreen`, badge fg `Color.Black`. Do NOT use raw hex literals in design-system code.
 
-- [ ] **Step 2: Compile**
+- [x] **Step 2: Compile**
 
 Run: `./gradlew :core:design-system:compileDebugKotlin`
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add core/design-system/
