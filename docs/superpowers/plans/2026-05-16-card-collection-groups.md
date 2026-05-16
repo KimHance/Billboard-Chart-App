@@ -1085,7 +1085,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 **Files:**
 - Create: `core/design-system/src/main/java/com/hancekim/billboard/core/designsystem/componenet/group/GroupDropdown.kt`
 
-- [ ] **Step 1: Implement**
+- [x] **Step 1: Implement**
 
 ```kotlin
 package com.hancekim.billboard.core.designsystem.componenet.group
@@ -1166,7 +1166,7 @@ fun GroupDropdown(
 }
 ```
 
-- [ ] **Step 2: Compile + commit**
+- [x] **Step 2: Compile + commit**
 
 ```bash
 ./gradlew :core:design-system:compileDebugKotlin
