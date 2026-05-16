@@ -22,7 +22,7 @@
 - Create: `core/data/src/main/java/com/hancekim/billboard/core/data/model/Group.kt`
 - Create: `core/data/src/main/java/com/hancekim/billboard/core/data/repository/GroupRepository.kt`
 
-- [ ] **Step 1: Create `Group` model**
+- [x] **Step 1: Create `Group` model**
 
 ```kotlin
 // core/data/src/main/java/com/hancekim/billboard/core/data/model/Group.kt
@@ -41,7 +41,7 @@ data class Group(
 }
 ```
 
-- [ ] **Step 2: Create `GroupRepository` interface**
+- [x] **Step 2: Create `GroupRepository` interface**
 
 ```kotlin
 // core/data/src/main/java/com/hancekim/billboard/core/data/repository/GroupRepository.kt
@@ -59,12 +59,12 @@ interface GroupRepository {
 }
 ```
 
-- [ ] **Step 3: Verify compilation**
+- [x] **Step 3: Verify compilation**
 
 Run: `./gradlew :core:data:compileDebugKotlin`
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add core/data/src/main/java/com/hancekim/billboard/core/data/model/Group.kt \

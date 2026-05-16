@@ -32,7 +32,6 @@ data class HomeState(
     val overlayChart: Chart? = null,
     val isOverlayItemCollected: Boolean = false,
     val collectionCount: Int = 0,
-    val isCollectionFull: Boolean = false,
     val eventSink: (HomeEvent) -> Unit,
 ) : CircuitUiState
 

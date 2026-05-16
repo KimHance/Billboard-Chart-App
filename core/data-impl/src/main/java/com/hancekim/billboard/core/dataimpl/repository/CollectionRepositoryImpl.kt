@@ -17,7 +17,6 @@ class CollectionRepositoryImpl @Inject constructor(
         dataSource.observeByKey(key)
 
     override suspend fun add(card: CollectedCard): Boolean {
-        if (dataSource.count() >= CollectedCard.MAX_SLOTS) return false
         dataSource.insert(card)
         return true
     }

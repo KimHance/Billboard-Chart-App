@@ -50,7 +50,6 @@ fun CollectOverlay(
     visible: Boolean,
     chart: Chart?,
     isAlreadyCollected: Boolean,
-    isCollectionFull: Boolean,
     modifier: Modifier = Modifier,
     onCollect: () -> Unit,
     onRemove: () -> Unit,
@@ -161,61 +160,41 @@ fun CollectOverlay(
                             val buttonModifier = Modifier
                                 .widthIn(min = 260.dp)
                                 .height(48.dp)
-                            when {
-                                collected -> {
-                                    Box(
-                                        modifier = buttonModifier
-                                            .border(
-                                                1.dp,
-                                                colorScheme.textOnDark.copy(alpha = 0.3f),
-                                                RoundedCornerShape(24.dp),
-                                            )
-                                            .noRippleClickable { onRemove() },
-                                        contentAlignment = Alignment.Center,
-                                    ) {
-                                        Text(
-                                            text = "REMOVE FROM COLLECTION",
-                                            style = BillboardTheme.typography.buttonMd(),
-                                            color = colorScheme.textOnDark,
+                            if (collected) {
+                                Box(
+                                    modifier = buttonModifier
+                                        .border(
+                                            1.dp,
+                                            colorScheme.textOnDark.copy(alpha = 0.3f),
+                                            RoundedCornerShape(24.dp),
                                         )
-                                    }
+                                        .noRippleClickable { onRemove() },
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Text(
+                                        text = "REMOVE FROM COLLECTION",
+                                        style = BillboardTheme.typography.buttonMd(),
+                                        color = colorScheme.textOnDark,
+                                    )
                                 }
-                                isCollectionFull -> {
-                                    Box(
-                                        modifier = buttonModifier
-                                            .border(
-                                                1.dp,
-                                                colorScheme.textOnDarkDisabled.copy(alpha = 0.3f),
-                                                RoundedCornerShape(24.dp),
-                                            ),
-                                        contentAlignment = Alignment.Center,
-                                    ) {
-                                        Text(
-                                            text = "COLLECTION FULL",
-                                            style = BillboardTheme.typography.buttonMd(),
-                                            color = colorScheme.textOnDarkDisabled,
+                            } else {
+                                Box(
+                                    modifier = buttonModifier
+                                        .background(
+                                            colorScheme.accent,
+                                            RoundedCornerShape(24.dp),
                                         )
-                                    }
-                                }
-                                else -> {
-                                    Box(
-                                        modifier = buttonModifier
-                                            .background(
-                                                colorScheme.accent,
-                                                RoundedCornerShape(24.dp),
-                                            )
-                                            .noRippleClickable {
-                                                sparkleKey++
-                                                onCollect()
-                                            },
-                                        contentAlignment = Alignment.Center,
-                                    ) {
-                                        Text(
-                                            text = "ADD TO COLLECTION",
-                                            style = BillboardTheme.typography.buttonMd(),
-                                            color = colorScheme.onAccent,
-                                        )
-                                    }
+                                        .noRippleClickable {
+                                            sparkleKey++
+                                            onCollect()
+                                        },
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Text(
+                                        text = "ADD TO COLLECTION",
+                                        style = BillboardTheme.typography.buttonMd(),
+                                        color = colorScheme.onAccent,
+                                    )
                                 }
                             }
                         }
@@ -248,7 +227,6 @@ private fun CollectOverlayPreview() {
             visible = true,
             chart = Chart(title = "Preview Title", artist = "Preview Artist", rank = 1),
             isAlreadyCollected = false,
-            isCollectionFull = false,
             onCollect = {},
             onRemove = {},
             onDismiss = {},

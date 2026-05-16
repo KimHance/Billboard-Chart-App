@@ -188,7 +188,6 @@ class HomePresenter @AssistedInject constructor(
             overlayChart = overlayChart,
             isOverlayItemCollected = isOverlayItemCollected,
             collectionCount = collectionCount,
-            isCollectionFull = collectionCount >= CollectedCard.MAX_SLOTS,
         ) { event ->
             when (event) {
                 is HomeEvent.OnFilterClick -> onFilterChanged(event.filter)
@@ -248,15 +247,8 @@ class HomePresenter @AssistedInject constructor(
                                         weeksOnChart = chart.weekOnChart,
                                     ),
                                 )
-                            }.onSuccess { added ->
-                                if (added) {
-                                    isOverlayItemCollected = true
-                                } else {
-                                    snackbarHostState.showSnackbar(
-                                        message = "Collection is full (max ${CollectedCard.MAX_SLOTS})",
-                                        duration = SnackbarDuration.Short,
-                                    )
-                                }
+                            }.onSuccess {
+                                isOverlayItemCollected = true
                             }.onFailure {
                                 snackbarHostState.showSnackbar("Failed to save card")
                             }

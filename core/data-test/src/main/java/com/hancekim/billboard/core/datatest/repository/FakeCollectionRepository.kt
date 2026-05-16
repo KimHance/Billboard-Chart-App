@@ -18,7 +18,6 @@ class FakeCollectionRepository @Inject constructor() : CollectionRepository {
 
     override suspend fun add(card: CollectedCard): Boolean {
         val current = cards.value
-        if (current.size >= CollectedCard.MAX_SLOTS) return false
         if (current.any { it.key == card.key }) return false
         cards.value = current + card
         return true

@@ -12,6 +12,7 @@ fun DataCollectedCard.toDomain() = CollectedCard(
     lastWeek = lastWeek,
     peakPosition = peakPosition,
     weeksOnChart = weeksOnChart,
+    groupId = groupId,
 )
 
 fun CollectedCard.toData() = DataCollectedCard(
@@ -23,4 +24,5 @@ fun CollectedCard.toData() = DataCollectedCard(
     lastWeek = lastWeek,
     peakPosition = peakPosition,
     weeksOnChart = weeksOnChart,
+    groupId = groupId,
 )
