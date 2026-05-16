@@ -1,8 +1,8 @@
 package com.hancekim.billboard.core.datatest.fixture
 
 import com.hancekim.billboard.core.data.model.CollectedCard
+import com.hancekim.billboard.core.data.model.Group
 
-// 테스트용 CollectedCard 픽스처 — 테스트 코드에서 :core:data 모델을 직접 참조하지 않도록 헬퍼 제공
 fun fakeCollectedCard(
     key: String,
     title: String = "TestTitle",
@@ -12,6 +12,7 @@ fun fakeCollectedCard(
     lastWeek: Int = 1,
     peakPosition: Int = 1,
     weeksOnChart: Int = 1,
+    groupId: Long = Group.DEFAULT_ID,
 ): CollectedCard = CollectedCard(
     key = key,
     title = title,
@@ -21,4 +22,5 @@ fun fakeCollectedCard(
     lastWeek = lastWeek,
     peakPosition = peakPosition,
     weeksOnChart = weeksOnChart,
+    groupId = groupId,
 )

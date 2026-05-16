@@ -17,9 +17,7 @@ class FakeCollectionRepository @Inject constructor() : CollectionRepository {
         cards.map { list -> list.find { it.key == key } }
 
     override suspend fun add(card: CollectedCard): Boolean {
-        val current = cards.value
-        if (current.any { it.key == card.key }) return false
-        cards.value = current + card
+        cards.value = cards.value.filterNot { it.key == card.key } + card
         return true
     }
 
@@ -29,6 +27,10 @@ class FakeCollectionRepository @Inject constructor() : CollectionRepository {
 
     override suspend fun removeAll() {
         cards.value = emptyList()
+    }
+
+    suspend fun removeByGroup(groupId: Long) {
+        cards.value = cards.value.filterNot { it.groupId == groupId }
     }
 
     override suspend fun isCollected(key: String): Boolean =
