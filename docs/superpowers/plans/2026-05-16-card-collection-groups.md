@@ -817,7 +817,7 @@ EOF
 - Modify: `core/data-test/src/main/java/com/hancekim/billboard/core/datatest/fixture/FakeCollectedCard.kt`
 - Modify: `core/data-test/src/main/java/com/hancekim/billboard/core/datatest/repository/FakeCollectionRepository.kt`
 
-- [ ] **Step 1: Add `fakeGroup`**
+- [x] **Step 1: Add `fakeGroup`**
 
 ```kotlin
 package com.hancekim.billboard.core.datatest.fixture
@@ -832,11 +832,11 @@ fun fakeGroup(
 ): Group = Group(id, name, colorArgb, createdAt)
 ```
 
-- [ ] **Step 2: Add `groupId` default to `fakeCollectedCard`**
+- [x] **Step 2: Add `groupId` default to `fakeCollectedCard`**
 
 In `FakeCollectedCard.kt`, add `groupId: Long = Group.DEFAULT_ID` to the factory signature and pass it through.
 
-- [ ] **Step 3: Add `FakeGroupRepository`**
+- [x] **Step 3: Add `FakeGroupRepository`**
 
 ```kotlin
 package com.hancekim.billboard.core.datatest.repository
@@ -873,7 +873,7 @@ class FakeGroupRepository(
 }
 ```
 
-- [ ] **Step 4: Update `FakeCollectionRepository`**
+- [x] **Step 4: Update `FakeCollectionRepository`**
 
 Change `add` to REPLACE semantics (filter then append) and ensure `groupId` is preserved.
 Add a cascade hook used by tests: when a `FakeGroupRepository.remove(id)` is called, also call `FakeCollectionRepository.removeByGroup(id)` from the test setup (don't try to chain them inside the fake itself — keep fakes orthogonal).
@@ -884,12 +884,12 @@ suspend fun removeByGroup(groupId: Long) {
 }
 ```
 
-- [ ] **Step 5: Compile**
+- [x] **Step 5: Compile**
 
 Run: `./gradlew :core:data-test:assemble`
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add core/data-test/
