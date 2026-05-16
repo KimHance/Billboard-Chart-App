@@ -910,7 +910,7 @@ EOF
 **Files:**
 - Modify: `core/design-foundation/src/main/java/com/hancekim/billboard/core/designfoundation/color/BillboardColor.kt`
 
-- [ ] **Step 1: Append the four preset swatches**
+- [x] **Step 1: Append the four preset swatches**
 
 ```kotlin
 val HoloGreen = Color(0xFF00FF85)
@@ -921,12 +921,12 @@ val HoloMagenta = Color(0xFFE879F9)
 
 (If `BillboardColor` is structured as an `object`, put them inside it; if as a file-level set of vals, match the existing style.)
 
-- [ ] **Step 2: Compile**
+- [x] **Step 2: Compile**
 
 Run: `./gradlew :core:design-foundation:compileDebugKotlin`
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add core/design-foundation/
@@ -945,7 +945,7 @@ EOF
 **Files:**
 - Create: `core/design-system/src/main/java/com/hancekim/billboard/core/designsystem/componenet/group/GroupDot.kt`
 
-- [ ] **Step 1: Implement**
+- [x] **Step 1: Implement**
 
 ```kotlin
 package com.hancekim.billboard.core.designsystem.componenet.group
@@ -992,12 +992,12 @@ private fun GroupDotPreview() {
 
 (`Color.toArgb()` import: `androidx.compose.ui.graphics.toArgb`.)
 
-- [ ] **Step 2: Compile**
+- [x] **Step 2: Compile**
 
 Run: `./gradlew :core:design-system:compileDebugKotlin`
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add core/design-system/
