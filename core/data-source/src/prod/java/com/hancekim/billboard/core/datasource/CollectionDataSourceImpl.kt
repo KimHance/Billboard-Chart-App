@@ -18,7 +18,7 @@ class CollectionDataSourceImpl @Inject constructor(
         dao.observeByKey(key).map { it?.toModel() }
 
     override suspend fun insert(card: CollectedCard) {
-        dao.insert(card.toEntity())
+        dao.upsert(card.toEntity())
     }
 
     override suspend fun deleteByKey(key: String) {
@@ -43,6 +43,7 @@ private fun CollectedCardEntity.toModel() = CollectedCard(
     lastWeek = lastWeek,
     peakPosition = peakPosition,
     weeksOnChart = weeksOnChart,
+    groupId = groupId,
 )
 
 private fun CollectedCard.toEntity() = CollectedCardEntity(
@@ -54,4 +55,5 @@ private fun CollectedCard.toEntity() = CollectedCardEntity(
     lastWeek = lastWeek,
     peakPosition = peakPosition,
     weeksOnChart = weeksOnChart,
+    groupId = groupId,
 )
