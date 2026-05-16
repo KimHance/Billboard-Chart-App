@@ -1861,7 +1861,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 **Files:**
 - Create: `feature/collection/src/main/java/com/hancekim/billboard/feature/collection/component/MiniRail.kt`
 
-- [ ] **Step 1: Implement**
+- [x] **Step 1: Implement**
 
 ```kotlin
 package com.hancekim.billboard.feature.collection.component
@@ -1918,7 +1918,7 @@ fun MiniRail(
 }
 ```
 
-- [ ] **Step 2: Compile + commit**
+- [x] **Step 2: Compile + commit**
 
 ```bash
 ./gradlew :feature:collection:compileProdDebugKotlin
