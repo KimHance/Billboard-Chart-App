@@ -552,7 +552,7 @@ EOF
 - Modify: `core/data-impl/src/main/java/com/hancekim/billboard/core/dataimpl/di/RepositoryModule.kt`
 - Modify: `core/data-impl/src/main/java/com/hancekim/billboard/core/dataimpl/repository/CollectionRepositoryImpl.kt`
 
-- [ ] **Step 1: Implement `GroupRepositoryImpl`**
+- [x] **Step 1: Implement `GroupRepositoryImpl`**
 
 ```kotlin
 package com.hancekim.billboard.core.dataimpl.repository
@@ -581,7 +581,7 @@ class GroupRepositoryImpl @Inject constructor(
 }
 ```
 
-- [ ] **Step 2: Add `@Binds` in `RepositoryModule`**
+- [x] **Step 2: Add `@Binds` in `RepositoryModule`**
 
 ```kotlin
 @Binds
@@ -589,12 +589,12 @@ class GroupRepositoryImpl @Inject constructor(
 abstract fun bindGroupRepository(impl: GroupRepositoryImpl): GroupRepository
 ```
 
-- [ ] **Step 3: Compile**
+- [x] **Step 3: Compile**
 
 Run: `./gradlew :core:data-impl:compileDebugKotlin`
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add core/data-impl/

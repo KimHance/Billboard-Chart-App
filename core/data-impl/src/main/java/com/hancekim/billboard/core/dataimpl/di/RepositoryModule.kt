@@ -2,10 +2,12 @@ package com.hancekim.billboard.core.dataimpl.di
 
 import com.hancekim.billboard.core.data.repository.ChartRepository
 import com.hancekim.billboard.core.data.repository.CollectionRepository
+import com.hancekim.billboard.core.data.repository.GroupRepository
 import com.hancekim.billboard.core.data.repository.PreferenceRepository
 import com.hancekim.billboard.core.data.repository.YoutubeRepository
 import com.hancekim.billboard.core.dataimpl.repository.ChartRepositoryImpl
 import com.hancekim.billboard.core.dataimpl.repository.CollectionRepositoryImpl
+import com.hancekim.billboard.core.dataimpl.repository.GroupRepositoryImpl
 import com.hancekim.billboard.core.dataimpl.repository.PreferenceRepositoryImpl
 import com.hancekim.billboard.core.dataimpl.repository.YoutubeRepositoryImpl
 import dagger.Binds
@@ -32,4 +34,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCollectionRepository(impl: CollectionRepositoryImpl): CollectionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindGroupRepository(impl: GroupRepositoryImpl): GroupRepository
 }
