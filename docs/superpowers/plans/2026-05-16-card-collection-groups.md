@@ -2547,7 +2547,7 @@ EOF
 **Files:**
 - Modify: `feature/collection/src/main/java/com/hancekim/billboard/feature/collection/CollectionUi.kt`
 
-- [ ] **Step 1: Replace body**
+- [x] **Step 1: Replace body**
 
 ```kotlin
 @CircuitInject(BillboardScreen.Collection::class, ActivityRetainedComponent::class)
@@ -2635,12 +2635,12 @@ fun CollectionUi(state: CollectionState, modifier: Modifier = Modifier) {
 }
 ```
 
-- [ ] **Step 2: Compile assembleDemoDebug + assembleProdDebug**
+- [x] **Step 2: Compile assembleDemoDebug + assembleProdDebug**
 
 Run: `./gradlew :feature:collection:assembleDemoDebug :feature:collection:assembleProdDebug`
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add feature/collection/

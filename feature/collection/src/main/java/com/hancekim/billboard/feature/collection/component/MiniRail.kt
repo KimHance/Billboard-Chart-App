@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.hancekim.billboard.core.data.model.CollectedCard
+import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designsystem.BillboardTheme
