@@ -2691,12 +2691,12 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 **Files:** none (verification only).
 
-- [ ] **Step 1: Assemble both flavors**
+- [x] **Step 1: Assemble both flavors**
 
 Run: `./gradlew assembleProdDebug assembleDemoDebug`
 Expected: BUILD SUCCESSFUL.
 
-- [ ] **Step 2: Run unit tests across modules**
+- [x] **Step 2: Run unit tests across modules**
 
 Run: `./gradlew :core:domain:test :core:data-impl:test`
 Expected: PASS.
@@ -2706,12 +2706,13 @@ Expected: PASS.
 Run: `./gradlew :feature:home:connectedDemoDebugAndroidTest :feature:collection:connectedDemoDebugAndroidTest`
 Expected: PASS.
 
-- [ ] **Step 4: Lint**
+- [x] **Step 4: Lint**
 
 Run: `./gradlew lintDemoDebug`
 Expected: 0 errors.
+Result: 1 pre-existing error — `HoloCardShader.kt:91 [NewApi] RuntimeShader() requires API 33, minSdk=32`. File not modified in this branch (introduced in v1.1.0). Escalate separately; does not block this feature.
 
-- [ ] **Step 5: Smoke test on emulator manually**
+- [ ] **Step 5: Smoke test on emulator manually** — skipped — manual smoke test required by user
 
 Install demo build, verify:
 - App boots with Default group seeded.
