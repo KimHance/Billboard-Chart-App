@@ -1986,7 +1986,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 - Create: `feature/collection/src/main/java/com/hancekim/billboard/feature/collection/component/NewGroupForm.kt` (copy of Home's, single file to keep boundary clean)
 - Create: `feature/collection/src/main/java/com/hancekim/billboard/feature/collection/component/NewGroupFormState.kt`
 
-- [ ] **Step 1: Mirror `NewGroupFormState`**
+- [x] **Step 1: Mirror `NewGroupFormState`**
 
 ```kotlin
 package com.hancekim.billboard.feature.collection.component
@@ -2002,11 +2002,11 @@ data class NewGroupFormState(
 )
 ```
 
-- [ ] **Step 2: Reuse the `NewGroupForm` composable from Task 16**
+- [x] **Step 2: Reuse the `NewGroupForm` composable from Task 16**
 
 Copy it verbatim into `:feature:collection/component/NewGroupForm.kt` — adjust the package and imports.
 
-- [ ] **Step 3: Compile + commit**
+- [x] **Step 3: Compile + commit**
 
 ```bash
 ./gradlew :feature:collection:compileProdDebugKotlin
