@@ -1016,7 +1016,7 @@ EOF
 **Files:**
 - Create: `core/design-system/src/main/java/com/hancekim/billboard/core/designsystem/componenet/group/GroupChip.kt`
 
-- [ ] **Step 1: Implement**
+- [x] **Step 1: Implement**
 
 ```kotlin
 package com.hancekim.billboard.core.designsystem.componenet.group
@@ -1068,7 +1068,7 @@ private fun GroupChipPreview() {
 }
 ```
 
-- [ ] **Step 2: Compile + commit**
+- [x] **Step 2: Compile + commit**
 
 ```bash
 ./gradlew :core:design-system:compileDebugKotlin
