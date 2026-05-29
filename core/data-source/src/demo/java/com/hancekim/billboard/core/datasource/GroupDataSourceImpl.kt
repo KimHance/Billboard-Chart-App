@@ -10,13 +10,13 @@ import javax.inject.Singleton
 @Singleton
 class GroupDataSourceImpl @Inject constructor() : GroupDataSource {
 
-    // Default(=1) 는 고정 시드 — 이후 id 는 2부터 증가
+    // Starred(=1) 는 고정 시드 — 이후 id 는 2부터 증가
     private val nextId = AtomicLong(2L)
     private val state = MutableStateFlow(
         listOf(
             Group(
                 id = Group.DEFAULT_ID,
-                name = "Default",
+                name = "Starred",
                 colorArgb = 0xFF00FF85.toInt(),
                 createdAt = System.currentTimeMillis(),
             ),

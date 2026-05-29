@@ -16,6 +16,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+// Starred 그룹 색상 — Green400 (앱 메인 컬러)
 private const val DEFAULT_GROUP_COLOR_ARGB: Int = 0xFF00FF85.toInt()
 
 @Module
@@ -34,12 +35,13 @@ object DatabaseModule {
             // DB 버전 업그레이드 시 기존 데이터 파기 후 재생성
             .fallbackToDestructiveMigration(dropAllTables = true)
             .addCallback(object : RoomDatabase.Callback() {
-                override suspend fun onCreate(connection: SQLiteConnection) {
+                // onCreate 는 DB 가 처음 만들어질 때만 호출되어, 이전 빌드에 DB 가 이미 있는
+                // 디바이스에는 시드가 누락된다. onOpen + INSERT OR IGNORE 로 매번 보장.
+                override suspend fun onOpen(connection: SQLiteConnection) {
                     val now = System.currentTimeMillis()
-                    // Default 그룹 시드 — id=1 고정, 삭제 불가 대상
                     connection.execSQL(
-                        "INSERT INTO groups (id, name, nameNormalized, colorArgb, createdAt) " +
-                            "VALUES (${Group.DEFAULT_ID}, 'Default', 'default', $DEFAULT_GROUP_COLOR_ARGB, $now)"
+                        "INSERT OR IGNORE INTO groups (id, name, nameNormalized, colorArgb, createdAt) " +
+                            "VALUES (${Group.DEFAULT_ID}, 'Starred', 'starred', $DEFAULT_GROUP_COLOR_ARGB, $now)"
                     )
                 }
             })

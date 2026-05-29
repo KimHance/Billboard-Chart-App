@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 class FakeGroupRepository(
     initial: List<Group> = listOf(
-        Group(Group.DEFAULT_ID, "Default", 0xFF00FF85.toInt(), 0L)
+        Group(Group.DEFAULT_ID, "Starred", 0xFF00FF85.toInt(), 0L)
     ),
 ) : GroupRepository {
     private val nextId = AtomicLong(initial.maxOf { it.id } + 1L)
