@@ -3,7 +3,6 @@ package com.hancekim.billboard.feature.collection
 import androidx.compose.runtime.Immutable
 import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.domain.model.CollectedCard
-import com.hancekim.billboard.core.player.PlayerState
 import com.hancekim.billboard.feature.collection.component.NewGroupFormState
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -17,7 +16,6 @@ data class CollectionState(
     val cardsInCurrentGroup: ImmutableList<CollectedCard>,
     val countsByGroupId: ImmutableMap<Long, Int>,
     val nowPlayingKey: String?,
-    val playerState: PlayerState?,
     val sidebarOpen: Boolean,
     val newGroupForm: NewGroupFormState?,
     val pendingDeleteGroupId: Long?,
@@ -36,6 +34,6 @@ sealed interface CollectionEvent : CircuitUiEvent {
     data object OnNewGroupClick : CollectionEvent
     data object OnCancelNewGroup : CollectionEvent
     data class OnNewGroupNameChange(val name: String) : CollectionEvent
-    data class OnNewGroupHexChange(val hex: String) : CollectionEvent
+    data class OnNewGroupColorSelect(val colorArgb: Int) : CollectionEvent
     data object OnSubmitNewGroup : CollectionEvent
 }

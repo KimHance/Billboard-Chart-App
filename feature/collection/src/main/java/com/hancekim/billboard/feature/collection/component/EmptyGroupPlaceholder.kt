@@ -26,3 +26,11 @@ fun EmptyGroupPlaceholder(modifier: Modifier = Modifier) {
             color = BillboardTheme.colorScheme.textSecondary)
     }
 }
+
+@Composable
+@com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
+private fun EmptyGroupPlaceholderPreview() {
+    BillboardTheme {
+        EmptyGroupPlaceholder()
+    }
+}

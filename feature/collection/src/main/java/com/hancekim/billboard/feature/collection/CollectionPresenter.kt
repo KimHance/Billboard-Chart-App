@@ -7,16 +7,13 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.domain.AddGroupUseCase
 import com.hancekim.billboard.core.domain.GetCollectionFlowUseCase
 import com.hancekim.billboard.core.domain.GetGroupsFlowUseCase
-import com.hancekim.billboard.core.domain.GetYoutubeVideoDetailUseCase
 import com.hancekim.billboard.core.domain.RemoveGroupUseCase
 import com.hancekim.billboard.core.domain.model.CollectedCard
-import com.hancekim.billboard.core.player.PlayerState
 import com.hancekim.billboard.feature.collection.component.NewGroupFormState
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
@@ -36,15 +33,12 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-private val HEX_REGEX = Regex("^#[0-9A-Fa-f]{6}$")
-
 class CollectionPresenter @AssistedInject constructor(
     @Assisted private val navigator: Navigator,
     private val getGroupsFlow: GetGroupsFlowUseCase,
     private val getCollectionFlow: GetCollectionFlowUseCase,
     private val addGroupUseCase: AddGroupUseCase,
     private val removeGroupUseCase: RemoveGroupUseCase,
-    private val getYoutubeVideoDetailUseCase: GetYoutubeVideoDetailUseCase,
 ) : Presenter<CollectionState> {
 
     @Composable
@@ -74,35 +68,12 @@ class CollectionPresenter @AssistedInject constructor(
             }
         }
 
-        // playerState 는 Context 가 필요해 LocalContext 로 생성 (Home 패턴 동일)
-        val context = LocalContext.current
-        val playerState = rememberRetained { PlayerState(context) }
-
-        LaunchedEffect(nowPlayingKey) {
-            val key = nowPlayingKey ?: return@LaunchedEffect
-            val card = allCards.firstOrNull { it.key == key } ?: return@LaunchedEffect
-            runCatching { getYoutubeVideoDetailUseCase(card.title, card.artist) }
-                .onSuccess { detail ->
-                    with(playerState) {
-                        changePlayable(detail.isPlayable)
-                        if (detail.isPlayable) {
-                            load(videoId = detail.videoId, thumbnailUrl = detail.thumbnailUrl)
-                            play()
-                        } else {
-                            pause()
-                        }
-                    }
-                }
-                .onFailure { Timber.e(it, "videoId resolve failed key=$key") }
-        }
-
         return CollectionState(
             groups = groups,
             currentGroupId = currentGroupId,
             cardsInCurrentGroup = cardsInCurrentGroup,
             countsByGroupId = countsByGroupId,
             nowPlayingKey = nowPlayingKey,
-            playerState = playerState,
             sidebarOpen = sidebarOpen,
             newGroupForm = newGroupForm,
             pendingDeleteGroupId = pendingDeleteGroupId,
@@ -148,7 +119,7 @@ class CollectionPresenter @AssistedInject constructor(
                     }
                     CollectionEvent.OnCancelDeleteGroup -> pendingDeleteGroupId = null
                     CollectionEvent.OnNewGroupClick ->
-                        newGroupForm = NewGroupFormState("", "", false, false)
+                        newGroupForm = NewGroupFormState(name = "", colorArgb = null, isDuplicate = false)
                     CollectionEvent.OnCancelNewGroup -> newGroupForm = null
                     is CollectionEvent.OnNewGroupNameChange -> {
                         val normalized = event.name.trim().lowercase()
@@ -157,18 +128,12 @@ class CollectionPresenter @AssistedInject constructor(
                             isDuplicate = groups.any { it.name.trim().lowercase() == normalized },
                         )
                     }
-                    is CollectionEvent.OnNewGroupHexChange ->
-                        newGroupForm = newGroupForm?.copy(
-                            hex = event.hex,
-                            isHexValid = HEX_REGEX.matches(event.hex),
-                        )
+                    is CollectionEvent.OnNewGroupColorSelect ->
+                        newGroupForm = newGroupForm?.copy(colorArgb = event.colorArgb)
                     CollectionEvent.OnSubmitNewGroup -> {
                         newGroupForm?.let { form ->
-                            val color = runCatching { android.graphics.Color.parseColor(form.hex) }
-                                .getOrElse {
-                                    Timber.e(it, "invalid hex color=${form.hex}")
-                                    return@let
-                                }
+                            val color = form.colorArgb ?: return@let
+                            if (form.name.trim().isEmpty() || form.isDuplicate) return@let
                             scope.launch {
                                 addGroupUseCase(form.name, color)
                                     .onSuccess { newId ->

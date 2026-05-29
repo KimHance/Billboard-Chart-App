@@ -1,20 +1,12 @@
 package com.hancekim.billboard.feature.collection.component
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -33,17 +25,15 @@ import com.hancekim.billboard.core.designsystem.componenet.group.GroupDot
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 
-private val SidebarEasing = CubicBezierEasing(0.2f, 0.7f, 0.2f, 1f)
-
+// DismissibleDrawerSheet 안에 들어가는 본문. open/close 애니메이션은 Drawer 가 담당.
 @Composable
 fun GroupSidebar(
-    isOpen: Boolean,
     groups: ImmutableList<Group>,
     currentGroupId: Long,
     countsByGroupId: ImmutableMap<Long, Int>,
     pendingDeleteGroupId: Long?,
     newGroupForm: NewGroupFormState?,
-    onToggle: (Boolean) -> Unit,
+    onClose: () -> Unit,
     onSelectGroup: (Long) -> Unit,
     onRequestDelete: (Long) -> Unit,
     onConfirmDelete: () -> Unit,
@@ -51,109 +41,122 @@ fun GroupSidebar(
     onNewGroupClick: () -> Unit,
     onCancelNewGroup: () -> Unit,
     onNewGroupNameChange: (String) -> Unit,
-    onNewGroupHexChange: (String) -> Unit,
+    onNewGroupColorSelect: (Int) -> Unit,
     onSubmitNewGroup: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (!isOpen) {
-        // 닫힌 상태: 14dp 세로 컬러 바 + 탭으로 열기
-        val current = groups.firstOrNull { it.id == currentGroupId } ?: return
-        Box(
-            modifier = modifier
-                .width(14.dp)
-                .fillMaxHeight()
-                .noRippleClickable { onToggle(true) },
+    val colorScheme = BillboardTheme.colorScheme
+    Column(
+        modifier = modifier.padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            Box(
+            Text(
+                "GROUPS",
+                style = BillboardTheme.typography.labelMd(),
+                color = colorScheme.textPrimary,
+            )
+            Text(
+                text = "✕",
+                style = BillboardTheme.typography.labelMd(),
+                color = colorScheme.textSecondary,
                 modifier = Modifier
-                    .width(3.dp)
-                    .fillMaxHeight()
-                    .padding(vertical = 16.dp)
-                    .background(Color(current.colorArgb), RoundedCornerShape(2.dp)),
+                    .noRippleClickable { onClose() }
+                    .padding(4.dp),
             )
         }
-        return
-    }
-
-    AnimatedVisibility(
-        visible = true,
-        enter = slideInHorizontally(animationSpec = tween(280, easing = SidebarEasing)) { it },
-        exit = slideOutHorizontally(animationSpec = tween(280, easing = SidebarEasing)) { it },
-    ) {
-        Column(
-            modifier = modifier
-                .width(220.dp)
-                .fillMaxHeight()
-                .background(BillboardTheme.colorScheme.bgCard)
-                .border(1.dp, Color.White.copy(alpha = 0.08f))
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            Text("GROUPS", style = BillboardTheme.typography.labelMd())
-            groups.forEach { g ->
-                Row(
+        groups.forEach { g ->
+            Row(
+                modifier = Modifier
+                    .background(
+                        if (g.id == currentGroupId) Color(g.colorArgb).copy(alpha = 0.12f)
+                        else Color.Transparent,
+                        RoundedCornerShape(6.dp),
+                    )
+                    .noRippleClickable { onSelectGroup(g.id) }
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                GroupDot(colorArgb = g.colorArgb)
+                Text(
+                    "${g.name}  (${countsByGroupId[g.id] ?: 0})",
+                    style = BillboardTheme.typography.bodyMd(),
+                    color = colorScheme.textPrimary,
+                    modifier = Modifier.weight(1f),
+                )
+                if (g.id != Group.DEFAULT_ID) {
+                    Icon(
+                        imageVector = BillboardIcons.IcoDelete,
+                        contentDescription = "${g.name} 삭제",
+                        modifier = Modifier
+                            .size(20.dp)
+                            .noRippleClickable { onRequestDelete(g.id) },
+                        tint = colorScheme.error,
+                    )
+                }
+            }
+            if (pendingDeleteGroupId == g.id) {
+                Column(
                     modifier = Modifier
                         .background(
-                            if (g.id == currentGroupId) Color(g.colorArgb).copy(alpha = 0.12f)
-                            else Color.Transparent,
+                            colorScheme.error.copy(alpha = 0.12f),
                             RoundedCornerShape(6.dp),
                         )
-                        .noRippleClickable { onSelectGroup(g.id) }
                         .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    GroupDot(colorArgb = g.colorArgb)
                     Text(
-                        "${g.name}  (${countsByGroupId[g.id] ?: 0})",
-                        style = BillboardTheme.typography.bodyMd(),
-                        modifier = Modifier.weight(1f),
+                        "${countsByGroupId[g.id] ?: 0}개 카드가 함께 삭제됩니다",
+                        style = BillboardTheme.typography.labelMd(),
+                        color = colorScheme.error,
                     )
-                    if (g.id != Group.DEFAULT_ID) {
-                        Icon(
-                            imageVector = BillboardIcons.IcoDelete,
-                            contentDescription = "${g.name} 삭제",
-                            modifier = Modifier
-                                .size(20.dp)
-                                .noRippleClickable { onRequestDelete(g.id) },
-                            tint = BillboardTheme.colorScheme.error,
-                        )
-                    }
-                }
-                if (pendingDeleteGroupId == g.id) {
-                    Column(
-                        modifier = Modifier
-                            .background(
-                                BillboardTheme.colorScheme.error.copy(alpha = 0.12f),
-                                RoundedCornerShape(6.dp),
-                            )
-                            .padding(8.dp),
-                    ) {
-                        Text(
-                            "${countsByGroupId[g.id] ?: 0}개 카드가 함께 삭제됩니다",
-                            style = BillboardTheme.typography.labelMd(),
-                            color = BillboardTheme.colorScheme.error,
-                        )
-                        Row {
-                            TextButton(onClick = onCancelDelete) { Text("CANCEL") }
-                            TextButton(onClick = onConfirmDelete) {
-                                Text("DELETE", color = BillboardTheme.colorScheme.error)
-                            }
+                    Row {
+                        TextButton(onClick = onCancelDelete) {
+                            Text("CANCEL", color = colorScheme.textSecondary)
+                        }
+                        TextButton(onClick = onConfirmDelete) {
+                            Text("DELETE", color = colorScheme.error)
                         }
                     }
                 }
             }
-            if (newGroupForm != null) {
-                NewGroupForm(
-                    form = newGroupForm,
-                    onNameChange = onNewGroupNameChange,
-                    onHexChange = onNewGroupHexChange,
-                    onSubmit = onSubmitNewGroup,
-                    onCancel = onCancelNewGroup,
-                )
-            } else {
-                TextButton(onClick = onNewGroupClick) { Text("+ NEW GROUP") }
+        }
+        if (newGroupForm != null) {
+            NewGroupForm(
+                form = newGroupForm,
+                onNameChange = onNewGroupNameChange,
+                onColorSelect = onNewGroupColorSelect,
+                onSubmit = onSubmitNewGroup,
+                onCancel = onCancelNewGroup,
+            )
+        } else {
+            TextButton(onClick = onNewGroupClick) {
+                Text("+ NEW GROUP", color = colorScheme.textPrimary)
             }
         }
+    }
+}
+
+@Composable
+@com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
+private fun GroupSidebarPreview() {
+    BillboardTheme {
+        GroupSidebar(
+            groups = kotlinx.collections.immutable.persistentListOf(
+                Group(Group.DEFAULT_ID, "Starred", 0xFF00FF85.toInt(), 0L),
+                Group(2L, "Workout", 0xFFFFA000.toInt(), 0L),
+            ),
+            currentGroupId = Group.DEFAULT_ID,
+            countsByGroupId = kotlinx.collections.immutable.persistentMapOf(Group.DEFAULT_ID to 12, 2L to 4),
+            pendingDeleteGroupId = null,
+            newGroupForm = null,
+            onClose = {}, onSelectGroup = {}, onRequestDelete = {}, onConfirmDelete = {},
+            onCancelDelete = {}, onNewGroupClick = {}, onCancelNewGroup = {},
+            onNewGroupNameChange = {}, onNewGroupColorSelect = {}, onSubmitNewGroup = {},
+        )
     }
 }

@@ -50,3 +50,19 @@ fun MiniRail(
         }
     }
 }
+
+@androidx.compose.runtime.Composable
+@com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
+private fun MiniRailPreview() {
+    BillboardTheme {
+        MiniRail(
+            cards = kotlinx.collections.immutable.persistentListOf(
+                CollectedCard("a", "Song A", "Artist A", "", 0L, 1, 1, 1),
+                CollectedCard("b", "Song B", "Artist B", "", 0L, 2, 1, 2),
+                CollectedCard("c", "Song C", "Artist C", "", 0L, 3, 1, 3),
+            ),
+            activeKey = "a",
+            onSelect = {},
+        )
+    }
+}

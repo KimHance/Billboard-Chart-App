@@ -5,7 +5,6 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class NewGroupFormState(
     val name: String,
-    val hex: String,
+    val colorArgb: Int?,
     val isDuplicate: Boolean,
-    val isHexValid: Boolean,
 )

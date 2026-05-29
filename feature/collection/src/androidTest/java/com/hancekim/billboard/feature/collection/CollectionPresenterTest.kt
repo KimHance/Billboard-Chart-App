@@ -6,11 +6,9 @@ import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.datatest.repository.FakeCollectionRepository
 import com.hancekim.billboard.core.datatest.repository.FakeGroupRepository
-import com.hancekim.billboard.core.datatest.repository.FakeYoutubeRepository
 import com.hancekim.billboard.core.domain.AddGroupUseCase
 import com.hancekim.billboard.core.domain.GetCollectionFlowUseCase
 import com.hancekim.billboard.core.domain.GetGroupsFlowUseCase
-import com.hancekim.billboard.core.domain.GetYoutubeVideoDetailUseCase
 import com.hancekim.billboard.core.domain.RemoveGroupUseCase
 import com.slack.circuit.test.FakeNavigator
 import kotlinx.coroutines.test.runTest
@@ -38,7 +36,6 @@ class CollectionPresenterTest {
         getCollectionFlow = GetCollectionFlowUseCase(collectionRepo),
         addGroupUseCase = AddGroupUseCase(groupRepo),
         removeGroupUseCase = RemoveGroupUseCase(groupRepo),
-        getYoutubeVideoDetailUseCase = GetYoutubeVideoDetailUseCase(FakeYoutubeRepository()),
     )
 
     private fun launchPresenter(presenter: CollectionPresenter) {
