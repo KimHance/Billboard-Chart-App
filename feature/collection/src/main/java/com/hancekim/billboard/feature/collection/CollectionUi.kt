@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -44,6 +45,7 @@ import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.group.GroupChip
 import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeader
+import com.hancekim.billboard.core.resource.R
 import com.hancekim.billboard.feature.collection.component.EmptyGroupPlaceholder
 import com.hancekim.billboard.feature.collection.component.GroupSidebar
 import com.hancekim.billboard.feature.collection.component.MiniRail
@@ -133,7 +135,7 @@ private fun CollectionContent(
         containerColor = colorScheme.bgApp,
         topBar = {
             BillboardHeader(
-                title = "COLLECTION",
+                title = stringResource(R.string.collection_title),
                 isLogoVisible = false,
                 leadingIcon = BillboardIcons.ArrowBack,
                 trailingIcon = null,
@@ -154,6 +156,7 @@ private fun CollectionContent(
                 val current = state.groups.firstOrNull { it.id == state.currentGroupId }
                 if (current != null) {
                     val barColor = Color(current.colorArgb)
+                    val openSidebarLabel = stringResource(R.string.cd_open_group_sidebar)
                     Box(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
@@ -173,7 +176,7 @@ private fun CollectionContent(
                             .noRippleClickable { onOpenSidebar() }
                             .semantics {
                                 role = Role.Button
-                                contentDescription = "그룹 사이드바 열기"
+                                contentDescription = openSidebarLabel
                             },
                     )
                 }
@@ -181,7 +184,11 @@ private fun CollectionContent(
             Column(Modifier.fillMaxSize()) {
                 val currentGroup = state.groups.firstOrNull { it.id == state.currentGroupId }
                 Text(
-                    text = "${state.cardsInCurrentGroup.size} IN ${currentGroup?.name?.uppercase() ?: "—"}",
+                    text = stringResource(
+                        R.string.collection_count_in_group,
+                        state.cardsInCurrentGroup.size,
+                        currentGroup?.name?.uppercase() ?: "—",
+                    ),
                     style = BillboardTheme.typography.labelMd(),
                     color = currentGroup?.colorArgb?.let { Color(it) } ?: colorScheme.textSecondary,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -208,7 +215,7 @@ private fun CollectionContent(
                     )
                     Spacer(Modifier.weight(1f))
                     Text(
-                        text = "${state.cardsInCurrentGroup.size} CARDS",
+                        text = stringResource(R.string.collection_cards_count, state.cardsInCurrentGroup.size),
                         style = BillboardTheme.typography.labelMd(),
                         color = colorScheme.textSecondary,
                         modifier = Modifier.padding(horizontal = 16.dp),
@@ -221,8 +228,9 @@ private fun CollectionContent(
                 }
             }
             if (state.nowPlayingKey != null) {
+                val inspectLabel = stringResource(R.string.cd_inspect_card)
                 Text(
-                    text = "INSPECT",
+                    text = stringResource(R.string.collection_inspect),
                     style = BillboardTheme.typography.labelMd(),
                     color = colorScheme.textPrimary,
                     modifier = Modifier
@@ -231,7 +239,7 @@ private fun CollectionContent(
                         .noRippleClickable { state.eventSink(CollectionEvent.OnInspectClick) }
                         .semantics {
                             role = Role.Button
-                            contentDescription = "카드 상세 보기"
+                            contentDescription = inspectLabel
                         },
                 )
             }

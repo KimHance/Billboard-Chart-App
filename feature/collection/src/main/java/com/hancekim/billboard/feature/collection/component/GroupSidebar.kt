@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
@@ -22,6 +23,7 @@ import com.hancekim.billboard.core.designfoundation.icon.IcoDelete
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.group.GroupDot
+import com.hancekim.billboard.core.resource.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 
@@ -56,7 +58,7 @@ fun GroupSidebar(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
-                "GROUPS",
+                text = stringResource(R.string.groups_header),
                 style = BillboardTheme.typography.labelMd(),
                 color = colorScheme.textPrimary,
             )
@@ -92,7 +94,7 @@ fun GroupSidebar(
                 if (g.id != Group.DEFAULT_ID) {
                     Icon(
                         imageVector = BillboardIcons.IcoDelete,
-                        contentDescription = "${g.name} 삭제",
+                        contentDescription = stringResource(R.string.cd_delete_group, g.name),
                         modifier = Modifier
                             .size(20.dp)
                             .noRippleClickable { onRequestDelete(g.id) },
@@ -110,16 +112,16 @@ fun GroupSidebar(
                         .padding(8.dp),
                 ) {
                     Text(
-                        "${countsByGroupId[g.id] ?: 0}개 카드가 함께 삭제됩니다",
+                        text = stringResource(R.string.groups_delete_warning, countsByGroupId[g.id] ?: 0),
                         style = BillboardTheme.typography.labelMd(),
                         color = colorScheme.error,
                     )
                     Row {
                         TextButton(onClick = onCancelDelete) {
-                            Text("CANCEL", color = colorScheme.textSecondary)
+                            Text(stringResource(R.string.action_cancel), color = colorScheme.textSecondary)
                         }
                         TextButton(onClick = onConfirmDelete) {
-                            Text("DELETE", color = colorScheme.error)
+                            Text(stringResource(R.string.action_delete), color = colorScheme.error)
                         }
                     }
                 }
@@ -135,7 +137,7 @@ fun GroupSidebar(
             )
         } else {
             TextButton(onClick = onNewGroupClick) {
-                Text("+ NEW GROUP", color = colorScheme.textPrimary)
+                Text(stringResource(R.string.groups_new), color = colorScheme.textPrimary)
             }
         }
     }

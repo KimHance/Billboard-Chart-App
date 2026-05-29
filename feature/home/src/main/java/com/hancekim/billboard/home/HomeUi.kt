@@ -13,12 +13,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.StateDiffLogEffect
 import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeader
 import com.hancekim.billboard.core.player.PlayerState
+import com.hancekim.billboard.core.resource.R
 import com.hancekim.billboard.home.component.CollectOverlay
 import com.hancekim.billboard.home.component.PlayerWithPager
 import kotlinx.collections.immutable.toImmutableList
@@ -54,7 +56,7 @@ fun HomeUi(
             containerColor = colorScheme.bgApp,
             topBar = {
                 BillboardHeader(
-                    title = "BILLBOARD",
+                    title = stringResource(R.string.home_title),
                     collectionCount = state.collectionCount,
                     onTrailingIconClick = { eventSink(HomeEvent.OnSettingIconClick) },
                     onCollectionClick = { state.eventSink(HomeEvent.OnCollectionIconClick) },

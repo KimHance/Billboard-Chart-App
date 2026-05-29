@@ -31,6 +31,7 @@ import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.domain.model.YoutubeVideoDetail
 import com.hancekim.billboard.core.player.PlayerState
 import com.hancekim.billboard.core.player.pip.PipState
+import com.hancekim.billboard.core.resource.R
 import com.hancekim.billboard.home.component.OverlayCollectState
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
@@ -133,7 +134,7 @@ class HomePresenter @AssistedInject constructor(
                             }
                         }
                     }.onFailure { e ->
-                        snackbarHostState.showSnackbar(e.message ?: "Unknown Error")
+                        snackbarHostState.showSnackbar(e.message ?: context.getString(R.string.home_error_unknown))
                     }
                 }
             }
@@ -239,7 +240,7 @@ class HomePresenter @AssistedInject constructor(
                         exitSnackbarVisible = true
                         scope.launch {
                             snackbarHostState.showSnackbar(
-                                message = "Press back again to exit",
+                                message = context.getString(R.string.home_press_back_to_exit),
                                 duration = SnackbarDuration.Short,
                             )
                             exitSnackbarVisible = false

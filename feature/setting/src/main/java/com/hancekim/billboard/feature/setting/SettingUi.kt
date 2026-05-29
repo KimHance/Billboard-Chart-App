@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.designfoundation.icon.ArrowBack
@@ -26,6 +27,7 @@ import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeader
 import com.hancekim.billboard.core.domain.model.AppFont
 import com.hancekim.billboard.core.domain.model.AppTheme
+import com.hancekim.billboard.core.resource.R
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dagger.hilt.android.components.ActivityRetainedComponent
 import kotlinx.collections.immutable.ImmutableList
@@ -51,7 +53,7 @@ fun SettingUi(
         containerColor = colorScheme.bgApp,
         topBar = {
             BillboardHeader(
-                title = "Setting",
+                title = stringResource(R.string.settings_title),
                 isLogoVisible = false,
                 leadingIcon = BillboardIcons.ArrowBack,
                 trailingIcon = null,
@@ -69,7 +71,7 @@ fun SettingUi(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 SingleChoiceButtonRow(
-                    title = "Theme",
+                    title = stringResource(R.string.settings_theme_title),
                     options = themeOptions,
                     modifier = Modifier.fillMaxWidth(),
                     selectedIndex = themeOptions.indexOf(state.themeOption),
@@ -78,7 +80,7 @@ fun SettingUi(
                     }
                 )
                 SingleChoiceButtonRow(
-                    title = "Font",
+                    title = stringResource(R.string.settings_font_title),
                     options = fontOptions,
                     modifier = Modifier.fillMaxWidth(),
                     selectedIndex = fontOptions.indexOf(state.fontOption),
@@ -152,7 +154,7 @@ fun <T> SingleChoiceButtonRow(
 private fun SingleChoiceButtonRowPreview() {
     BillboardTheme {
         SingleChoiceButtonRow(
-            title = "Theme",
+            title = stringResource(R.string.settings_theme_title),
             options = AppTheme.entries.toPersistentList(),
         ) {}
     }

@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -35,6 +36,7 @@ import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
+import com.hancekim.billboard.core.resource.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -66,7 +68,7 @@ fun NewGroupForm(
         // 제목 + 이름 입력 섹션
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
-                "NAME",
+                text = stringResource(R.string.new_group_section_name),
                 style = BillboardTheme.typography.labelMd(),
                 color = colorScheme.textSecondary,
             )
@@ -84,7 +86,7 @@ fun NewGroupForm(
             )
             if (form.isDuplicate) {
                 Text(
-                    "이미 같은 이름의 그룹이 있어요",
+                    text = stringResource(R.string.new_group_duplicate_error),
                     color = colorScheme.error,
                     style = BillboardTheme.typography.labelMd(),
                 )
@@ -94,7 +96,7 @@ fun NewGroupForm(
         // 색상 선택 섹션
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
-                "COLOR",
+                text = stringResource(R.string.new_group_section_color),
                 style = BillboardTheme.typography.labelMd(),
                 color = colorScheme.textSecondary,
             )
@@ -105,6 +107,7 @@ fun NewGroupForm(
                 items(GroupColorPalette) { color ->
                     val argb = color.toArgb()
                     val selected = form.colorArgb == argb
+                    val selectLabel = stringResource(R.string.cd_select_color)
                     Box(
                         modifier = Modifier
                             .size(36.dp)
@@ -118,7 +121,7 @@ fun NewGroupForm(
                             .semantics {
                                 role = Role.RadioButton
                                 this.selected = selected
-                                contentDescription = "색상 선택"
+                                contentDescription = selectLabel
                             },
                     )
                 }
@@ -134,7 +137,7 @@ fun NewGroupForm(
                 onClick = onCancel,
                 modifier = Modifier.weight(1f),
             ) {
-                Text("CANCEL", color = colorScheme.textSecondary)
+                Text(stringResource(R.string.action_cancel), color = colorScheme.textSecondary)
             }
             Button(
                 onClick = onSubmit,
@@ -147,7 +150,7 @@ fun NewGroupForm(
                 ),
                 modifier = Modifier.weight(1f),
             ) {
-                Text("ADD")
+                Text(stringResource(R.string.action_add))
             }
         }
         Spacer(Modifier.height(4.dp))

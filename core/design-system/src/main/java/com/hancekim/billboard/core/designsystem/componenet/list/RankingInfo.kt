@@ -29,6 +29,8 @@ import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designfoundation.util.throttledProcess
 import com.hancekim.billboard.core.designsystem.BillboardTheme
+import com.hancekim.billboard.core.resource.R
+import androidx.compose.ui.res.stringResource
 
 @Composable
 internal fun CenterInfo(
@@ -82,15 +84,15 @@ internal fun RankingInfo(
             horizontalAlignment = Alignment.End,
         ) {
             Info(
-                text = "LW",
+                text = stringResource(R.string.card_detail_stat_lw),
                 number = lastWeek,
             )
             Info(
-                text = "PEEK",
+                text = stringResource(R.string.card_detail_stat_peak),
                 number = peak,
             )
             Info(
-                text = "WEEKS",
+                text = stringResource(R.string.card_detail_stat_weeks),
                 number = onWeeks,
             )
         }

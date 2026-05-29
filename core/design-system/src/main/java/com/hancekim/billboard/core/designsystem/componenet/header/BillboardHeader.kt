@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.role
@@ -45,6 +46,7 @@ import com.hancekim.billboard.core.designfoundation.modifier.clickableIfNeed
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
+import com.hancekim.billboard.core.resource.R
 
 @Composable
 fun BillboardHeader(
@@ -110,7 +112,7 @@ fun BillboardHeader(
                                     onClick = onLeadingIconClick
                                 ),
                             imageVector = icon,
-                            contentDescription = "setting_button"
+                            contentDescription = stringResource(R.string.cd_open_settings)
                         )
                     }
                     if (isLogoVisible) {
@@ -131,13 +133,14 @@ fun BillboardHeader(
                     horizontalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
                     if (collectionCount != null && onCollectionClick != null) {
+                        val collectionLabel = stringResource(R.string.cd_open_collection)
                         Box(
                             modifier = Modifier
                                 .size(40.dp)
                                 .noRippleClickable(onClick = onCollectionClick)
                                 .semantics {
                                     role = Role.Button
-                                    contentDescription = "컬렉션 열기"
+                                    contentDescription = collectionLabel
                                 },
                             contentAlignment = Alignment.Center,
                         ) {
@@ -178,7 +181,7 @@ fun BillboardHeader(
                                     onClick = onTrailingIconClick
                                 ),
                             imageVector = icon,
-                            contentDescription = "setting_button"
+                            contentDescription = stringResource(R.string.cd_open_settings)
                         )
                     }
                 }
@@ -192,7 +195,7 @@ fun BillboardHeader(
 private fun BillboardHeader1Preview() {
     BillboardTheme {
         BillboardHeader(
-            title = "BILLBOARD"
+            title = stringResource(R.string.app_name)
         )
     }
 }

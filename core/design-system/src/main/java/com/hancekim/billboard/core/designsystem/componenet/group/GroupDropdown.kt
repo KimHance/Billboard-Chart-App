@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.designfoundation.color.BillboardColor
@@ -26,6 +27,7 @@ import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
+import com.hancekim.billboard.core.resource.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -63,7 +65,10 @@ fun GroupDropdown(
             if (canExpand) {
                 Icon(
                     imageVector = BillboardIcons.ArrowDown,
-                    contentDescription = if (open) "그룹 선택 닫기" else "그룹 선택 열기",
+                    contentDescription = stringResource(
+                        if (open) R.string.cd_collapse_group_selector
+                        else R.string.cd_expand_group_selector,
+                    ),
                     modifier = Modifier
                         .size(20.dp)
                         .graphicsLayer { rotationZ = rotation },

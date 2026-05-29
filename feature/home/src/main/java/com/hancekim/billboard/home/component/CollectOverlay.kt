@@ -33,6 +33,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.data.model.Group
@@ -43,6 +44,7 @@ import com.hancekim.billboard.core.designsystem.componenet.card.HoloCard
 import com.hancekim.billboard.core.designsystem.componenet.card.SparkleEffect
 import com.hancekim.billboard.core.designsystem.componenet.group.GroupDropdown
 import com.hancekim.billboard.core.domain.model.Chart
+import com.hancekim.billboard.core.resource.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.coroutineScope
@@ -182,7 +184,7 @@ fun CollectOverlay(
                                 val (label, bgColor, borderColor) = when (overlayState) {
                                     OverlayCollectState.Uncollected ->
                                         Triple(
-                                            "ADD TO ${selected.name.uppercase()}",
+                                            stringResource(R.string.home_overlay_add_to, selected.name.uppercase()),
                                             Color(selected.colorArgb),
                                             Color.Transparent,
                                         )
@@ -190,13 +192,13 @@ fun CollectOverlay(
                                     is OverlayCollectState.Collected ->
                                         if (overlayState.groupId == selectedGroupId) {
                                             Triple(
-                                                "REMOVE FROM COLLECTION",
+                                                stringResource(R.string.home_overlay_remove),
                                                 Color.Transparent,
                                                 Color.White,
                                             )
                                         } else {
                                             Triple(
-                                                "MOVE TO ${selected.name.uppercase()}",
+                                                stringResource(R.string.home_overlay_move_to, selected.name.uppercase()),
                                                 Color(selected.colorArgb),
                                                 Color.Transparent,
                                             )
@@ -229,7 +231,7 @@ fun CollectOverlay(
                     Spacer(modifier = Modifier.height(14.dp))
 
                     Text(
-                        text = "drag card to rotate · tap backdrop to cancel",
+                        text = stringResource(R.string.home_overlay_hint),
                         style = BillboardTheme.typography.labelMd(),
                         color = colorScheme.textOnDarkDisabled,
                     )

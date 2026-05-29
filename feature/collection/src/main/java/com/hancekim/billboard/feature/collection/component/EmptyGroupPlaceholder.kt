@@ -8,8 +8,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designsystem.BillboardTheme
+import com.hancekim.billboard.core.resource.R
 
 @Composable
 fun EmptyGroupPlaceholder(modifier: Modifier = Modifier) {
@@ -18,12 +20,16 @@ fun EmptyGroupPlaceholder(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text("이 그룹에 카드가 없어요",
+        Text(
+            text = stringResource(R.string.collection_empty_title),
             style = BillboardTheme.typography.bodyMd(),
-            color = BillboardTheme.colorScheme.textPrimary)
-        Text("홈에서 곡을 길게 눌러 추가하세요",
+            color = BillboardTheme.colorScheme.textPrimary,
+        )
+        Text(
+            text = stringResource(R.string.collection_empty_subtitle),
             style = BillboardTheme.typography.labelMd(),
-            color = BillboardTheme.colorScheme.textSecondary)
+            color = BillboardTheme.colorScheme.textSecondary,
+        )
     }
 }
 

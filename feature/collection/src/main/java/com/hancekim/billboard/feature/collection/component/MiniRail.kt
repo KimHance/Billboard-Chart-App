@@ -11,12 +11,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designsystem.BillboardTheme
+import com.hancekim.billboard.core.resource.R
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
@@ -35,7 +37,7 @@ fun MiniRail(
             val isActive = card.key == activeKey
             AsyncImage(
                 model = card.albumArtUrl,
-                contentDescription = "${card.title} by ${card.artist}",
+                contentDescription = stringResource(R.string.cd_card_title_by_artist, card.title, card.artist),
                 modifier = Modifier
                     .size(100.dp)
                     .graphicsLayer { alpha = if (isActive) 1f else 0.5f }
