@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App brand -->
+    <string name="app_name">BILLBOARD</string>
+
+    <!-- Common actions -->
+    <string name="action_add">ADD</string>
+    <string name="action_cancel">CANCEL</string>
+    <string name="action_delete">DELETE</string>
+    <string name="action_ok">OK</string>
+    <string name="action_close">Close</string>
+
+    <!-- Common accessibility / content descriptions -->
+    <string name="cd_open_collection">Open collection</string>
+    <string name="cd_open_settings">Open settings</string>
+
+    <!-- Network dialog (shared by Splash + BillboardAlert) -->
+    <string name="network_dialog_title">Network connection</string>
+    <string name="network_dialog_body">Please check your network connection.</string>
+
+    <!-- Home -->
+    <string name="home_title">BILLBOARD</string>
+    <string name="home_press_back_to_exit">Press back again to exit</string>
+    <string name="home_error_unknown">Unknown error</string>
+    <string name="home_overlay_add_to">ADD TO %1$s</string>
+    <string name="home_overlay_move_to">MOVE TO %1$s</string>
+    <string name="home_overlay_remove">REMOVE FROM COLLECTION</string>
+    <string name="home_overlay_hint">drag card to rotate · tap backdrop to cancel</string>
+
+    <!-- Collection -->
+    <string name="collection_title">COLLECTION</string>
+    <string name="collection_inspect">INSPECT</string>
+    <string name="collection_count_in_group">%1$d IN %2$s</string>
+    <string name="collection_cards_count">%1$d CARDS</string>
+    <string name="collection_empty_title">No cards in this group</string>
+    <string name="collection_empty_subtitle">Long-press a song on Home to add</string>
+    <string name="cd_open_group_sidebar">Open group sidebar</string>
+    <string name="cd_inspect_card">Inspect card</string>
+    <string name="cd_card_title_by_artist">%1$s by %2$s</string>
+
+    <!-- Card detail -->
+    <string name="card_detail_stat_lw">LW</string>
+    <string name="card_detail_stat_peak">PEAK</string>
+    <string name="card_detail_stat_weeks">WEEKS</string>
+    <string name="card_detail_remove">REMOVE FROM COLLECTION</string>
+
+    <!-- Groups -->
+    <string name="groups_header">GROUPS</string>
+    <string name="groups_new">+ NEW GROUP</string>
+    <string name="groups_delete_warning">%1$d cards will be deleted with this group</string>
+    <string name="cd_delete_group">Delete %1$s</string>
+    <string name="cd_expand_group_selector">Expand group selector</string>
+    <string name="cd_collapse_group_selector">Collapse group selector</string>
+
+    <!-- New group form -->
+    <string name="new_group_section_name">NAME</string>
+    <string name="new_group_section_color">COLOR</string>
+    <string name="new_group_duplicate_error">A group with this name already exists</string>
+    <string name="cd_select_color">Select color</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Setting</string>
+    <string name="settings_theme_title">Theme</string>
+    <string name="settings_font_title">Font</string>
+</resources>
