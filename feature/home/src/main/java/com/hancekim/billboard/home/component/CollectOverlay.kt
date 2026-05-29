@@ -58,14 +58,8 @@ fun CollectOverlay(
     overlayState: OverlayCollectState,
     groups: ImmutableList<Group>,
     selectedGroupId: Long,
-    newGroupForm: NewGroupFormState?,
     modifier: Modifier = Modifier,
     onSelectGroup: (Long) -> Unit,
-    onCreateNewGroupClick: () -> Unit,
-    onNewGroupNameChange: (String) -> Unit,
-    onNewGroupHexChange: (String) -> Unit,
-    onSubmitNewGroup: () -> Unit,
-    onCancelNewGroup: () -> Unit,
     onCommit: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -176,63 +170,52 @@ fun CollectOverlay(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.graphicsLayer { clip = false },
                     ) {
-                        if (newGroupForm != null) {
-                            NewGroupForm(
-                                form = newGroupForm,
-                                onNameChange = onNewGroupNameChange,
-                                onHexChange = onNewGroupHexChange,
-                                onSubmit = onSubmitNewGroup,
-                                onCancel = onCancelNewGroup,
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            GroupDropdown(
+                                groups = groups,
+                                selectedId = selectedGroupId,
+                                onSelect = onSelectGroup,
                             )
-                        } else {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                GroupDropdown(
-                                    groups = groups,
-                                    selectedId = selectedGroupId,
-                                    onSelect = onSelectGroup,
-                                    onCreateNew = onCreateNewGroupClick,
-                                )
-                                Spacer(Modifier.height(16.dp))
-                                val selected = groups.firstOrNull { it.id == selectedGroupId }
-                                if (selected != null) {
-                                    val (label, bgColor, borderColor) = when (overlayState) {
-                                        OverlayCollectState.Uncollected ->
+                            Spacer(Modifier.height(16.dp))
+                            val selected = groups.firstOrNull { it.id == selectedGroupId }
+                            if (selected != null) {
+                                val (label, bgColor, borderColor) = when (overlayState) {
+                                    OverlayCollectState.Uncollected ->
+                                        Triple(
+                                            "ADD TO ${selected.name.uppercase()}",
+                                            Color(selected.colorArgb),
+                                            Color.Transparent,
+                                        )
+
+                                    is OverlayCollectState.Collected ->
+                                        if (overlayState.groupId == selectedGroupId) {
                                             Triple(
-                                                "ADD TO ${selected.name.uppercase()}",
+                                                "REMOVE FROM COLLECTION",
+                                                Color.Transparent,
+                                                Color.White,
+                                            )
+                                        } else {
+                                            Triple(
+                                                "MOVE TO ${selected.name.uppercase()}",
                                                 Color(selected.colorArgb),
                                                 Color.Transparent,
                                             )
-
-                                        is OverlayCollectState.Collected ->
-                                            if (overlayState.groupId == selectedGroupId) {
-                                                Triple(
-                                                    "REMOVE FROM COLLECTION",
-                                                    Color.Transparent,
-                                                    Color.White,
-                                                )
-                                            } else {
-                                                Triple(
-                                                    "MOVE TO ${selected.name.uppercase()}",
-                                                    Color(selected.colorArgb),
-                                                    Color.Transparent,
-                                                )
-                                            }
-                                    }
-                                    OverlayActionButton(
-                                        label = label,
-                                        bg = bgColor,
-                                        border = borderColor,
-                                        onClick = {
-                                            // Sparkle 은 add/move 같은 commit 성공시에만 트리거
-                                            if (overlayState !is OverlayCollectState.Collected ||
-                                                overlayState.groupId != selectedGroupId
-                                            ) {
-                                                sparkleKey++
-                                            }
-                                            onCommit()
-                                        },
-                                    )
+                                        }
                                 }
+                                OverlayActionButton(
+                                    label = label,
+                                    bg = bgColor,
+                                    border = borderColor,
+                                    onClick = {
+                                        // Sparkle 은 add/move 같은 commit 성공시에만 트리거
+                                        if (overlayState !is OverlayCollectState.Collected ||
+                                            overlayState.groupId != selectedGroupId
+                                        ) {
+                                            sparkleKey++
+                                        }
+                                        onCommit()
+                                    },
+                                )
                             }
                         }
                         SparkleEffect(
@@ -291,13 +274,7 @@ private fun CollectOverlayPreview() {
             overlayState = OverlayCollectState.Uncollected,
             groups = persistentListOf(),
             selectedGroupId = Group.DEFAULT_ID,
-            newGroupForm = null,
             onSelectGroup = {},
-            onCreateNewGroupClick = {},
-            onNewGroupNameChange = {},
-            onNewGroupHexChange = {},
-            onSubmitNewGroup = {},
-            onCancelNewGroup = {},
             onCommit = {},
             onDismiss = {},
         )

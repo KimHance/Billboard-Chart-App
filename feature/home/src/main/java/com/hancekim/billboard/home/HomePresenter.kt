@@ -19,7 +19,6 @@ import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.circuit.PopResult
 import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.designsystem.componenet.filter.ChartFilter
-import com.hancekim.billboard.core.domain.AddGroupUseCase
 import com.hancekim.billboard.core.domain.GetBillboard200UseCase
 import com.hancekim.billboard.core.domain.GetBillboardArtist100UseCase
 import com.hancekim.billboard.core.domain.GetBillboardGlobal200UseCase
@@ -32,7 +31,6 @@ import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.domain.model.YoutubeVideoDetail
 import com.hancekim.billboard.core.player.PlayerState
 import com.hancekim.billboard.core.player.pip.PipState
-import com.hancekim.billboard.home.component.NewGroupFormState
 import com.hancekim.billboard.home.component.OverlayCollectState
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
@@ -52,9 +50,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-// 사용자 입력 hex 문자열 검증용 — #RRGGBB 만 허용
-private val HEX_REGEX = Regex("^#[0-9A-Fa-f]{6}$")
-
 class HomePresenter @AssistedInject constructor(
     @Assisted private val navigator: Navigator,
     private val getHot100UseCase: GetBillboardHot100UseCase,
@@ -63,7 +58,6 @@ class HomePresenter @AssistedInject constructor(
     private val getBillboard200UseCase: GetBillboard200UseCase,
     private val getYoutubeVideoDetailUseCase: GetYoutubeVideoDetailUseCase,
     private val getGroupsFlow: GetGroupsFlowUseCase,
-    private val addGroupUseCase: AddGroupUseCase,
     private val collectionActions: CollectionActions,
 ) : Presenter<HomeState> {
     @Composable
@@ -102,7 +96,6 @@ class HomePresenter @AssistedInject constructor(
         val collectionCount = collection.size
 
         var selectedGroupIdInOverlay by rememberRetained { mutableLongStateOf(Group.DEFAULT_ID) }
-        var newGroupFormInOverlay by rememberRetained { mutableStateOf<NewGroupFormState?>(null) }
         val overlayState: OverlayCollectState = remember(collection, overlayChart) {
             val chart = overlayChart ?: return@remember OverlayCollectState.Uncollected
             val key = CollectedCard.createKey(chart.title, chart.artist)
@@ -223,13 +216,11 @@ class HomePresenter @AssistedInject constructor(
             pipState = pipState,
             showCollectOverlay = showCollectOverlay,
             overlayChart = overlayChart,
-            isOverlayItemCollected = overlayState is OverlayCollectState.Collected,
             collectionCount = collectionCount,
             groups = groupsMap,
             selectedGroupIdInOverlay = selectedGroupIdInOverlay,
             collectedGroupColorByKey = collectedGroupColorByKey,
             overlayState = overlayState,
-            newGroupFormInOverlay = newGroupFormInOverlay,
         ) { event ->
             when (event) {
                 is HomeEvent.OnFilterClick -> onFilterChanged(event.filter)
@@ -271,49 +262,6 @@ class HomePresenter @AssistedInject constructor(
                 is HomeEvent.OnSelectGroupInOverlay -> {
                     selectedGroupIdInOverlay = event.id
                 }
-                HomeEvent.OnCreateNewGroupClickInOverlay -> {
-                    newGroupFormInOverlay = NewGroupFormState(
-                        name = "",
-                        hex = "",
-                        isDuplicate = false,
-                        isHexValid = false,
-                    )
-                }
-                HomeEvent.OnCancelNewGroupInOverlay -> {
-                    newGroupFormInOverlay = null
-                }
-                is HomeEvent.OnNewGroupNameChangeInOverlay -> {
-                    val name = event.name
-                    val normalized = name.trim().lowercase()
-                    newGroupFormInOverlay = newGroupFormInOverlay?.copy(
-                        name = name,
-                        isDuplicate = groups.any { it.name.trim().lowercase() == normalized },
-                    )
-                }
-                is HomeEvent.OnNewGroupHexChangeInOverlay -> {
-                    newGroupFormInOverlay = newGroupFormInOverlay?.copy(
-                        hex = event.hex,
-                        isHexValid = HEX_REGEX.matches(event.hex),
-                    )
-                }
-                HomeEvent.OnSubmitNewGroupInOverlay -> {
-                    val form = newGroupFormInOverlay
-                    if (form != null && form.isHexValid && !form.isDuplicate && form.name.trim().isNotEmpty()) {
-                        val color = android.graphics.Color.parseColor(form.hex)
-                        scope.launch {
-                            runCatching { addGroupUseCase(form.name, color) }
-                                .onSuccess { result ->
-                                    result
-                                        .onSuccess { newId ->
-                                            selectedGroupIdInOverlay = newId
-                                            newGroupFormInOverlay = null
-                                        }
-                                        .onFailure { Timber.e(it, "add group in overlay failed") }
-                                }
-                                .onFailure { Timber.e(it, "add group in overlay threw") }
-                        }
-                    }
-                }
                 HomeEvent.OnCommitOverlay -> {
                     val chart = overlayChart
                     if (chart != null) {
@@ -349,47 +297,11 @@ class HomePresenter @AssistedInject constructor(
                             }
                         }
                     }
-                    showCollectOverlay = false
-                    overlayChart = null
-                }
-                HomeEvent.OnCollectItem -> {
-                    overlayChart?.let { chart ->
-                        scope.launch {
-                            runCatching {
-                                collectionActions.add(
-                                    CollectedCard(
-                                        key = CollectedCard.createKey(chart.title, chart.artist),
-                                        title = chart.title,
-                                        artist = chart.artist,
-                                        albumArtUrl = chart.image,
-                                        collectedAt = System.currentTimeMillis(),
-                                        lastWeek = chart.lastWeek,
-                                        peakPosition = chart.peakPosition,
-                                        weeksOnChart = chart.weekOnChart,
-                                        groupId = selectedGroupIdInOverlay,
-                                    ),
-                                )
-                            }.onFailure {
-                                snackbarHostState.showSnackbar("Failed to save card")
-                            }
-                        }
-                    }
-                }
-                HomeEvent.OnRemoveItem -> {
-                    overlayChart?.let { chart ->
-                        scope.launch {
-                            runCatching {
-                                collectionActions.remove(CollectedCard.createKey(chart.title, chart.artist))
-                            }.onFailure {
-                                snackbarHostState.showSnackbar("Failed to remove card")
-                            }
-                        }
-                    }
+                    // commit 후 자동 닫기 안 함 — 사용자가 backdrop 탭으로 직접 닫을 때까지 유지.
                 }
                 HomeEvent.OnDismissOverlay -> {
                     showCollectOverlay = false
                     overlayChart = null
-                    newGroupFormInOverlay = null
                 }
             }
         }

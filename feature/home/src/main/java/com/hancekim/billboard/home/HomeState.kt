@@ -12,7 +12,6 @@ import com.hancekim.billboard.core.player.pip.PipState
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.hancekim.billboard.core.data.model.Group
-import com.hancekim.billboard.home.component.NewGroupFormState
 import com.hancekim.billboard.home.component.OverlayCollectState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
@@ -35,13 +34,11 @@ data class HomeState(
     val chartFilter: ChartFilter = ChartFilter.BillboardHot100,
     val showCollectOverlay: Boolean = false,
     val overlayChart: Chart? = null,
-    val isOverlayItemCollected: Boolean = false,
     val collectionCount: Int = 0,
     val groups: ImmutableMap<Long, Group> = persistentMapOf(),
     val selectedGroupIdInOverlay: Long = Group.DEFAULT_ID,
     val collectedGroupColorByKey: ImmutableMap<String, Int> = persistentMapOf(),
     val overlayState: OverlayCollectState = OverlayCollectState.Uncollected,
-    val newGroupFormInOverlay: NewGroupFormState? = null,
     val eventSink: (HomeEvent) -> Unit,
 ) : CircuitUiState
 
@@ -68,14 +65,7 @@ sealed interface HomeEvent : CircuitUiEvent {
 
     data class OnLongPressItem(val item: Chart) : HomeEvent
     data object OnCollectionIconClick : HomeEvent
-    data object OnCollectItem : HomeEvent
-    data object OnRemoveItem : HomeEvent
     data object OnDismissOverlay : HomeEvent
     data class OnSelectGroupInOverlay(val id: Long) : HomeEvent
-    data object OnCreateNewGroupClickInOverlay : HomeEvent
-    data class OnNewGroupNameChangeInOverlay(val name: String) : HomeEvent
-    data class OnNewGroupHexChangeInOverlay(val hex: String) : HomeEvent
-    data object OnSubmitNewGroupInOverlay : HomeEvent
-    data object OnCancelNewGroupInOverlay : HomeEvent
     data object OnCommitOverlay : HomeEvent
 }

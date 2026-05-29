@@ -89,13 +89,7 @@ fun HomeUi(
             overlayState = state.overlayState,
             groups = state.groups.values.toImmutableList(),
             selectedGroupId = state.selectedGroupIdInOverlay,
-            newGroupForm = state.newGroupFormInOverlay,
             onSelectGroup = { eventSink(HomeEvent.OnSelectGroupInOverlay(it)) },
-            onCreateNewGroupClick = { eventSink(HomeEvent.OnCreateNewGroupClickInOverlay) },
-            onNewGroupNameChange = { eventSink(HomeEvent.OnNewGroupNameChangeInOverlay(it)) },
-            onNewGroupHexChange = { eventSink(HomeEvent.OnNewGroupHexChangeInOverlay(it)) },
-            onSubmitNewGroup = { eventSink(HomeEvent.OnSubmitNewGroupInOverlay) },
-            onCancelNewGroup = { eventSink(HomeEvent.OnCancelNewGroupInOverlay) },
             onCommit = { eventSink(HomeEvent.OnCommitOverlay) },
             onDismiss = { eventSink(HomeEvent.OnDismissOverlay) },
         )
