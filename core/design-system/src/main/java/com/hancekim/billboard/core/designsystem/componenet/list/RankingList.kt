@@ -29,7 +29,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.DpOffset
@@ -39,6 +41,7 @@ import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.indication.OffscreenIndication
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
+import com.hancekim.billboard.core.designsystem.componenet.group.GroupDot
 import com.hancekim.billboard.core.designsystem.componenet.list.ChartStatus.Moved
 import com.hancekim.billboard.core.imageloader.BillboardAsyncImage
 
@@ -91,6 +94,7 @@ fun RankingItem(
     peakDate: String,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    collectedGroupColor: Color? = null,
     onExpandButtonClick: () -> Unit,
     onLongClick: (() -> Unit)? = null,
     onItemClick: () -> Unit,
@@ -129,6 +133,7 @@ fun RankingItem(
             peak = peak,
             onWeeks = onWeeks,
             expand = expand,
+            collectedGroupColor = collectedGroupColor,
             onExpandButtonClick = onExpandButtonClick
         )
         AnimatedVisibility(
@@ -156,6 +161,7 @@ private fun DetailInfo(
     onWeeks: Int,
     expand: Boolean,
     modifier: Modifier = Modifier,
+    collectedGroupColor: Color? = null,
     onExpandButtonClick: () -> Unit,
 ) {
     Row(
@@ -175,22 +181,32 @@ private fun DetailInfo(
             style = BillboardTheme.typography.titleMd(),
             color = BillboardTheme.colorScheme.textPrimary,
         )
-        BillboardAsyncImage(
-            modifier = Modifier
-                .size(50.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(BillboardTheme.colorScheme.bgImageFallback),
-            placeholder = {
-                Icon(
-                    imageVector = BillboardIcons.Album,
-                    tint = BillboardTheme.colorScheme.borderButton,
-                    contentDescription = null
+        Box {
+            BillboardAsyncImage(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(BillboardTheme.colorScheme.bgImageFallback),
+                placeholder = {
+                    Icon(
+                        imageVector = BillboardIcons.Album,
+                        tint = BillboardTheme.colorScheme.borderButton,
+                        contentDescription = null
+                    )
+                },
+                model = imgUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+            )
+            collectedGroupColor?.let {
+                GroupDot(
+                    colorArgb = it.toArgb(),
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = 3.dp, y = (-3).dp),
                 )
-            },
-            model = imgUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-        )
+            }
+        }
         TrendingIndicator(
             status = status,
         )

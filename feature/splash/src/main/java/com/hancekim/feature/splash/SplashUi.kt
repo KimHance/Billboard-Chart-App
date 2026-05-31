@@ -42,6 +42,8 @@ import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.dialog.BillboardAlert
+import com.hancekim.billboard.core.resource.R
+import androidx.compose.ui.res.stringResource
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dagger.hilt.android.components.ActivityRetainedComponent
 import kotlinx.coroutines.delay
@@ -65,9 +67,9 @@ fun SplashUi(
         if (state.networkState == NetworkState.DisConnected) {
             BillboardAlert(
                 onClick = { state.quitEventSink(OnQuitAlertButtonClick) },
-                title = "네트워크 확인",
-                body = "네트워크 연결을 확인해주세요",
-                buttonLabel = "확인",
+                title = stringResource(R.string.network_dialog_title),
+                body = stringResource(R.string.network_dialog_body),
+                buttonLabel = stringResource(R.string.action_ok),
                 onDismissRequest = { state.quitEventSink(OnQuitAlertButtonClick) }
             )
         }
@@ -129,7 +131,7 @@ fun SplashUi(
                         ShimmeringLogoIcon(modifier = Modifier.fillMaxSize())
                     }
                     Text(
-                        text = "BILLBOARD",
+                        text = stringResource(R.string.app_name),
                         style = BillboardTheme.typography.heading2Xl(),
                         color = BillboardTheme.colorScheme.textPrimary,
                     )

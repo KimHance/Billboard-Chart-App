@@ -9,24 +9,30 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.circuit.PopResult
 import com.hancekim.billboard.core.designsystem.componenet.filter.ChartFilter
+import com.hancekim.billboard.core.domain.model.Group
 import com.hancekim.billboard.core.domain.GetBillboard200UseCase
 import com.hancekim.billboard.core.domain.GetBillboardArtist100UseCase
 import com.hancekim.billboard.core.domain.GetBillboardGlobal200UseCase
 import com.hancekim.billboard.core.domain.GetBillboardHot100UseCase
+import com.hancekim.billboard.core.domain.GetGroupsFlowUseCase
 import com.hancekim.billboard.core.domain.GetYoutubeVideoDetailUseCase
 import com.hancekim.billboard.core.domain.model.Chart
-import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.domain.model.ChartOverview
+import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.domain.model.YoutubeVideoDetail
 import com.hancekim.billboard.core.player.PlayerState
 import com.hancekim.billboard.core.player.pip.PipState
+import com.hancekim.billboard.core.resource.R
+import com.hancekim.billboard.home.component.OverlayCollectState
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
@@ -36,9 +42,14 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.components.ActivityRetainedComponent
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class HomePresenter @AssistedInject constructor(
     @Assisted private val navigator: Navigator,
@@ -47,6 +58,7 @@ class HomePresenter @AssistedInject constructor(
     private val getGlobal200UseCase: GetBillboardGlobal200UseCase,
     private val getBillboard200UseCase: GetBillboard200UseCase,
     private val getYoutubeVideoDetailUseCase: GetYoutubeVideoDetailUseCase,
+    private val getGroupsFlow: GetGroupsFlowUseCase,
     private val collectionActions: CollectionActions,
 ) : Presenter<HomeState> {
     @Composable
@@ -68,10 +80,29 @@ class HomePresenter @AssistedInject constructor(
         var currentVideo by rememberRetained { mutableStateOf<YoutubeVideoDetail?>(null) }
         var showCollectOverlay by rememberRetained { mutableStateOf(false) }
         var overlayChart by rememberRetained { mutableStateOf<Chart?>(null) }
-        var isOverlayItemCollected by rememberRetained { mutableStateOf(false) }
 
-        val collectionCount by produceRetainedState(0) {
-            collectionActions.observeAll().collect { value = it.size }
+        // 그룹 + 컬렉션 동기 수집 — overlay 색/상태 derive 의 기반
+        val groups by produceRetainedState<ImmutableList<Group>>(persistentListOf()) {
+            getGroupsFlow().collect { value = it.toImmutableList() }
+        }
+        val groupsMap = remember(groups) { groups.associateBy { it.id }.toImmutableMap() }
+        val collection by produceRetainedState<ImmutableList<CollectedCard>>(persistentListOf()) {
+            collectionActions.observeAll().map { it.toImmutableList() }.collect { value = it }
+        }
+        val collectedGroupColorByKey = remember(collection, groupsMap) {
+            collection.associate { card ->
+                card.key to (groupsMap[card.groupId]?.colorArgb ?: 0)
+            }.toImmutableMap()
+        }
+        val collectionCount = collection.size
+
+        var selectedGroupIdInOverlay by rememberRetained { mutableLongStateOf(Group.DEFAULT_ID) }
+        val overlayState: OverlayCollectState = remember(collection, overlayChart) {
+            val chart = overlayChart ?: return@remember OverlayCollectState.Uncollected
+            val key = CollectedCard.createKey(chart.title, chart.artist)
+            collection.firstOrNull { it.key == key }
+                ?.let { OverlayCollectState.Collected(it.groupId) }
+                ?: OverlayCollectState.Uncollected
         }
 
         var exitSnackbarVisible by rememberRetained { mutableStateOf(false) }
@@ -103,7 +134,7 @@ class HomePresenter @AssistedInject constructor(
                             }
                         }
                     }.onFailure { e ->
-                        snackbarHostState.showSnackbar(e.message ?: "Unknown Error")
+                        snackbarHostState.showSnackbar(e.message ?: context.getString(R.string.home_error_unknown))
                     }
                 }
             }
@@ -186,9 +217,11 @@ class HomePresenter @AssistedInject constructor(
             pipState = pipState,
             showCollectOverlay = showCollectOverlay,
             overlayChart = overlayChart,
-            isOverlayItemCollected = isOverlayItemCollected,
             collectionCount = collectionCount,
-            isCollectionFull = collectionCount >= CollectedCard.MAX_SLOTS,
+            groups = groupsMap,
+            selectedGroupIdInOverlay = selectedGroupIdInOverlay,
+            collectedGroupColorByKey = collectedGroupColorByKey,
+            overlayState = overlayState,
         ) { event ->
             when (event) {
                 is HomeEvent.OnFilterClick -> onFilterChanged(event.filter)
@@ -207,7 +240,7 @@ class HomePresenter @AssistedInject constructor(
                         exitSnackbarVisible = true
                         scope.launch {
                             snackbarHostState.showSnackbar(
-                                message = "Press back again to exit",
+                                message = context.getString(R.string.home_press_back_to_exit),
                                 duration = SnackbarDuration.Short,
                             )
                             exitSnackbarVisible = false
@@ -220,63 +253,57 @@ class HomePresenter @AssistedInject constructor(
                 is HomeEvent.OnItemClick -> loadVideo(event.item)
                 is HomeEvent.OnLongPressItem -> {
                     overlayChart = event.item
-                    scope.launch {
-                        runCatching {
-                            collectionActions.isCollected(CollectedCard.createKey(event.item.title, event.item.artist))
-                        }.onSuccess { collected ->
-                            isOverlayItemCollected = collected
-                            showCollectOverlay = true
-                        }.onFailure {
-                            snackbarHostState.showSnackbar("Failed to check collection")
-                        }
-                    }
+                    showCollectOverlay = true
+                    // overlayState 는 derive — 여기서 즉시 selected 시드만 갱신
+                    val key = CollectedCard.createKey(event.item.title, event.item.artist)
+                    val existing = collection.firstOrNull { it.key == key }
+                    selectedGroupIdInOverlay = existing?.groupId ?: selectedGroupIdInOverlay
                 }
                 HomeEvent.OnCollectionIconClick -> navigator.goTo(BillboardScreen.Collection)
-                HomeEvent.OnCollectItem -> {
-                    overlayChart?.let { chart ->
-                        scope.launch {
-                            runCatching {
-                                collectionActions.add(
-                                    CollectedCard(
-                                        key = CollectedCard.createKey(chart.title, chart.artist),
-                                        title = chart.title,
-                                        artist = chart.artist,
-                                        albumArtUrl = chart.image,
-                                        collectedAt = System.currentTimeMillis(),
-                                        lastWeek = chart.lastWeek,
-                                        peakPosition = chart.peakPosition,
-                                        weeksOnChart = chart.weekOnChart,
-                                    ),
-                                )
-                            }.onSuccess { added ->
-                                if (added) {
-                                    isOverlayItemCollected = true
+                is HomeEvent.OnSelectGroupInOverlay -> {
+                    selectedGroupIdInOverlay = event.id
+                }
+                HomeEvent.OnCommitOverlay -> {
+                    val chart = overlayChart
+                    if (chart != null) {
+                        val card = CollectedCard(
+                            key = CollectedCard.createKey(chart.title, chart.artist),
+                            title = chart.title,
+                            artist = chart.artist,
+                            albumArtUrl = chart.image,
+                            collectedAt = System.currentTimeMillis(),
+                            lastWeek = chart.lastWeek,
+                            peakPosition = chart.peakPosition,
+                            weeksOnChart = chart.weekOnChart,
+                            groupId = selectedGroupIdInOverlay,
+                        )
+                        when (val s = overlayState) {
+                            OverlayCollectState.Uncollected -> scope.launch {
+                                runCatching { collectionActions.add(card) }
+                                    .onFailure { Timber.e(it, "addToCollection failed") }
+                            }
+                            is OverlayCollectState.Collected -> {
+                                if (s.groupId == selectedGroupIdInOverlay) {
+                                    scope.launch {
+                                        runCatching { collectionActions.remove(card.key) }
+                                            .onFailure { Timber.e(it, "removeFromCollection failed") }
+                                    }
                                 } else {
-                                    snackbarHostState.showSnackbar(
-                                        message = "Collection is full (max ${CollectedCard.MAX_SLOTS})",
-                                        duration = SnackbarDuration.Short,
-                                    )
+                                    // 그룹 이동만 — collectedAt 등은 보존
+                                    scope.launch {
+                                        runCatching { collectionActions.move(card.key, selectedGroupIdInOverlay) }
+                                            .onFailure { Timber.e(it, "moveGroup failed") }
+                                    }
                                 }
-                            }.onFailure {
-                                snackbarHostState.showSnackbar("Failed to save card")
                             }
                         }
                     }
+                    // commit 후 자동 닫기 안 함 — 사용자가 backdrop 탭으로 직접 닫을 때까지 유지.
                 }
-                HomeEvent.OnRemoveItem -> {
-                    overlayChart?.let { chart ->
-                        scope.launch {
-                            runCatching {
-                                collectionActions.remove(CollectedCard.createKey(chart.title, chart.artist))
-                            }.onSuccess {
-                                isOverlayItemCollected = false
-                            }.onFailure {
-                                snackbarHostState.showSnackbar("Failed to remove card")
-                            }
-                        }
-                    }
+                HomeEvent.OnDismissOverlay -> {
+                    showCollectOverlay = false
+                    overlayChart = null
                 }
-                HomeEvent.OnDismissOverlay -> showCollectOverlay = false
             }
         }
     }

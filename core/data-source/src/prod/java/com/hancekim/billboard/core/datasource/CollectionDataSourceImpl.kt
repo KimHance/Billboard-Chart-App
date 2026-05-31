@@ -17,8 +17,13 @@ class CollectionDataSourceImpl @Inject constructor(
     override fun observeByKey(key: String): Flow<CollectedCard?> =
         dao.observeByKey(key).map { it?.toModel() }
 
-    override suspend fun insert(card: CollectedCard) {
-        dao.insert(card.toEntity())
+    override suspend fun insert(card: CollectedCard): Boolean {
+        // INSERT IGNORE → 신규 삽입 시 rowId, 충돌 시 -1L. 호출 측 contract 와 일치.
+        return dao.upsert(card.toEntity()) != -1L
+    }
+
+    override suspend fun moveToGroup(key: String, groupId: Long) {
+        dao.updateGroup(key, groupId)
     }
 
     override suspend fun deleteByKey(key: String) {
@@ -43,6 +48,7 @@ private fun CollectedCardEntity.toModel() = CollectedCard(
     lastWeek = lastWeek,
     peakPosition = peakPosition,
     weeksOnChart = weeksOnChart,
+    groupId = groupId,
 )
 
 private fun CollectedCard.toEntity() = CollectedCardEntity(
@@ -54,4 +60,5 @@ private fun CollectedCard.toEntity() = CollectedCardEntity(
     lastWeek = lastWeek,
     peakPosition = peakPosition,
     weeksOnChart = weeksOnChart,
+    groupId = groupId,
 )

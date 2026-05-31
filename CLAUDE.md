@@ -34,6 +34,7 @@ Billboard is an Android app that displays Billboard chart data (Hot 100, Billboa
 @.claude/rules/05-error-handling.md
 @.claude/rules/06-testing.md
 @.claude/rules/07-design-system.md
+@.claude/rules/08-string-resources.md
 
 ---
 
@@ -50,6 +51,7 @@ Billboard is an Android app that displays Billboard chart data (Hot 100, Billboa
 | `:core:network` | Retrofit, OkHttp, `ResultCall` / `ResultCallAdapter` |
 | `:core:design-foundation` | Color tokens, typography tokens, icons, modifiers, utilities |
 | `:core:design-system` | `BillboardTheme`, shared Compose components |
+| `:core:resource` | App-wide `strings.xml` (English-only); consumed transitively via `:core:design-system` |
 | `:core:player` | `PlayerState`, `PlayerController`, `YoutubePlayer`, PiP support |
 | `:core:image-loader` | Coil setup (GIF, SVG, network) |
 | `:core:common` | Shared coroutine utilities |

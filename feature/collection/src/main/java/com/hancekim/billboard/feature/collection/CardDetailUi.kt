@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -37,6 +38,8 @@ import com.hancekim.billboard.core.designfoundation.util.throttledProcess
 import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.card.HoloCard
+import com.hancekim.billboard.core.designsystem.componenet.group.GroupChip
+import com.hancekim.billboard.core.resource.R
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dagger.hilt.android.components.ActivityRetainedComponent
 
@@ -64,6 +67,7 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
                 ),
         ) {
             // 닫기 버튼
+            val closeLabel = stringResource(R.string.action_close)
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -72,7 +76,7 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
                     .background(colorScheme.textPrimary.copy(alpha = 0.12f), CircleShape)
                     .semantics {
                         role = Role.Button
-                        contentDescription = "닫기"
+                        contentDescription = closeLabel
                     }
                     .noRippleClickable { state.eventSink(CardDetailEvent.OnCloseClick) },
                 contentAlignment = Alignment.Center,
@@ -119,13 +123,18 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
                     horizontalArrangement = Arrangement.spacedBy(24.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    StatItem(label = "LW", value = card.lastWeek.toString())
-                    StatItem(label = "PEAK", value = card.peakPosition.toString())
-                    StatItem(label = "WEEKS", value = card.weeksOnChart.toString())
+                    StatItem(label = stringResource(R.string.card_detail_stat_lw), value = card.lastWeek.toString())
+                    StatItem(label = stringResource(R.string.card_detail_stat_peak), value = card.peakPosition.toString())
+                    StatItem(label = stringResource(R.string.card_detail_stat_weeks), value = card.weeksOnChart.toString())
                 }
 
                 Spacer(modifier = Modifier.height(18.dp))
 
+                state.group?.let { GroupChip(name = it.name, colorArgb = it.colorArgb) }
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                val removeLabel = stringResource(R.string.card_detail_remove)
                 Box(
                     modifier = Modifier
                         .height(44.dp)
@@ -136,7 +145,7 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
                         )
                         .semantics {
                             role = Role.Button
-                            contentDescription = "REMOVE FROM COLLECTION"
+                            contentDescription = removeLabel
                         }
                         .noRippleClickable(
                             onClick = throttledProcess(id = "card_detail_remove") {
@@ -147,7 +156,7 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "REMOVE FROM COLLECTION",
+                        text = removeLabel,
                         style = BillboardTheme.typography.buttonMd(),
                         color = colorScheme.textPrimary,
                     )

@@ -1,7 +1,7 @@
 package com.hancekim.billboard.home.component
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
@@ -28,9 +28,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
@@ -38,7 +41,14 @@ import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.card.HoloCard
 import com.hancekim.billboard.core.designsystem.componenet.card.SparkleEffect
+import com.hancekim.billboard.core.designsystem.componenet.group.GroupBadge
+import com.hancekim.billboard.core.designsystem.componenet.group.GroupDropdown
 import com.hancekim.billboard.core.domain.model.Chart
+import com.hancekim.billboard.core.domain.model.Group
+import com.hancekim.billboard.core.resource.R
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -49,11 +59,12 @@ private val OverlayEasing = CubicBezierEasing(0.2f, 0.7f, 0.2f, 1f)
 fun CollectOverlay(
     visible: Boolean,
     chart: Chart?,
-    isAlreadyCollected: Boolean,
-    isCollectionFull: Boolean,
+    overlayState: OverlayCollectState,
+    groups: ImmutableList<Group>,
+    selectedGroupId: Long,
     modifier: Modifier = Modifier,
-    onCollect: () -> Unit,
-    onRemove: () -> Unit,
+    onSelectGroup: (Long) -> Unit,
+    onCommit: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     AnimatedVisibility(
@@ -65,12 +76,11 @@ fun CollectOverlay(
         val colorScheme = BillboardTheme.colorScheme
         var sparkleKey by remember { mutableIntStateOf(0) }
 
-        // 카드 entry 애니메이션: scale 0.21 → 1.0 + translationY 아래→제자리
+        // 카드 entry 애니메이션
         val cardScale = remember { Animatable(0.21f) }
         val cardTranslationY = remember { Animatable(400f) }
         val contentAlpha = remember { Animatable(0f) }
 
-        // chart 가 바뀌면 entry 애니메이션 재실행 (다른 곡 롱프레스 시 재진입 효과 보장)
         LaunchedEffect(chart.title, chart.artist) {
             cardScale.snapTo(0.21f)
             cardTranslationY.snapTo(400f)
@@ -85,6 +95,19 @@ fun CollectOverlay(
             }
         }
 
+        // 선택된 그룹 색으로 글로우 색을 구동 — animateColorAsState 결과 State 자체를 들고
+        // drawBehind 람다(draw phase) 안에서 .value 를 read 해 매 보간 프레임 recompose 회피.
+        // targetGlowColor lookup 도 remember 로 캐시해 spring 재시작 / 반복 탐색을 막는다.
+        val targetGlowColor = remember(groups, selectedGroupId) {
+            groups.firstOrNull { it.id == selectedGroupId }
+                ?.colorArgb?.let(::Color) ?: Color.White
+        }
+        val animatedGlowColor = animateColorAsState(
+            targetValue = targetGlowColor,
+            animationSpec = tween(300),
+            label = "overlay-glow",
+        )
+
         Box(
             modifier = modifier
                 .fillMaxSize()
@@ -98,7 +121,6 @@ fun CollectOverlay(
                     .noRippleClickable {},
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                // 카드 영역: scale + translation 애니메이션
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.graphicsLayer {
@@ -107,18 +129,23 @@ fun CollectOverlay(
                         translationY = cardTranslationY.value
                     },
                 ) {
+                    // 글로우: drawBehind 내부에서만 색 read → draw phase 격리
                     Box(
                         modifier = Modifier
                             .size(360.dp)
                             .blur(12.dp)
-                            .background(
-                                brush = Brush.radialGradient(
-                                    colors = listOf(
-                                        colorScheme.holoGlow.copy(alpha = 0.3f),
-                                        Color.Transparent,
+                            .drawBehind {
+                                val c = animatedGlowColor.value
+                                drawRect(
+                                    brush = Brush.radialGradient(
+                                        colors = listOf(
+                                            c.copy(alpha = 0.3f),
+                                            Color.Transparent,
+                                        ),
+                                        center = Offset(size.width / 2f, size.height / 2f),
                                     ),
-                                ),
-                            ),
+                                )
+                            },
                     )
                     HoloCard(
                         albumArtUrl = chart.image,
@@ -127,7 +154,6 @@ fun CollectOverlay(
                     )
                 }
 
-                // 텍스트/버튼 영역: 지연 fade in
                 Column(
                     modifier = Modifier.graphicsLayer { alpha = contentAlpha.value },
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -153,70 +179,55 @@ fun CollectOverlay(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.graphicsLayer { clip = false },
                     ) {
-                        Crossfade(
-                            targetState = isAlreadyCollected,
-                            animationSpec = tween(250),
-                            label = "button_switch",
-                        ) { collected ->
-                            val buttonModifier = Modifier
-                                .widthIn(min = 260.dp)
-                                .height(48.dp)
-                            when {
-                                collected -> {
-                                    Box(
-                                        modifier = buttonModifier
-                                            .border(
-                                                1.dp,
-                                                colorScheme.textOnDark.copy(alpha = 0.3f),
-                                                RoundedCornerShape(24.dp),
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            val badges = remember(groups) {
+                                groups.map { GroupBadge(it.id, it.name, it.colorArgb) }.toImmutableList()
+                            }
+                            GroupDropdown(
+                                items = badges,
+                                selectedId = selectedGroupId,
+                                onSelect = onSelectGroup,
+                            )
+                            Spacer(Modifier.height(16.dp))
+                            val selected = groups.firstOrNull { it.id == selectedGroupId }
+                            if (selected != null) {
+                                val (label, bgColor, borderColor) = when (overlayState) {
+                                    OverlayCollectState.Uncollected ->
+                                        Triple(
+                                            stringResource(R.string.home_overlay_add_to, selected.name.uppercase()),
+                                            Color(selected.colorArgb),
+                                            Color.Transparent,
+                                        )
+
+                                    is OverlayCollectState.Collected ->
+                                        if (overlayState.groupId == selectedGroupId) {
+                                            Triple(
+                                                stringResource(R.string.home_overlay_remove),
+                                                Color.Transparent,
+                                                BillboardTheme.colorScheme.textOnDark,
                                             )
-                                            .noRippleClickable { onRemove() },
-                                        contentAlignment = Alignment.Center,
-                                    ) {
-                                        Text(
-                                            text = "REMOVE FROM COLLECTION",
-                                            style = BillboardTheme.typography.buttonMd(),
-                                            color = colorScheme.textOnDark,
-                                        )
-                                    }
-                                }
-                                isCollectionFull -> {
-                                    Box(
-                                        modifier = buttonModifier
-                                            .border(
-                                                1.dp,
-                                                colorScheme.textOnDarkDisabled.copy(alpha = 0.3f),
-                                                RoundedCornerShape(24.dp),
-                                            ),
-                                        contentAlignment = Alignment.Center,
-                                    ) {
-                                        Text(
-                                            text = "COLLECTION FULL",
-                                            style = BillboardTheme.typography.buttonMd(),
-                                            color = colorScheme.textOnDarkDisabled,
-                                        )
-                                    }
-                                }
-                                else -> {
-                                    Box(
-                                        modifier = buttonModifier
-                                            .background(
-                                                colorScheme.accent,
-                                                RoundedCornerShape(24.dp),
+                                        } else {
+                                            Triple(
+                                                stringResource(R.string.home_overlay_move_to, selected.name.uppercase()),
+                                                Color(selected.colorArgb),
+                                                Color.Transparent,
                                             )
-                                            .noRippleClickable {
-                                                sparkleKey++
-                                                onCollect()
-                                            },
-                                        contentAlignment = Alignment.Center,
-                                    ) {
-                                        Text(
-                                            text = "ADD TO COLLECTION",
-                                            style = BillboardTheme.typography.buttonMd(),
-                                            color = colorScheme.onAccent,
-                                        )
-                                    }
+                                        }
                                 }
+                                OverlayActionButton(
+                                    label = label,
+                                    bg = bgColor,
+                                    border = borderColor,
+                                    onClick = {
+                                        // Sparkle 은 add/move 같은 commit 성공시에만 트리거
+                                        if (overlayState !is OverlayCollectState.Collected ||
+                                            overlayState.groupId != selectedGroupId
+                                        ) {
+                                            sparkleKey++
+                                        }
+                                        onCommit()
+                                    },
+                                )
                             }
                         }
                         SparkleEffect(
@@ -230,13 +241,38 @@ fun CollectOverlay(
                     Spacer(modifier = Modifier.height(14.dp))
 
                     Text(
-                        text = "drag card to rotate · tap backdrop to cancel",
+                        text = stringResource(R.string.home_overlay_hint),
                         style = BillboardTheme.typography.labelMd(),
                         color = colorScheme.textOnDarkDisabled,
                     )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun OverlayActionButton(
+    label: String,
+    bg: Color,
+    border: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .widthIn(min = 260.dp)
+            .height(48.dp)
+            .background(bg, RoundedCornerShape(24.dp))
+            .border(1.dp, border, RoundedCornerShape(24.dp))
+            .noRippleClickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            style = BillboardTheme.typography.buttonMd(),
+            color = BillboardTheme.colorScheme.textOnDark,
+        )
     }
 }
 
@@ -247,10 +283,11 @@ private fun CollectOverlayPreview() {
         CollectOverlay(
             visible = true,
             chart = Chart(title = "Preview Title", artist = "Preview Artist", rank = 1),
-            isAlreadyCollected = false,
-            isCollectionFull = false,
-            onCollect = {},
-            onRemove = {},
+            overlayState = OverlayCollectState.Uncollected,
+            groups = persistentListOf(),
+            selectedGroupId = Group.DEFAULT_ID,
+            onSelectGroup = {},
+            onCommit = {},
             onDismiss = {},
         )
     }

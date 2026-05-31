@@ -8,7 +8,7 @@ Shared Compose UI component library and theme entry point. Builds on top of `:co
 |------|------|
 | `BillboardTheme.kt` | Theme entry point — provides `colorScheme` and `typography` via CompositionLocals |
 | `StateDiffLogger.kt` | Debug utility — `StateDiffLogEffect` logs state diffs to Logcat |
-| `component/header/BillboardHeader.kt` | Top app bar with title and settings icon |
+| `component/header/BillboardHeader.kt` | Top app bar with title; supports leading/trailing icons (Settings, Menu, ArrowBack…) and an optional collection-count badge. `trailingIconContentDescription` overrides the default a11y label for non-Settings trailing icons. |
 | `component/carousel/TopCarousel.kt` | Horizontal pager carousel for top-10 |
 | `component/carousel/CarouselItem.kt` | Individual carousel card |
 | `component/list/RankingList.kt` | Full chart ranking list |
@@ -18,6 +18,12 @@ Shared Compose UI component library and theme entry point. Builds on top of `:co
 | `component/filter/FilterRow.kt` | Chart filter tab row |
 | `component/dialog/BillboardAlert.kt` | Shared alert dialog |
 | `component/title/TitleSection.kt` | Section title with styling |
+| `component/card/HoloCard.kt` | Holographic 3D card (auto-spin + horizontal drag + AGSL shader on API 33+, Compose Canvas fallback below). Caller-tunable `autoSpeed` (default 24f) and `borderRadius`. Reset rotation by wrapping in `key(...) { HoloCard(...) }`. |
+| `component/card/HoloCardShader.kt` | AGSL RuntimeShader source for HoloCard's metallic sheen. |
+| `component/card/SparkleEffect.kt` | Sparkle/particle overlay used by the Home collect overlay. |
+| `component/group/GroupChip.kt` | Pill chip showing a group's name colored by its `colorArgb`. |
+| `component/group/GroupDot.kt` | Small filled circle in a group's color. |
+| `component/group/GroupDropdown.kt` | Group-selector dropdown (auto-hides the chevron when only the default group exists). |
 
 ## BillboardTheme
 ```kotlin

@@ -11,6 +11,7 @@ data-impl/
     YoutubeRepositoryImpl.kt
     PreferenceRepositoryImpl.kt
     CollectionRepositoryImpl.kt
+    GroupRepositoryImpl.kt
   di/
     RepositoryModule.kt   ← @Binds Hilt module
 ```

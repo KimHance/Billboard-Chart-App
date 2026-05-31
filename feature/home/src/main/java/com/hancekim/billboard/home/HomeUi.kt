@@ -10,17 +10,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.StateDiffLogEffect
 import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeader
 import com.hancekim.billboard.core.player.PlayerState
+import com.hancekim.billboard.core.resource.R
 import com.hancekim.billboard.home.component.CollectOverlay
 import com.hancekim.billboard.home.component.PlayerWithPager
+import kotlinx.collections.immutable.toImmutableList
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dagger.hilt.android.components.ActivityRetainedComponent
 
@@ -53,10 +57,10 @@ fun HomeUi(
             containerColor = colorScheme.bgApp,
             topBar = {
                 BillboardHeader(
-                    title = "BILLBOARD",
+                    title = stringResource(R.string.home_title),
                     collectionCount = state.collectionCount,
                     onTrailingIconClick = { eventSink(HomeEvent.OnSettingIconClick) },
-                    onCollectionIconClick = { state.eventSink(HomeEvent.OnCollectionIconClick) },
+                    onCollectionClick = { state.eventSink(HomeEvent.OnCollectionIconClick) },
                 )
             },
             snackbarHost = {
@@ -77,18 +81,23 @@ fun HomeUi(
                     playerState = state.playerState,
                     scrollState = state.scrollState,
                     lazyListState = state.lazyListState,
-                    pipState = state.pipState
+                    pipState = state.pipState,
+                    collectedGroupColorByKey = state.collectedGroupColorByKey,
                 )
             }
         )
+        // state.groups 자체가 바뀔 때만 새 ImmutableList 인스턴스 생성 →
+        // CollectOverlay 가 referential equality 로 skip 가능해진다.
+        val overlayGroups = remember(state.groups) { state.groups.values.toImmutableList() }
         CollectOverlay(
             visible = state.showCollectOverlay,
             chart = state.overlayChart,
-            isAlreadyCollected = state.isOverlayItemCollected,
-            isCollectionFull = state.isCollectionFull,
-            onCollect = { state.eventSink(HomeEvent.OnCollectItem) },
-            onRemove = { state.eventSink(HomeEvent.OnRemoveItem) },
-            onDismiss = { state.eventSink(HomeEvent.OnDismissOverlay) },
+            overlayState = state.overlayState,
+            groups = overlayGroups,
+            selectedGroupId = state.selectedGroupIdInOverlay,
+            onSelectGroup = { eventSink(HomeEvent.OnSelectGroupInOverlay(it)) },
+            onCommit = { eventSink(HomeEvent.OnCommitOverlay) },
+            onDismiss = { eventSink(HomeEvent.OnDismissOverlay) },
         )
     }
 }

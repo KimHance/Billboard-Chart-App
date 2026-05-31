@@ -13,8 +13,11 @@ Home screen — the main screen of the app. Displays Billboard chart rankings wi
 | `HomePresenter.kt` | Business logic; loads chart data and YouTube video detail |
 | `HomeUi.kt` | Top-level `@CircuitInject` composable |
 | `IgnoreHorizontalPadding.kt` | Layout modifier for full-bleed sections |
+| `CollectionActions.kt` | Internal helper bundling `AddToCollectionUseCase` + `RemoveFromCollectionUseCase` + `IsCollectedUseCase` for the long-press collect overlay flow |
 | `component/PlayerWithPager.kt` | YouTube player + chart pager |
 | `component/TrendingSection.kt` | Trending (top-10) carousel section |
+| `component/CollectOverlay.kt` | Long-press overlay: holographic preview + `GroupDropdown` + ADD / MOVE / REMOVE pill. Stays open after commit so the sparkle animation plays out — closed by backdrop tap / back press. |
+| `component/OverlayCollectState.kt` | State holder for the collect overlay (selected group, currently-collected status, etc.) |
 
 ## State & Events
 **Key state fields:**
@@ -27,7 +30,7 @@ Home screen — the main screen of the app. Displays Billboard chart rankings wi
 - `pipState: PipState` — PiP overlay state
 - `isPipMode: Boolean` — derived: `listOffsetY > 0 && scrollState >= listOffsetY`
 
-**Events:** `OnFilterClick`, `OnExpandButtonClick`, `OnBackPressed`, `OnSettingIconClick`, `OnListPositioned`, `OnItemClick`
+**Events:** `OnFilterClick`, `OnExpandButtonClick`, `OnBackPressed`, `OnSettingIconClick`, `OnListPositioned`, `OnItemClick`, and the long-press collect overlay flow (`OnLongPressItem`, `OnSelectGroupInOverlay`, `OnCommitOverlay`, `OnDismissOverlay`).
 
 ## Presenter Rules
 - Uses `produceRetainedState` to load all four chart types simultaneously on first render.
@@ -49,6 +52,6 @@ Home screen — the main screen of the app. Displays Billboard chart rankings wi
 
 ## Dependencies
 - `:core:circuit` — `BillboardScreen`, `PopResult`
-- `:core:domain` — `GetBillboard*UseCase`, `GetYoutubeVideoDetailUseCase`
-- `:core:design-system` — `BillboardTheme`, components
+- `:core:domain` — `GetBillboard*UseCase`, `GetYoutubeVideoDetailUseCase`, `GetGroupsFlowUseCase`, `AddToCollectionUseCase`, `RemoveFromCollectionUseCase`, `IsCollectedUseCase`
+- `:core:design-system` — `BillboardTheme`, `HoloCard`, `SparkleEffect`, `GroupDropdown`, `BillboardHeader`
 - `:core:player` — `PlayerState`, `PipState`, `YoutubePlayer`

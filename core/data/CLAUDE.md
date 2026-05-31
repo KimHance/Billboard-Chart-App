@@ -10,14 +10,15 @@ data/
     ChartRepository.kt       ← Billboard chart data
     YoutubeRepository.kt     ← YouTube search + video info
     PreferenceRepository.kt  ← App preferences (theme, font)
+    CollectionRepository.kt  ← Persistent card collection
+    GroupRepository.kt       ← Persistent groups (cascade-deletes cards on removeGroup)
   model/
-    BillboardResponse.kt     ← Chart API response DTO
     Chart.kt                 ← Chart item DTO
-    YoutubeSearchResponse.kt ← YouTube search DTO
-    VideoListResponse.kt     ← YouTube video info DTO
     YoutubeVideoInfo.kt      ← YouTube video detail DTO
     YoutubeSearchResult.kt   ← YouTube search result DTO
     BillboardPreference.kt   ← DataStore preference model
+    CollectedCard.kt         ← Persisted card row (key, title, artist, albumArtUrl, groupId, collectedAt, stats)
+    Group.kt                 ← Group row (id, name, colorArgb, createdAt). `Group.DEFAULT_ID` is the non-deletable "Starred" group.
   datastore/
     serializer/
       BillboardPreferenceSerializer.kt

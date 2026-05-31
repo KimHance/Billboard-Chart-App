@@ -104,9 +104,9 @@ private fun BillboardAlertPreview() {
         Box(Modifier.fillMaxSize()) {
             BillboardAlert(
                 onClick = {},
-                title = "네트워크 연결 확인",
-                body = "네트워크 연결을 확인해주세요",
-                buttonLabel = "확인",
+                title = "Network connection",
+                body = "Please check your network connection.",
+                buttonLabel = "OK",
                 onDismissRequest = {}
             )
         }

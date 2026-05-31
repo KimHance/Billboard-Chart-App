@@ -16,10 +16,10 @@ class CollectionRepositoryImpl @Inject constructor(
     override fun getByKeyFlow(key: String): Flow<CollectedCard?> =
         dataSource.observeByKey(key)
 
-    override suspend fun add(card: CollectedCard): Boolean {
-        if (dataSource.count() >= CollectedCard.MAX_SLOTS) return false
-        dataSource.insert(card)
-        return true
+    override suspend fun add(card: CollectedCard): Boolean = dataSource.insert(card)
+
+    override suspend fun moveToGroup(key: String, groupId: Long) {
+        dataSource.moveToGroup(key, groupId)
     }
 
     override suspend fun remove(key: String) {

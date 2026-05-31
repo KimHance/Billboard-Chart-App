@@ -4,6 +4,8 @@ import com.hancekim.billboard.core.datasource.ChartDataSource
 import com.hancekim.billboard.core.datasource.ChartDataSourceImpl
 import com.hancekim.billboard.core.datasource.CollectionDataSource
 import com.hancekim.billboard.core.datasource.CollectionDataSourceImpl
+import com.hancekim.billboard.core.datasource.GroupDataSource
+import com.hancekim.billboard.core.datasource.GroupDataSourceImpl
 import com.hancekim.billboard.core.datasource.PreferenceDataSource
 import com.hancekim.billboard.core.datasource.PreferenceDataSourceImpl
 import com.hancekim.billboard.core.datasource.YoutubeDataSource
@@ -32,4 +34,8 @@ abstract class DataSourceModule {
     @Binds
     @Singleton
     abstract fun bindCollectionDataSource(impl: CollectionDataSourceImpl): CollectionDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindGroupDataSource(impl: GroupDataSourceImpl): GroupDataSource
 }

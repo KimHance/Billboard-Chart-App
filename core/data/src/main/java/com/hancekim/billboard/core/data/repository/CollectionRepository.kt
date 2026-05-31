@@ -7,6 +7,7 @@ interface CollectionRepository {
     fun getCollectionFlow(): Flow<List<CollectedCard>>
     fun getByKeyFlow(key: String): Flow<CollectedCard?>
     suspend fun add(card: CollectedCard): Boolean
+    suspend fun moveToGroup(key: String, groupId: Long)
     suspend fun remove(key: String)
     suspend fun removeAll()
     suspend fun isCollected(key: String): Boolean

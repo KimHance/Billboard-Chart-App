@@ -5,7 +5,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.datatest.fixture.fakeCollectedCard
 import com.hancekim.billboard.core.datatest.repository.FakeCollectionRepository
+import com.hancekim.billboard.core.datatest.repository.FakeGroupRepository
 import com.hancekim.billboard.core.domain.GetCollectedCardFlowUseCase
+import com.hancekim.billboard.core.domain.GetGroupsFlowUseCase
 import com.hancekim.billboard.core.domain.RemoveFromCollectionUseCase
 import com.slack.circuit.test.FakeNavigator
 import kotlinx.coroutines.test.runTest
@@ -25,6 +27,7 @@ class CardDetailPresenterTest {
 
     private lateinit var fakeNavigator: FakeNavigator
     private lateinit var fakeRepository: FakeCollectionRepository
+    private lateinit var fakeGroupRepository: FakeGroupRepository
     private var currentState: CardDetailState? = null
 
     private val testCardKey = "TestTitle::TestArtist"
@@ -32,6 +35,7 @@ class CardDetailPresenterTest {
     @Before
     fun setUp() {
         fakeRepository = FakeCollectionRepository()
+        fakeGroupRepository = FakeGroupRepository()
         fakeNavigator = FakeNavigator(BillboardScreen.CardDetail(testCardKey))
     }
 
@@ -39,6 +43,7 @@ class CardDetailPresenterTest {
         navigator = fakeNavigator,
         screen = BillboardScreen.CardDetail(cardKey),
         getCollectedCardFlowUseCase = GetCollectedCardFlowUseCase(fakeRepository),
+        getGroupsFlowUseCase = GetGroupsFlowUseCase(fakeGroupRepository),
         removeFromCollectionUseCase = RemoveFromCollectionUseCase(fakeRepository),
     )
 
@@ -52,7 +57,7 @@ class CardDetailPresenterTest {
     // ── 카드 로드 ──────────────────────────────────────────────────────────────
 
     @Test
-    fun 카드가_존재하면_state에_반영된다() = runTest {
+    fun `카드가 존재하면 state 에 반영된다`() = runTest {
         fakeRepository.add(fakeCollectedCard(testCardKey))
 
         launchPresenter()
@@ -66,7 +71,7 @@ class CardDetailPresenterTest {
     }
 
     @Test
-    fun 카드가_없으면_state_card는_null이다() {
+    fun `카드가 없으면 state card 는 null 이다`() {
         launchPresenter("nonexistent_key")
 
         composeTestRule.runOnIdle {
@@ -77,7 +82,7 @@ class CardDetailPresenterTest {
     // ── 닫기 ────────────────────────────────────────────────────────────────────
 
     @Test
-    fun OnCloseClick으로_navigator_pop이_호출된다() = runTest {
+    fun `OnCloseClick 으로 navigator pop 이 호출된다`() = runTest {
         fakeRepository.add(fakeCollectedCard(testCardKey))
         launchPresenter()
         composeTestRule.waitUntil(timeoutMillis = 3_000) {
@@ -94,7 +99,23 @@ class CardDetailPresenterTest {
     // ── 삭제 ────────────────────────────────────────────────────────────────────
 
     @Test
-    fun OnRemoveClick으로_카드가_삭제되고_pop이_호출된다() = runTest {
+    fun `state group 은 카드의 groupId 와 매칭되는 그룹으로 채워진다`() = runTest {
+        // 사용자-정의 그룹 id 로 셋업해 "lookup 로직" 자체를 검증 (DEFAULT_ID 양쪽 박기 = tautology)
+        val workoutId = fakeGroupRepository.add("Workout", 0xFFFFB400.toInt())
+        fakeRepository.add(fakeCollectedCard(testCardKey, groupId = workoutId))
+        launchPresenter()
+        composeTestRule.waitUntil(timeoutMillis = 3_000) {
+            currentState?.group != null
+        }
+        composeTestRule.runOnIdle {
+            val s = checkNotNull(currentState)
+            assertEquals(workoutId, s.group?.id)
+            assertEquals("Workout", s.group?.name)
+        }
+    }
+
+    @Test
+    fun `OnRemoveClick 으로 카드가 삭제되고 pop 이 호출된다`() = runTest {
         fakeRepository.add(fakeCollectedCard(testCardKey))
         launchPresenter()
         composeTestRule.waitUntil(timeoutMillis = 3_000) {
