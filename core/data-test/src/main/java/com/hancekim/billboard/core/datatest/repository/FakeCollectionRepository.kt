@@ -34,10 +34,6 @@ class FakeCollectionRepository @Inject constructor() : CollectionRepository {
         cards.value = emptyList()
     }
 
-    suspend fun removeByGroup(groupId: Long) {
-        cards.value = cards.value.filterNot { it.groupId == groupId }
-    }
-
     override suspend fun isCollected(key: String): Boolean =
         cards.value.any { it.key == key }
 
