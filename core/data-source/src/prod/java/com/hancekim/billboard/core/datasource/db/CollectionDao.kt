@@ -14,9 +14,13 @@ interface CollectionDao {
     @Query("SELECT * FROM collected_cards WHERE groupId = :groupId ORDER BY collectedAt DESC")
     fun observeByGroup(groupId: Long): Flow<List<CollectedCardEntity>>
 
-    // 같은 key 가 들어오면 REPLACE — 한 곡이 다른 그룹으로 이동하는 의미
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    // 신규 삽입 전용 — 같은 key 가 이미 있으면 무시 (그룹 이동은 updateGroup 으로 분리).
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun upsert(entity: CollectedCardEntity)
+
+    // 그룹 이동 전용 — collectedAt 등 다른 컬럼은 보존하고 groupId 만 갱신.
+    @Query("UPDATE collected_cards SET groupId = :groupId WHERE `key` = :key")
+    suspend fun updateGroup(key: String, groupId: Long)
 
     @Query("DELETE FROM collected_cards WHERE `key` = :key")
     suspend fun deleteByKey(key: String)

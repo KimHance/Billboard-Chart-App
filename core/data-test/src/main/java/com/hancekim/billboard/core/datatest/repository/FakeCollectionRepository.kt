@@ -17,8 +17,13 @@ class FakeCollectionRepository @Inject constructor() : CollectionRepository {
         cards.map { list -> list.find { it.key == key } }
 
     override suspend fun add(card: CollectedCard): Boolean {
-        cards.value = cards.value.filterNot { it.key == card.key } + card
+        if (cards.value.any { it.key == card.key }) return false
+        cards.value = cards.value + card
         return true
+    }
+
+    override suspend fun moveToGroup(key: String, groupId: Long) {
+        cards.value = cards.value.map { if (it.key == key) it.copy(groupId = groupId) else it }
     }
 
     override suspend fun remove(key: String) {

@@ -289,9 +289,9 @@ class HomePresenter @AssistedInject constructor(
                                             .onFailure { Timber.e(it, "removeFromCollection failed") }
                                     }
                                 } else {
-                                    // REPLACE 의 add — 같은 key 면 repository 가 갱신
+                                    // 그룹 이동만 — collectedAt 등은 보존
                                     scope.launch {
-                                        runCatching { collectionActions.add(card) }
+                                        runCatching { collectionActions.move(card.key, selectedGroupIdInOverlay) }
                                             .onFailure { Timber.e(it, "moveGroup failed") }
                                     }
                                 }

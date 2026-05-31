@@ -21,6 +21,10 @@ class CollectionRepositoryImpl @Inject constructor(
         return true
     }
 
+    override suspend fun moveToGroup(key: String, groupId: Long) {
+        dataSource.moveToGroup(key, groupId)
+    }
+
     override suspend fun remove(key: String) {
         dataSource.deleteByKey(key)
     }

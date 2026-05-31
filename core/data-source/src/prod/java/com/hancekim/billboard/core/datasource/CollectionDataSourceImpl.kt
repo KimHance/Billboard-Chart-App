@@ -21,6 +21,10 @@ class CollectionDataSourceImpl @Inject constructor(
         dao.upsert(card.toEntity())
     }
 
+    override suspend fun moveToGroup(key: String, groupId: Long) {
+        dao.updateGroup(key, groupId)
+    }
+
     override suspend fun deleteByKey(key: String) {
         dao.deleteByKey(key)
     }

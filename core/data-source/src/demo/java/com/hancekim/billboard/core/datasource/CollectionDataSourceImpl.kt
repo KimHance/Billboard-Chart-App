@@ -19,8 +19,13 @@ class CollectionDataSourceImpl @Inject constructor() : CollectionDataSource {
         cards.map { list -> list.find { it.key == key } }
 
     override suspend fun insert(card: CollectedCard) {
-        // 동일 key 카드가 존재하면 교체 — 그룹 이동 시 기존 항목 덮어씀
-        cards.value = cards.value.filterNot { it.key == card.key } + card
+        // 신규 삽입 전용 — 이미 동일 key 가 있으면 IGNORE (prod Dao 의 INSERT IGNORE 와 동등).
+        if (cards.value.any { it.key == card.key }) return
+        cards.value = cards.value + card
+    }
+
+    override suspend fun moveToGroup(key: String, groupId: Long) {
+        cards.value = cards.value.map { if (it.key == key) it.copy(groupId = groupId) else it }
     }
 
     override suspend fun deleteByKey(key: String) {
