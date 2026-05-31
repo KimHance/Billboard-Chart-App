@@ -99,6 +99,22 @@ class CardDetailPresenterTest {
     // ── 삭제 ────────────────────────────────────────────────────────────────────
 
     @Test
+    fun `state group 은 카드의 groupId 와 매칭되는 그룹으로 채워진다`() = runTest {
+        // 사용자-정의 그룹 id 로 셋업해 "lookup 로직" 자체를 검증 (DEFAULT_ID 양쪽 박기 = tautology)
+        val workoutId = fakeGroupRepository.add("Workout", 0xFFFFB400.toInt())
+        fakeRepository.add(fakeCollectedCard(testCardKey, groupId = workoutId))
+        launchPresenter()
+        composeTestRule.waitUntil(timeoutMillis = 3_000) {
+            currentState?.group != null
+        }
+        composeTestRule.runOnIdle {
+            val s = checkNotNull(currentState)
+            assertEquals(workoutId, s.group?.id)
+            assertEquals("Workout", s.group?.name)
+        }
+    }
+
+    @Test
     fun `OnRemoveClick 으로 카드가 삭제되고 pop 이 호출된다`() = runTest {
         fakeRepository.add(fakeCollectedCard(testCardKey))
         launchPresenter()

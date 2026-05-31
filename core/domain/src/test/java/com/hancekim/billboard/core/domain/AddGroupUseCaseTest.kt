@@ -1,5 +1,6 @@
 package com.hancekim.billboard.core.domain
 
+import com.hancekim.billboard.core.data.exception.DuplicateGroupNameException
 import com.hancekim.billboard.core.data.repository.GroupRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -40,5 +41,13 @@ class AddGroupUseCaseTest {
         val result = useCase("  Workout ", 123)
         assertEquals(42L, result.getOrNull())
         coVerify { repo.add("Workout", 123) }
+    }
+
+    @Test
+    fun `existsByName 미스 후 insert 시 race 충돌 - DuplicateGroupNameException 을 DuplicateName 으로 매핑`() = runTest {
+        coEvery { repo.existsByName(any()) } returns false
+        coEvery { repo.add("Workout", 0) } throws DuplicateGroupNameException("Workout")
+        val result = useCase("Workout", 0)
+        assertTrue(result.exceptionOrNull() is GroupValidationError.DuplicateName)
     }
 }
