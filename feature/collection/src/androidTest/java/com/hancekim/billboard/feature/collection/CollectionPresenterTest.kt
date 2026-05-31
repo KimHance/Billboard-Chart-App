@@ -60,21 +60,18 @@ class CollectionPresenterTest {
     }
 
     @Test
-    fun `OnSelectGroup 으로 currentGroupId 변경되고 sidebar 닫힘`() = runTest {
+    fun `OnSelectGroup 으로 currentGroupId 변경된다`() = runTest {
         val groupRepo = FakeGroupRepository().apply { add("Workout", 0xFFFFB400.toInt()) }
         launchPresenter(buildPresenter(groupRepo = groupRepo))
         composeTestRule.waitUntil(timeoutMillis = 3_000) {
             currentState?.groups?.any { it.id == 2L } == true
         }
-        sendEvent(CollectionEvent.OnSidebarToggle(true))
         sendEvent(CollectionEvent.OnSelectGroup(2L))
         composeTestRule.waitUntil(timeoutMillis = 3_000) {
             currentState?.currentGroupId == 2L
         }
         composeTestRule.runOnIdle {
-            val s = checkNotNull(currentState)
-            assertEquals(2L, s.currentGroupId)
-            assertEquals(false, s.sidebarOpen)
+            assertEquals(2L, checkNotNull(currentState).currentGroupId)
         }
     }
 

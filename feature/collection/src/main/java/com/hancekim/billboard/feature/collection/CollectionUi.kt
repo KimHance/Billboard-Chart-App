@@ -14,6 +14,8 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -41,42 +43,39 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import dagger.hilt.android.components.ActivityRetainedComponent
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.launch
 
 @CircuitInject(BillboardScreen.Collection::class, ActivityRetainedComponent::class)
 @Composable
 fun CollectionUi(state: CollectionState, modifier: Modifier = Modifier) {
     val colorScheme = BillboardTheme.colorScheme
+    // drawerState 가 사이드바 단일 SoT — Presenter 는 sidebarOpen 을 들고 있지 않다.
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val openSidebar = remember(drawerState, scope) { { scope.launch { drawerState.open() } } }
+    val closeSidebar = remember(drawerState, scope) { { scope.launch { drawerState.close() } } }
+
     // 사이드바 열림 상태면 백프레스가 사이드바만 닫는다 — 화면 자체 pop 은 두 번째 백프레스에서.
     BackHandler {
-        if (state.sidebarOpen) {
-            state.eventSink(CollectionEvent.OnSidebarToggle(false))
+        if (drawerState.isOpen) {
+            closeSidebar()
         } else {
             state.eventSink(CollectionEvent.OnBackClick)
         }
     }
 
-    // DismissibleNavigationDrawer 는 좌측에서 열림이 기본 — RTL 트릭으로 우측 배치.
+    // 그룹 변경(선택/새 그룹 생성 성공) 시 사이드바 자동 닫기 — 최초 컴포지션 때는 drawer 가 닫혀 있어 no-op.
+    LaunchedEffect(state.currentGroupId) {
+        if (drawerState.isOpen) drawerState.close()
+    }
+
+    // ModalNavigationDrawer 는 좌측에서 열림이 기본 — RTL 트릭으로 우측 배치.
     // drawer 내용물은 다시 Ltr 로 되돌려 일반 레이아웃 유지.
-    val drawerState = rememberDrawerState(
-        if (state.sidebarOpen) DrawerValue.Open else DrawerValue.Closed,
-    )
-
-    // state.sidebarOpen → drawerState 동기화 (외부 트리거)
-    LaunchedEffect(state.sidebarOpen) {
-        if (state.sidebarOpen && !drawerState.isOpen) drawerState.open()
-        if (!state.sidebarOpen && drawerState.isOpen) drawerState.close()
-    }
-    // 사용자 제스처/탭으로 drawer 가 바뀌면 state 도 따라가게
-    LaunchedEffect(drawerState.currentValue) {
-        val open = drawerState.currentValue == DrawerValue.Open
-        if (open != state.sidebarOpen) state.eventSink(CollectionEvent.OnSidebarToggle(open))
-    }
-
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         ModalNavigationDrawer(
             modifier = modifier,
             drawerState = drawerState,
-            // 스와이프 제스처로 열고 닫는 동작은 차단 — 헤더의 메뉴 버튼으로만 토글.
+            // 스와이프 제스처로 열고 닫는 동작은 차단 — 메뉴 버튼 / 스크림 탭 / 백프레스만 토글.
             gesturesEnabled = false,
             drawerContent = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -90,7 +89,7 @@ fun CollectionUi(state: CollectionState, modifier: Modifier = Modifier) {
                             countsByGroupId = state.countsByGroupId,
                             pendingDeleteGroupId = state.pendingDeleteGroupId,
                             newGroupForm = state.newGroupForm,
-                            onClose = { state.eventSink(CollectionEvent.OnSidebarToggle(false)) },
+                            onClose = { closeSidebar() },
                             onSelectGroup = { state.eventSink(CollectionEvent.OnSelectGroup(it)) },
                             onRequestDelete = { state.eventSink(CollectionEvent.OnRequestDeleteGroup(it)) },
                             onConfirmDelete = { state.eventSink(CollectionEvent.OnConfirmDeleteGroup) },
@@ -108,7 +107,7 @@ fun CollectionUi(state: CollectionState, modifier: Modifier = Modifier) {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 CollectionContent(
                     state = state,
-                    onOpenSidebar = { state.eventSink(CollectionEvent.OnSidebarToggle(true)) },
+                    onOpenSidebar = { openSidebar() },
                 )
             }
         }
@@ -218,7 +217,6 @@ private fun CollectionUiSidebarClosedPreview() {
                 cardsInCurrentGroup = previewCards,
                 countsByGroupId = previewCounts,
                 nowPlayingKey = "a",
-                sidebarOpen = false,
                 newGroupForm = null,
                 pendingDeleteGroupId = null,
                 eventSink = {},
@@ -227,22 +225,5 @@ private fun CollectionUiSidebarClosedPreview() {
     }
 }
 
-@ThemePreviews
-@Composable
-private fun CollectionUiSidebarOpenPreview() {
-    BillboardTheme {
-        CollectionUi(
-            state = CollectionState(
-                groups = previewGroups,
-                currentGroupId = Group.DEFAULT_ID,
-                cardsInCurrentGroup = previewCards,
-                countsByGroupId = previewCounts,
-                nowPlayingKey = "a",
-                sidebarOpen = true,
-                newGroupForm = null,
-                pendingDeleteGroupId = null,
-                eventSink = {},
-            ),
-        )
-    }
-}
+// 사이드바 열린 상태 프리뷰는 drawerState 가 UI 내부 SoT 라 더 이상 의미가 없어 제거.
+

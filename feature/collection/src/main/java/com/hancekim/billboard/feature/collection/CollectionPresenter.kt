@@ -60,7 +60,6 @@ class CollectionPresenter @AssistedInject constructor(
             allCards.groupingBy { it.groupId }.eachCount().toImmutableMap()
         }
         var nowPlayingKey by rememberRetained { mutableStateOf<String?>(null) }
-        var sidebarOpen by rememberRetained { mutableStateOf(false) }
         var newGroupForm by rememberRetained { mutableStateOf<NewGroupFormState?>(null) }
         var pendingDeleteGroupId by rememberRetained { mutableStateOf<Long?>(null) }
 
@@ -79,7 +78,6 @@ class CollectionPresenter @AssistedInject constructor(
             cardsInCurrentGroup = cardsInCurrentGroup,
             countsByGroupId = countsByGroupId,
             nowPlayingKey = nowPlayingKey,
-            sidebarOpen = sidebarOpen,
             newGroupForm = newGroupForm,
             pendingDeleteGroupId = pendingDeleteGroupId,
             eventSink = { event ->
@@ -97,10 +95,9 @@ class CollectionPresenter @AssistedInject constructor(
                     }
                     CollectionEvent.OnInspectClick ->
                         nowPlayingKey?.let { navigator.goTo(BillboardScreen.CardDetail(it)) }
-                    is CollectionEvent.OnSidebarToggle -> sidebarOpen = event.open
                     is CollectionEvent.OnSelectGroup -> {
+                        // 사이드바 닫기는 UI 가 currentGroupId 변경을 감지해서 처리.
                         currentGroupId = event.id
-                        sidebarOpen = false
                     }
                     is CollectionEvent.OnRequestDeleteGroup -> {
                         if (event.id == Group.DEFAULT_ID) {
@@ -151,7 +148,6 @@ class CollectionPresenter @AssistedInject constructor(
                                     .onSuccess { newId ->
                                         currentGroupId = newId
                                         newGroupForm = null
-                                        sidebarOpen = false
                                     }
                                     .onFailure { Timber.e(it, "addGroup failed") }
                             }

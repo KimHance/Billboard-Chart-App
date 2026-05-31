@@ -16,7 +16,6 @@ data class CollectionState(
     val cardsInCurrentGroup: ImmutableList<CollectedCard>,
     val countsByGroupId: ImmutableMap<Long, Int>,
     val nowPlayingKey: String?,
-    val sidebarOpen: Boolean,
     val newGroupForm: NewGroupFormState?,
     val pendingDeleteGroupId: Long?,
     val eventSink: (CollectionEvent) -> Unit,
@@ -27,7 +26,6 @@ sealed interface CollectionEvent : CircuitUiEvent {
     data class OnSelectCard(val key: String) : CollectionEvent
     data class OnRemoveCard(val key: String) : CollectionEvent
     data object OnInspectClick : CollectionEvent
-    data class OnSidebarToggle(val open: Boolean) : CollectionEvent
     data class OnSelectGroup(val id: Long) : CollectionEvent
     data class OnRequestDeleteGroup(val id: Long) : CollectionEvent
     data object OnConfirmDeleteGroup : CollectionEvent
