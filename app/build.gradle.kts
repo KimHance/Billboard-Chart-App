@@ -8,6 +8,12 @@ plugins {
 android {
     namespace = "com.hancekim.billboard"
 
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+        }
+    }
+
     defaultConfig {
         applicationId = "com.hancekim.billboard"
         versionCode = libs.versions.appVersionCode.get().toInt()
@@ -56,6 +62,11 @@ dependencies {
     implementation(projects.feature.collection)
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(projects.core.dataTest)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(kotlin("test"))
 
     baselineProfile(projects.benchmark)
 }
