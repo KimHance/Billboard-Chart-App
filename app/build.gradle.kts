@@ -33,6 +33,11 @@ android {
     }
 }
 
+ksp {
+    // appfunctions-compiler 가 여러 모듈에 분산되어 있어도 :app 에서 한 번 모아 schema 생성.
+    arg("appfunctions:aggregateAppFunctions", "true")
+}
+
 dependencies {
     implementation(projects.core.designSystem)
     implementation(projects.core.imageLoader)
@@ -41,6 +46,9 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.splash)
+    implementation(libs.androidx.appfunctions)
+    implementation(libs.androidx.appfunctions.service)
+    ksp(libs.androidx.appfunctions.compiler)
 
     implementation(projects.feature.splash)
     implementation(projects.feature.home)
