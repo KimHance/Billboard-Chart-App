@@ -353,6 +353,7 @@ Landroidx/collection/MutableIntObjectMap;
 HSPLandroidx/collection/MutableIntObjectMap;-><init>(I)V
 HSPLandroidx/collection/MutableIntObjectMap;-><init>(IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 HSPLandroidx/collection/MutableIntObjectMap;->adjustStorage$collection()V
+HSPLandroidx/collection/MutableIntObjectMap;->findAbsoluteInsertIndex(I)I
 HSPLandroidx/collection/MutableIntObjectMap;->findFirstAvailableSlot(I)I
 HSPLandroidx/collection/MutableIntObjectMap;->initializeGrowth()V
 HSPLandroidx/collection/MutableIntObjectMap;->initializeMetadata(I)V
@@ -396,6 +397,7 @@ HSPLandroidx/collection/MutableObjectIntMap;-><init>(IILkotlin/jvm/internal/Defa
 HSPLandroidx/collection/MutableObjectIntMap;->adjustStorage$collection()V
 HSPLandroidx/collection/MutableObjectIntMap;->clear()V
 HSPLandroidx/collection/MutableObjectIntMap;->findFirstAvailableSlot(I)I
+HSPLandroidx/collection/MutableObjectIntMap;->findIndex(Ljava/lang/Object;)I
 HSPLandroidx/collection/MutableObjectIntMap;->initializeGrowth()V
 HSPLandroidx/collection/MutableObjectIntMap;->initializeMetadata(I)V
 HSPLandroidx/collection/MutableObjectIntMap;->initializeStorage(I)V
@@ -425,6 +427,7 @@ HSPLandroidx/collection/MutableScatterMap;-><init>(IILkotlin/jvm/internal/Defaul
 HSPLandroidx/collection/MutableScatterMap;->adjustStorage$collection()V
 HSPLandroidx/collection/MutableScatterMap;->clear()V
 HSPLandroidx/collection/MutableScatterMap;->findFirstAvailableSlot(I)I
+HSPLandroidx/collection/MutableScatterMap;->findInsertIndex(Ljava/lang/Object;)I
 HSPLandroidx/collection/MutableScatterMap;->initializeGrowth()V
 HSPLandroidx/collection/MutableScatterMap;->initializeMetadata(I)V
 HSPLandroidx/collection/MutableScatterMap;->initializeStorage(I)V
@@ -441,7 +444,6 @@ HSPLandroidx/collection/MutableScatterSet;->adjustStorage$collection()V
 HSPLandroidx/collection/MutableScatterSet;->asMutableSet()Ljava/util/Set;
 HSPLandroidx/collection/MutableScatterSet;->clear()V
 HSPLandroidx/collection/MutableScatterSet;->dropDeletes$collection()V
-HSPLandroidx/collection/MutableScatterSet;->findAbsoluteInsertIndex(Ljava/lang/Object;)I
 HSPLandroidx/collection/MutableScatterSet;->findFirstAvailableSlot(I)I
 HSPLandroidx/collection/MutableScatterSet;->initializeGrowth()V
 HSPLandroidx/collection/MutableScatterSet;->initializeMetadata(I)V
@@ -4164,6 +4166,7 @@ HSPLandroidx/compose/runtime/CompositionImpl;->prepareCompose(Lkotlin/jvm/functi
 HSPLandroidx/compose/runtime/CompositionImpl;->recompose()Z
 HSPLandroidx/compose/runtime/CompositionImpl;->recomposeScopeReleased(Landroidx/compose/runtime/RecomposeScopeImpl;)V
 HSPLandroidx/compose/runtime/CompositionImpl;->recordModificationsOf(Ljava/util/Set;)V
+HSPLandroidx/compose/runtime/CompositionImpl;->recordReadOf(Ljava/lang/Object;)V
 HSPLandroidx/compose/runtime/CompositionImpl;->recordWriteOf(Ljava/lang/Object;)V
 HSPLandroidx/compose/runtime/CompositionImpl;->removeObservation$runtime(Ljava/lang/Object;Landroidx/compose/runtime/RecomposeScopeImpl;)V
 HSPLandroidx/compose/runtime/CompositionImpl;->setContent(Lkotlin/jvm/functions/Function2;)V
@@ -4197,13 +4200,13 @@ HSPLandroidx/compose/runtime/CompositionLocalMap$Companion;-><init>()V
 HSPLandroidx/compose/runtime/CompositionLocalMap$Companion;->getEmpty()Landroidx/compose/runtime/CompositionLocalMap;
 Landroidx/compose/runtime/CompositionLocalMapKt;
 HSPLandroidx/compose/runtime/CompositionLocalMapKt;->contains(Landroidx/compose/runtime/PersistentCompositionLocalMap;Landroidx/compose/runtime/CompositionLocal;)Z
-HSPLandroidx/compose/runtime/CompositionLocalMapKt;->read(Landroidx/compose/runtime/PersistentCompositionLocalMap;Landroidx/compose/runtime/CompositionLocal;)Ljava/lang/Object;
 HSPLandroidx/compose/runtime/CompositionLocalMapKt;->updateCompositionMap$default([Landroidx/compose/runtime/ProvidedValue;Landroidx/compose/runtime/PersistentCompositionLocalMap;Landroidx/compose/runtime/PersistentCompositionLocalMap;ILjava/lang/Object;)Landroidx/compose/runtime/PersistentCompositionLocalMap;
 HSPLandroidx/compose/runtime/CompositionLocalMapKt;->updateCompositionMap([Landroidx/compose/runtime/ProvidedValue;Landroidx/compose/runtime/PersistentCompositionLocalMap;Landroidx/compose/runtime/PersistentCompositionLocalMap;)Landroidx/compose/runtime/PersistentCompositionLocalMap;
 Landroidx/compose/runtime/CompositionObserverHolder;
 HSPLandroidx/compose/runtime/CompositionObserverHolder;-><clinit>()V
 HSPLandroidx/compose/runtime/CompositionObserverHolder;-><init>(Landroidx/compose/runtime/tooling/CompositionObserver;ZLandroidx/compose/runtime/CompositionContext;)V
 HSPLandroidx/compose/runtime/CompositionObserverHolder;-><init>(Landroidx/compose/runtime/tooling/CompositionObserver;ZLandroidx/compose/runtime/CompositionContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+HSPLandroidx/compose/runtime/CompositionObserverHolder;->current()Landroidx/compose/runtime/tooling/CompositionObserver;
 Landroidx/compose/runtime/CompositionServiceKey;
 Landroidx/compose/runtime/CompositionServices;
 Landroidx/compose/runtime/ComputedProvidableCompositionLocal;
@@ -4293,6 +4296,7 @@ HSPLandroidx/compose/runtime/GapComposer;-><init>(Landroidx/compose/runtime/Appl
 HSPLandroidx/compose/runtime/GapComposer;->access$getChildrenComposing$p(Landroidx/compose/runtime/GapComposer;)I
 HSPLandroidx/compose/runtime/GapComposer;->access$getParentContext$p(Landroidx/compose/runtime/GapComposer;)Landroidx/compose/runtime/CompositionContext;
 HSPLandroidx/compose/runtime/GapComposer;->access$setChildrenComposing$p(Landroidx/compose/runtime/GapComposer;I)V
+HSPLandroidx/compose/runtime/GapComposer;->addRecomposeScope()V
 HSPLandroidx/compose/runtime/GapComposer;->apply(Ljava/lang/Object;Lkotlin/jvm/functions/Function2;)V
 HSPLandroidx/compose/runtime/GapComposer;->buildContext()Landroidx/compose/runtime/CompositionContext;
 HSPLandroidx/compose/runtime/GapComposer;->changed(F)Z
@@ -4313,7 +4317,6 @@ HSPLandroidx/compose/runtime/GapComposer;->currentCompositionLocalScope()Landroi
 HSPLandroidx/compose/runtime/GapComposer;->currentCompositionLocalScope(I)Landroidx/compose/runtime/PersistentCompositionLocalMap;
 HSPLandroidx/compose/runtime/GapComposer;->doCompose-aFTiNEg(Landroidx/collection/MutableScatterMap;Lkotlin/jvm/functions/Function2;)V
 HSPLandroidx/compose/runtime/GapComposer;->doRecordDownsFor(II)V
-HSPLandroidx/compose/runtime/GapComposer;->end(Z)V
 HSPLandroidx/compose/runtime/GapComposer;->endDefaults()V
 HSPLandroidx/compose/runtime/GapComposer;->endGroup()V
 HSPLandroidx/compose/runtime/GapComposer;->endMovableGroup()V
@@ -4324,9 +4327,7 @@ HSPLandroidx/compose/runtime/GapComposer;->endReplaceGroup()V
 HSPLandroidx/compose/runtime/GapComposer;->endReusableGroup()V
 HSPLandroidx/compose/runtime/GapComposer;->endRoot()V
 HSPLandroidx/compose/runtime/GapComposer;->ensureWriter()V
-HSPLandroidx/compose/runtime/GapComposer;->enterGroup(ZLandroidx/compose/runtime/GapPending;)V
 HSPLandroidx/compose/runtime/GapComposer;->enterRecomposeScope(Landroidx/compose/runtime/RecomposeScopeImpl;)V
-HSPLandroidx/compose/runtime/GapComposer;->exitGroup(IZ)V
 HSPLandroidx/compose/runtime/GapComposer;->exitRecomposeScope(Landroidx/compose/runtime/RecomposeScopeImpl;)Lkotlin/jvm/functions/Function1;
 HSPLandroidx/compose/runtime/GapComposer;->finalizeCompose()V
 HSPLandroidx/compose/runtime/GapComposer;->forceFreshInsertTable()V
@@ -4385,7 +4386,6 @@ HSPLandroidx/compose/runtime/GapComposer;->skipToGroupEnd()V
 HSPLandroidx/compose/runtime/GapComposer;->sourceInformation(Ljava/lang/String;)V
 HSPLandroidx/compose/runtime/GapComposer;->sourceInformationMarkerEnd()V
 HSPLandroidx/compose/runtime/GapComposer;->sourceInformationMarkerStart(ILjava/lang/String;)V
-HSPLandroidx/compose/runtime/GapComposer;->start-AzEfcrM(ILjava/lang/Object;ILjava/lang/Object;)V
 HSPLandroidx/compose/runtime/GapComposer;->startDefaults()V
 HSPLandroidx/compose/runtime/GapComposer;->startGroup(I)V
 HSPLandroidx/compose/runtime/GapComposer;->startGroup(ILjava/lang/Object;)V
@@ -4394,7 +4394,6 @@ HSPLandroidx/compose/runtime/GapComposer;->startNode()V
 HSPLandroidx/compose/runtime/GapComposer;->startProvider(Landroidx/compose/runtime/ProvidedValue;)V
 HSPLandroidx/compose/runtime/GapComposer;->startProviders([Landroidx/compose/runtime/ProvidedValue;)V
 HSPLandroidx/compose/runtime/GapComposer;->startReaderGroup(ZLjava/lang/Object;)V
-HSPLandroidx/compose/runtime/GapComposer;->startReplaceGroup(I)V
 HSPLandroidx/compose/runtime/GapComposer;->startRestartGroup(I)Landroidx/compose/runtime/Composer;
 HSPLandroidx/compose/runtime/GapComposer;->startReusableGroup(ILjava/lang/Object;)V
 HSPLandroidx/compose/runtime/GapComposer;->startReusableNode()V
@@ -5024,7 +5023,6 @@ HSPLandroidx/compose/runtime/SnapshotMutableStateImpl;-><init>(Ljava/lang/Object
 HSPLandroidx/compose/runtime/SnapshotMutableStateImpl;->getFirstStateRecord()Landroidx/compose/runtime/snapshots/StateRecord;
 HSPLandroidx/compose/runtime/SnapshotMutableStateImpl;->getPolicy()Landroidx/compose/runtime/SnapshotMutationPolicy;
 HSPLandroidx/compose/runtime/SnapshotMutableStateImpl;->prependStateRecord(Landroidx/compose/runtime/snapshots/StateRecord;)V
-HSPLandroidx/compose/runtime/SnapshotMutableStateImpl;->setValue(Ljava/lang/Object;)V
 Landroidx/compose/runtime/SnapshotMutableStateImpl$StateStateRecord;
 HSPLandroidx/compose/runtime/SnapshotMutableStateImpl$StateStateRecord;-><init>(JLjava/lang/Object;)V
 HSPLandroidx/compose/runtime/SnapshotMutableStateImpl$StateStateRecord;->assign(Landroidx/compose/runtime/snapshots/StateRecord;)V
@@ -5662,7 +5660,6 @@ HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations;->isEmpty(
 HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations;->isNotEmpty()Z
 HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations;->popInto(Landroidx/compose/runtime/composer/gapbuffer/changelist/Operations;)V
 HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations;->push(Landroidx/compose/runtime/composer/gapbuffer/changelist/Operation;)V
-HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations;->pushOp(Landroidx/compose/runtime/composer/gapbuffer/changelist/Operation;)V
 HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations;->resizeIntArgs(II)V
 HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations;->resizeObjectArgs(II)V
 HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations;->resizeOpCodes()V
@@ -5671,6 +5668,7 @@ HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations$OpIterator
 HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations$OpIterator;->getInt(I)I
 HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations$OpIterator;->getObject-PtL-UHM(I)Ljava/lang/Object;
 HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations$OpIterator;->getOperation()Landroidx/compose/runtime/composer/gapbuffer/changelist/Operation;
+HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations$OpIterator;->next()Z
 Landroidx/compose/runtime/composer/gapbuffer/changelist/Operations$WriteScope;
 HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations$WriteScope;->constructor-impl(Landroidx/compose/runtime/composer/gapbuffer/changelist/Operations;)Landroidx/compose/runtime/composer/gapbuffer/changelist/Operations;
 HSPLandroidx/compose/runtime/composer/gapbuffer/changelist/Operations$WriteScope;->setObject-sGr0YRc(Landroidx/compose/runtime/composer/gapbuffer/changelist/Operations;ILjava/lang/Object;)V
@@ -6277,8 +6275,8 @@ HSPLandroidx/compose/runtime/snapshots/SnapshotDoubleIndexHeap;->swap(II)V
 Landroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;-><clinit>()V
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;-><init>([J)V
-HSPLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;->add(J)V
-HSPLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;->toArray()[J
+PLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;->add(J)V
+PLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;->toArray()[J
 Landroidx/compose/runtime/snapshots/SnapshotIdSet;
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet;-><clinit>()V
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet;-><init>(JJJ[J)V
@@ -6298,10 +6296,10 @@ HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet$Companion;-><init>()V
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet$Companion;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet$Companion;->getEMPTY()Landroidx/compose/runtime/snapshots/SnapshotIdSet;
 Landroidx/compose/runtime/snapshots/SnapshotId_jvmKt;
-HSPLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->binarySearch([JJ)I
+PLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->binarySearch([JJ)I
 HSPLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->snapshotIdArrayWithCapacity(I)[J
 HSPLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->toSnapshotId(I)J
-HSPLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->withIdRemovedAt([JI)[J
+PLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->withIdRemovedAt([JI)[J
 Landroidx/compose/runtime/snapshots/SnapshotKt;
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->$r8$lambda$VdGZ0p4UKQxv_XqZ8KzdJfJi_-k(Landroidx/compose/runtime/snapshots/SnapshotIdSet;)Lkotlin/Unit;
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->$r8$lambda$ZS1PuAm6Lqpkpu6zI50FMEgFhZw(Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/snapshots/SnapshotIdSet;)Landroidx/compose/runtime/snapshots/Snapshot;
@@ -6337,7 +6335,6 @@ HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->createTransparentSnapshotWit
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->createTransparentSnapshotWithNoParentReadObserver(Landroidx/compose/runtime/snapshots/Snapshot;Lkotlin/jvm/functions/Function1;Z)Landroidx/compose/runtime/snapshots/Snapshot;
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->current(Landroidx/compose/runtime/snapshots/StateRecord;)Landroidx/compose/runtime/snapshots/StateRecord;
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->current(Landroidx/compose/runtime/snapshots/StateRecord;Landroidx/compose/runtime/snapshots/Snapshot;)Landroidx/compose/runtime/snapshots/StateRecord;
-HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->currentSnapshot()Landroidx/compose/runtime/snapshots/Snapshot;
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->emptyLambda$lambda$0(Landroidx/compose/runtime/snapshots/SnapshotIdSet;)Lkotlin/Unit;
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->getLock()Ljava/lang/Object;
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->mergedReadObserver$default(Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ZILjava/lang/Object;)Lkotlin/jvm/functions/Function1;
@@ -6353,7 +6350,7 @@ HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->optimisticMerges(JLandroidx/
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->overwritableRecord(Landroidx/compose/runtime/snapshots/StateRecord;Landroidx/compose/runtime/snapshots/StateObject;Landroidx/compose/runtime/snapshots/Snapshot;Landroidx/compose/runtime/snapshots/StateRecord;)Landroidx/compose/runtime/snapshots/StateRecord;
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->overwriteUnusedRecordsLocked(Landroidx/compose/runtime/snapshots/StateObject;)Z
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->processForUnusedRecordsLocked(Landroidx/compose/runtime/snapshots/StateObject;)V
-HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->readable(Landroidx/compose/runtime/snapshots/StateRecord;Landroidx/compose/runtime/snapshots/StateObject;)Landroidx/compose/runtime/snapshots/StateRecord;
+HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->readable(Landroidx/compose/runtime/snapshots/StateRecord;JLandroidx/compose/runtime/snapshots/SnapshotIdSet;)Landroidx/compose/runtime/snapshots/StateRecord;
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->releasePinningLocked(I)V
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->resetGlobalSnapshotLocked(Landroidx/compose/runtime/snapshots/GlobalSnapshot;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->takeNewSnapshot$lambda$0(Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/snapshots/SnapshotIdSet;)Landroidx/compose/runtime/snapshots/Snapshot;
@@ -6450,7 +6447,6 @@ HSPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->
 HSPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->getOnChanged()Lkotlin/jvm/functions/Function1;
 HSPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->hasScopeObservations()Z
 HSPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->notifyInvalidatedScopes()V
-HSPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->recordInvalidation(Ljava/util/Set;)Z
 HSPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->recordRead(Ljava/lang/Object;)V
 HSPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->recordRead(Ljava/lang/Object;ILjava/lang/Object;Landroidx/collection/MutableObjectIntMap;)V
 HSPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->removeObservation(Ljava/lang/Object;Ljava/lang/Object;)V
@@ -9686,6 +9682,7 @@ Landroidx/compose/ui/node/MeasureAndLayoutDelegate$WhenMappings;
 HSPLandroidx/compose/ui/node/MeasureAndLayoutDelegate$WhenMappings;-><clinit>()V
 Landroidx/compose/ui/node/MeasurePassDelegate;
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;-><clinit>()V
+HSPLandroidx/compose/ui/node/MeasurePassDelegate;-><init>(Landroidx/compose/ui/node/LayoutNodeLayoutDelegate;)V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->access$checkChildrenPlaceOrderForUpdates(Landroidx/compose/ui/node/MeasurePassDelegate;)V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->access$clearPlaceOrder(Landroidx/compose/ui/node/MeasurePassDelegate;)V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->access$getPerformMeasureConstraints$p(Landroidx/compose/ui/node/MeasurePassDelegate;)J
@@ -9705,6 +9702,7 @@ HSPLandroidx/compose/ui/node/MeasurePassDelegate;->getChildDelegates$ui()Ljava/u
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->getInnerCoordinator()Landroidx/compose/ui/node/NodeCoordinator;
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->getLastConstraints-DWUhwKw()Landroidx/compose/ui/unit/Constraints;
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->getLayingOutChildren()Z
+HSPLandroidx/compose/ui/node/MeasurePassDelegate;->getLayoutNode()Landroidx/compose/ui/node/LayoutNode;
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->getLayoutPending$ui()Z
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->getLayoutState()Landroidx/compose/ui/node/LayoutNode$LayoutState;
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->getLookaheadPassDelegate()Landroidx/compose/ui/node/LookaheadPassDelegate;
@@ -9730,6 +9728,7 @@ HSPLandroidx/compose/ui/node/MeasurePassDelegate;->onBeforeLayoutChildren()V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->onNodeDetached()V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->placeAt-f8xVGno(JFLkotlin/jvm/functions/Function1;)V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->placeSelf-MLgxB_4(JFLkotlin/jvm/functions/Function1;Landroidx/compose/ui/graphics/layer/GraphicsLayer;)V
+HSPLandroidx/compose/ui/node/MeasurePassDelegate;->remeasure-BRTryo0(J)Z
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->replace()V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->requestLayoutIfCoordinatesAreUsedAndNotifyChildren()V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->requestMeasure()V
@@ -9803,8 +9802,8 @@ HSPLandroidx/compose/ui/node/NodeChain;->runDetachLifecycle$ui()V
 HSPLandroidx/compose/ui/node/NodeChain;->syncAggregateChildKindSet()V
 HSPLandroidx/compose/ui/node/NodeChain;->syncCoordinators()V
 HSPLandroidx/compose/ui/node/NodeChain;->trimChain(Landroidx/compose/ui/Modifier$Node;)Landroidx/compose/ui/Modifier$Node;
-HSPLandroidx/compose/ui/node/NodeChain;->updateFrom$ui(Landroidx/compose/ui/Modifier;)V
 HSPLandroidx/compose/ui/node/NodeChain;->updateNode(Landroidx/compose/ui/Modifier$Element;Landroidx/compose/ui/Modifier$Element;Landroidx/compose/ui/Modifier$Node;)V
+Landroidx/compose/ui/node/NodeChain$Logger;
 Landroidx/compose/ui/node/NodeChain$sentinelHead$1;
 HSPLandroidx/compose/ui/node/NodeChain$sentinelHead$1;-><init>()V
 Landroidx/compose/ui/node/NodeChainKt;
@@ -9885,6 +9884,7 @@ HSPLandroidx/compose/ui/node/NodeCoordinator;->onUnplaced()V
 HSPLandroidx/compose/ui/node/NodeCoordinator;->placeAt-f8xVGno(JFLkotlin/jvm/functions/Function1;)V
 HSPLandroidx/compose/ui/node/NodeCoordinator;->placeSelfApparentToRealOffset-MLgxB_4(JFLkotlin/jvm/functions/Function1;Landroidx/compose/ui/graphics/layer/GraphicsLayer;)V
 HSPLandroidx/compose/ui/node/NodeCoordinator;->rectInParent$ui$default(Landroidx/compose/ui/node/NodeCoordinator;Landroidx/compose/ui/geometry/MutableRect;ZZILjava/lang/Object;)V
+HSPLandroidx/compose/ui/node/NodeCoordinator;->rectInParent$ui(Landroidx/compose/ui/geometry/MutableRect;ZZ)V
 HSPLandroidx/compose/ui/node/NodeCoordinator;->releaseLayer()V
 HSPLandroidx/compose/ui/node/NodeCoordinator;->replace$ui()V
 HSPLandroidx/compose/ui/node/NodeCoordinator;->setForcePlaceWithLookaheadOffset$ui(Z)V
@@ -10331,8 +10331,6 @@ HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;-
 HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->access$getSendingFocusAffectingEvent$p(Landroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;)Z
 HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->boundsInScreen(Landroidx/compose/ui/semantics/SemanticsNodeWithAdjustedBounds;)Landroid/graphics/Rect;
 HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->boundsUpdatesEventLoop$ui(Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->createNodeInfo(I)Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;
-HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->emptyNodeInfoOrNull()Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;
 HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->getAccessibilityNodeProvider(Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeProviderCompat;
 HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->getAccessibilitySelectionEnd(Landroidx/compose/ui/semantics/SemanticsNode;)I
 HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->getAccessibilitySelectionStart(Landroidx/compose/ui/semantics/SemanticsNode;)I
@@ -10349,7 +10347,6 @@ HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;-
 HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->onViewAttachedToWindow(Landroid/view/View;)V
 HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->populateAccessibilityNodeInfoProperties$canScrollBackward(Landroidx/compose/ui/semantics/ScrollAxisRange;)Z
 HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->populateAccessibilityNodeInfoProperties$canScrollForward(Landroidx/compose/ui/semantics/ScrollAxisRange;)Z
-HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->populateAccessibilityNodeInfoProperties(ILandroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Landroidx/compose/ui/semantics/SemanticsNode;)V
 HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->resetEnabledAccessibilityServiceList()V
 HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->setContentInvalid(Landroidx/compose/ui/semantics/SemanticsNode;Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)V
 HSPLandroidx/compose/ui/platform/AndroidComposeViewAccessibilityDelegateCompat;->setInvisibleIfEmptyBounds(Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Landroidx/compose/ui/semantics/SemanticsNode;)V
@@ -11250,7 +11247,6 @@ HSPLandroidx/compose/ui/semantics/SemanticsOwnerKt;->getAllUncoveredSemanticsNod
 HSPLandroidx/compose/ui/semantics/SemanticsOwnerKt;->getAllUncoveredSemanticsNodesToIntObjectMap$lambda$0$virtualViewId(Landroidx/compose/ui/semantics/SemanticsNode;ILandroidx/compose/ui/semantics/SemanticsNode;)I
 HSPLandroidx/compose/ui/semantics/SemanticsOwnerKt;->getAllUncoveredSemanticsNodesToIntObjectMap(Landroidx/compose/ui/semantics/SemanticsOwner;ILkotlin/jvm/functions/Function1;)Landroidx/collection/IntObjectMap;
 HSPLandroidx/compose/ui/semantics/SemanticsOwnerKt;->getScrollableParent(Landroidx/compose/ui/semantics/SemanticsNode;)Landroidx/compose/ui/semantics/SemanticsNode;
-HSPLandroidx/compose/ui/semantics/SemanticsOwnerKt;->isHidden(Landroidx/compose/ui/semantics/SemanticsNode;)Z
 HSPLandroidx/compose/ui/semantics/SemanticsOwnerKt;->isImportantForAccessibility(Landroidx/compose/ui/semantics/SemanticsNode;)Z
 HSPLandroidx/compose/ui/semantics/SemanticsOwnerKt;->isPartiallyOffscreenInScrollParent(Landroidx/compose/ui/semantics/SemanticsNode;)Z
 HSPLandroidx/compose/ui/semantics/SemanticsOwnerKt;->isScrollNode(Landroidx/compose/ui/semantics/SemanticsNode;)Z
@@ -16080,14 +16076,15 @@ Lcom/hancekim/billboard/feature/collection/CardDetailPresenter$CardDetailPresent
 Lcom/hancekim/billboard/feature/collection/CardDetailPresenterFactory;
 HSPLcom/hancekim/billboard/feature/collection/CardDetailPresenterFactory;-><clinit>()V
 HSPLcom/hancekim/billboard/feature/collection/CardDetailPresenterFactory;-><init>(Lcom/hancekim/billboard/feature/collection/CardDetailPresenter$CardDetailPresenterFactory;)V
-HSPLcom/hancekim/billboard/feature/collection/CardDetailPresenterFactory;->create(Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/CircuitContext;)Lcom/slack/circuit/runtime/presenter/Presenter;
 Lcom/hancekim/billboard/feature/collection/CardDetailUiFactory;
 HSPLcom/hancekim/billboard/feature/collection/CardDetailUiFactory;-><clinit>()V
 HSPLcom/hancekim/billboard/feature/collection/CardDetailUiFactory;-><init>()V
+HSPLcom/hancekim/billboard/feature/collection/CardDetailUiFactory;->create(Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/CircuitContext;)Lcom/slack/circuit/runtime/ui/Ui;
 Lcom/hancekim/billboard/feature/collection/CollectionPresenter$Factory;
 Lcom/hancekim/billboard/feature/collection/CollectionPresenterFactory;
 HSPLcom/hancekim/billboard/feature/collection/CollectionPresenterFactory;-><clinit>()V
 HSPLcom/hancekim/billboard/feature/collection/CollectionPresenterFactory;-><init>(Lcom/hancekim/billboard/feature/collection/CollectionPresenter$Factory;)V
+HSPLcom/hancekim/billboard/feature/collection/CollectionPresenterFactory;->create(Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuit/runtime/CircuitContext;)Lcom/slack/circuit/runtime/presenter/Presenter;
 Lcom/hancekim/billboard/feature/collection/CollectionUiFactory;
 HSPLcom/hancekim/billboard/feature/collection/CollectionUiFactory;-><clinit>()V
 HSPLcom/hancekim/billboard/feature/collection/CollectionUiFactory;-><init>()V
@@ -16371,8 +16368,8 @@ HSPLcom/hancekim/billboard/home/HomeUiKt$$ExternalSyntheticLambda8;-><init>(Lkot
 Lcom/hancekim/billboard/home/component/CollectOverlayKt;
 HSPLcom/hancekim/billboard/home/component/CollectOverlayKt;-><clinit>()V
 HSPLcom/hancekim/billboard/home/component/CollectOverlayKt;->CollectOverlay(ZLcom/hancekim/billboard/core/domain/model/Chart;Lcom/hancekim/billboard/home/component/OverlayCollectState;Lkotlinx/collections/immutable/ImmutableList;JLandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
-Lcom/hancekim/billboard/home/component/CollectOverlayKt$$ExternalSyntheticLambda0;
-HSPLcom/hancekim/billboard/home/component/CollectOverlayKt$$ExternalSyntheticLambda0;-><init>(Lcom/hancekim/billboard/core/domain/model/Chart;Lkotlinx/collections/immutable/ImmutableList;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function0;JLkotlin/jvm/functions/Function1;Lcom/hancekim/billboard/home/component/OverlayCollectState;Lkotlin/jvm/functions/Function0;)V
+Lcom/hancekim/billboard/home/component/CollectOverlayKt$$ExternalSyntheticLambda8;
+HSPLcom/hancekim/billboard/home/component/CollectOverlayKt$$ExternalSyntheticLambda8;-><init>(Lcom/hancekim/billboard/core/domain/model/Chart;Lkotlinx/collections/immutable/ImmutableList;JLandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lcom/hancekim/billboard/home/component/OverlayCollectState;Lkotlin/jvm/functions/Function0;)V
 Lcom/hancekim/billboard/home/component/OverlayCollectState;
 Lcom/hancekim/billboard/home/component/OverlayCollectState$Uncollected;
 HSPLcom/hancekim/billboard/home/component/OverlayCollectState$Uncollected;-><clinit>()V
@@ -16543,16 +16540,17 @@ Lcom/pierfrancescosoffritti/androidyoutubeplayer/R$styleable;
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/R$styleable;-><clinit>()V
 Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayer;
 Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;
-PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;->$r8$lambda$YB_gpQ9KeJ8VURoVwBfleqYhAdc(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;)V
+HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;->$r8$lambda$YB_gpQ9KeJ8VURoVwBfleqYhAdc(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;)V
 PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;->$r8$lambda$yEFqA5mOS-poujinyxHoXnthMtk(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;)V
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;-><clinit>()V
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;-><init>(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge$YouTubePlayerBridgeCallbacks;)V
 PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;->sendReady$lambda$2(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;)V
 PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;->sendReady()Z
-PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;->sendYouTubeIFrameAPIReady$lambda$0(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;)V
-PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;->sendYouTubeIFrameAPIReady()Z
-PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge$$ExternalSyntheticLambda1;-><init>(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;)V
-PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge$$ExternalSyntheticLambda1;->run()V
+HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;->sendYouTubeIFrameAPIReady$lambda$0(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;)V
+HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;->sendYouTubeIFrameAPIReady()Z
+Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge$$ExternalSyntheticLambda1;
+HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge$$ExternalSyntheticLambda1;-><init>(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;)V
+HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge$$ExternalSyntheticLambda1;->run()V
 PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge$$ExternalSyntheticLambda7;-><init>(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge;)V
 PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge$$ExternalSyntheticLambda7;->run()V
 Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayerBridge$Companion;
@@ -16604,12 +16602,12 @@ Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/utils/PlaybackResum
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/utils/PlaybackResumer;-><init>()V
 Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;->$r8$lambda$Wa2bmJqHvTWZKtypXieO8mWMES8(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/options/IFramePlayerOptions;Ljava/lang/String;Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/listeners/YouTubePlayerListener;)Lkotlin/Unit;
-PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;->$r8$lambda$tjI7WlkS1uEqr3L4Uf2-FL5xkbk(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/listeners/YouTubePlayerListener;Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayer;)Lkotlin/Unit;
+HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;->$r8$lambda$tjI7WlkS1uEqr3L4Uf2-FL5xkbk(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/listeners/YouTubePlayerListener;Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayer;)Lkotlin/Unit;
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;-><init>(Landroid/content/Context;Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/listeners/FullscreenListener;Landroid/util/AttributeSet;I)V
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;-><init>(Landroid/content/Context;Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/listeners/FullscreenListener;Landroid/util/AttributeSet;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;->access$getInitialize$p(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;)Lkotlin/jvm/functions/Function0;
 PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;->access$getYouTubePlayerCallbacks$p(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;)Ljava/util/Set;
-PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;->initialize$lambda$2$lambda$1(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/listeners/YouTubePlayerListener;Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayer;)Lkotlin/Unit;
+HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;->initialize$lambda$2$lambda$1(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/listeners/YouTubePlayerListener;Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/YouTubePlayer;)Lkotlin/Unit;
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;->initialize$lambda$2(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/options/IFramePlayerOptions;Ljava/lang/String;Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/listeners/YouTubePlayerListener;)Lkotlin/Unit;
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;->initialize(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/listeners/YouTubePlayerListener;Z)V
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;->initialize(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/listeners/YouTubePlayerListener;ZLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/options/IFramePlayerOptions;)V
@@ -16620,7 +16618,7 @@ Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTube
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView$$ExternalSyntheticLambda0;-><init>()V
 Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView$$ExternalSyntheticLambda1;
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView$$ExternalSyntheticLambda1;-><init>(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/listeners/YouTubePlayerListener;)V
-PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView$$ExternalSyntheticLambda1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
+HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView$$ExternalSyntheticLambda1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView$$ExternalSyntheticLambda2;
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView$$ExternalSyntheticLambda2;-><init>(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView;Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/options/IFramePlayerOptions;Ljava/lang/String;Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/listeners/YouTubePlayerListener;)V
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/LegacyYouTubePlayerView$$ExternalSyntheticLambda2;->invoke()Ljava/lang/Object;
@@ -16644,7 +16642,7 @@ PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/WebViewYouTu
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/WebViewYouTubePlayer;->initWebView(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/options/IFramePlayerOptions;Ljava/lang/String;)V
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/WebViewYouTubePlayer;->initialize$core_release(Lkotlin/jvm/functions/Function1;Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/options/IFramePlayerOptions;Ljava/lang/String;)V
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/WebViewYouTubePlayer;->onWindowVisibilityChanged(I)V
-PLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/WebViewYouTubePlayer;->onYouTubeIFrameAPIReady()V
+HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/WebViewYouTubePlayer;->onYouTubeIFrameAPIReady()V
 Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/WebViewYouTubePlayer$initWebView$2;
 HSPLcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/WebViewYouTubePlayer$initWebView$2;-><init>(Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/WebViewYouTubePlayer;)V
 Lcom/pierfrancescosoffritti/androidyoutubeplayer/core/player/views/WebViewYouTubePlayerKt;
@@ -18031,6 +18029,7 @@ HSPLkotlin/coroutines/CoroutineContext$DefaultImpls$$ExternalSyntheticLambda0;->
 Lkotlin/coroutines/CoroutineContext$Element;
 Lkotlin/coroutines/CoroutineContext$Element$DefaultImpls;
 HSPLkotlin/coroutines/CoroutineContext$Element$DefaultImpls;->fold(Lkotlin/coroutines/CoroutineContext$Element;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;)Ljava/lang/Object;
+HSPLkotlin/coroutines/CoroutineContext$Element$DefaultImpls;->get(Lkotlin/coroutines/CoroutineContext$Element;Lkotlin/coroutines/CoroutineContext$Key;)Lkotlin/coroutines/CoroutineContext$Element;
 HSPLkotlin/coroutines/CoroutineContext$Element$DefaultImpls;->minusKey(Lkotlin/coroutines/CoroutineContext$Element;Lkotlin/coroutines/CoroutineContext$Key;)Lkotlin/coroutines/CoroutineContext;
 HSPLkotlin/coroutines/CoroutineContext$Element$DefaultImpls;->plus(Lkotlin/coroutines/CoroutineContext$Element;Lkotlin/coroutines/CoroutineContext;)Lkotlin/coroutines/CoroutineContext;
 Lkotlin/coroutines/CoroutineContext$Key;
@@ -18188,6 +18187,7 @@ Lkotlin/jvm/internal/IntCompanionObject;
 HSPLkotlin/jvm/internal/IntCompanionObject;-><clinit>()V
 HSPLkotlin/jvm/internal/IntCompanionObject;-><init>()V
 Lkotlin/jvm/internal/Intrinsics;
+HSPLkotlin/jvm/internal/Intrinsics;->areEqual(Ljava/lang/Object;Ljava/lang/Object;)Z
 HSPLkotlin/jvm/internal/Intrinsics;->checkNotNull(Ljava/lang/Object;)V
 HSPLkotlin/jvm/internal/Intrinsics;->checkNotNull(Ljava/lang/Object;Ljava/lang/String;)V
 HSPLkotlin/jvm/internal/Intrinsics;->checkNotNullExpressionValue(Ljava/lang/Object;Ljava/lang/String;)V
@@ -18815,7 +18815,6 @@ Lkotlinx/coroutines/DispatchedTask;
 HSPLkotlinx/coroutines/DispatchedTask;-><init>(I)V
 HSPLkotlinx/coroutines/DispatchedTask;->getExceptionalResult$kotlinx_coroutines_core(Ljava/lang/Object;)Ljava/lang/Throwable;
 HSPLkotlinx/coroutines/DispatchedTask;->getSuccessfulResult$kotlinx_coroutines_core(Ljava/lang/Object;)Ljava/lang/Object;
-HSPLkotlinx/coroutines/DispatchedTask;->run()V
 Lkotlinx/coroutines/DispatchedTaskKt;
 HSPLkotlinx/coroutines/DispatchedTaskKt;->dispatch(Lkotlinx/coroutines/DispatchedTask;I)V
 HSPLkotlinx/coroutines/DispatchedTaskKt;->isCancellableMode(I)Z

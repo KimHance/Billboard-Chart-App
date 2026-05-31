@@ -1,6 +1,6 @@
 # Baseline Profile Report
 
-**Generated**: 2026-05-31 15:11 UTC
+**Generated**: 2026-05-31 16:05 UTC
 **Branch**: release/v1.2.0
 **Device**: Pixel 6 API 32 (Gradle Managed Device, CI)
 
@@ -8,9 +8,9 @@
 
 | Metric | Value |
 |---|---|
-| Total rules | 21802 |
-| Startup rules | 15756 |
-| Interaction rules | 6046 |
+| Total rules | 21854 |
+| Startup rules | 15749 |
+| Interaction rules | 6105 |
 | File size | 2.3M |
 
 ## Top 15 App Classes
