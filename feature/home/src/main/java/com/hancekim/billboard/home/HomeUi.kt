@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -85,11 +86,14 @@ fun HomeUi(
                 )
             }
         )
+        // state.groups 자체가 바뀔 때만 새 ImmutableList 인스턴스 생성 →
+        // CollectOverlay 가 referential equality 로 skip 가능해진다.
+        val overlayGroups = remember(state.groups) { state.groups.values.toImmutableList() }
         CollectOverlay(
             visible = state.showCollectOverlay,
             chart = state.overlayChart,
             overlayState = state.overlayState,
-            groups = state.groups.values.toImmutableList(),
+            groups = overlayGroups,
             selectedGroupId = state.selectedGroupIdInOverlay,
             onSelectGroup = { eventSink(HomeEvent.OnSelectGroupInOverlay(it)) },
             onCommit = { eventSink(HomeEvent.OnCommitOverlay) },

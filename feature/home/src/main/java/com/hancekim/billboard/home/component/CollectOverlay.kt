@@ -97,8 +97,11 @@ fun CollectOverlay(
 
         // 선택된 그룹 색으로 글로우 색을 구동 — animateColorAsState 결과 State 자체를 들고
         // drawBehind 람다(draw phase) 안에서 .value 를 read 해 매 보간 프레임 recompose 회피.
-        val targetGlowColor = groups.firstOrNull { it.id == selectedGroupId }
-            ?.colorArgb?.let(::Color) ?: Color.White
+        // targetGlowColor lookup 도 remember 로 캐시해 spring 재시작 / 반복 탐색을 막는다.
+        val targetGlowColor = remember(groups, selectedGroupId) {
+            groups.firstOrNull { it.id == selectedGroupId }
+                ?.colorArgb?.let(::Color) ?: Color.White
+        }
         val animatedGlowColor = animateColorAsState(
             targetValue = targetGlowColor,
             animationSpec = tween(300),

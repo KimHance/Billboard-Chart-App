@@ -46,8 +46,11 @@ fun GroupDropdown(
     modifier: Modifier = Modifier,
 ) {
     var open by remember { mutableStateOf(false) }
-    // items 가 비어있을 수 있는 시점(첫 emit 전, 전체 삭제 직후) 방어
-    val selected = items.firstOrNull { it.id == selectedId } ?: items.firstOrNull()
+    // items 가 비어있을 수 있는 시점(첫 emit 전, 전체 삭제 직후) 방어.
+    // animateFloatAsState (chevron 회전) 가 매 프레임 recompose 를 일으키므로 firstOrNull 탐색을 캐시.
+    val selected = remember(items, selectedId) {
+        items.firstOrNull { it.id == selectedId } ?: items.firstOrNull()
+    }
     // animateFloatAsState 결과 자체를 들고, graphicsLayer 람다(draw phase) 안에서 .value read
     // → 회전 동안 컴포지션 비용 0 (03-compose-state.md deferred read).
     val rotationState = animateFloatAsState(if (open) 180f else 0f, label = "dropdown-chevron")
