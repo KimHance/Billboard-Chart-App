@@ -1,5 +1,7 @@
 package com.hancekim.billboard.core.domain.model
 
+import com.hancekim.billboard.core.data.model.Group as DataGroup
+
 data class Group(
     val id: Long,
     val name: String,
@@ -7,11 +9,10 @@ data class Group(
     val createdAt: Long,
 ) {
     companion object {
-        // 디폴트 그룹(Starred) 고정 id — 삭제 금지 대상. :core:data Group 의 DEFAULT_ID 와 동일 값.
-        const val DEFAULT_ID: Long = 1L
-
-        // 디폴트 그룹 시드 이름/색상 — DataSource 시드와 fake/preview 가 공통 참조.
-        const val DEFAULT_NAME: String = "Starred"
-        const val DEFAULT_COLOR_ARGB: Int = 0xFF00FF85.toInt()
+        // Default 그룹 상수는 :core:data Group 이 SoT — 도메인은 동일 값을 재노출만 한다.
+        // (:core:data-source / :core:data-test 가 :core:domain 을 참조할 수 없어 data 측 상수도 필요.)
+        const val DEFAULT_ID: Long = DataGroup.DEFAULT_ID
+        const val DEFAULT_NAME: String = DataGroup.DEFAULT_NAME
+        const val DEFAULT_COLOR_ARGB: Int = DataGroup.DEFAULT_COLOR_ARGB
     }
 }

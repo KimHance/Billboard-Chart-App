@@ -7,7 +7,7 @@ const val DEFAULT_GROUP_ID: Long = Group.DEFAULT_ID
 
 fun fakeGroup(
     id: Long = DEFAULT_GROUP_ID,
-    name: String = "Starred",
-    colorArgb: Int = 0xFF00FF85.toInt(),
+    name: String = Group.DEFAULT_NAME,
+    colorArgb: Int = Group.DEFAULT_COLOR_ARGB,
     createdAt: Long = 0L,
 ): Group = Group(id, name, colorArgb, createdAt)

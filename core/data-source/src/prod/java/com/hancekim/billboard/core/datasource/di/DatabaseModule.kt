@@ -16,9 +16,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-// Starred 그룹 색상 — Green400 (앱 메인 컬러)
-private const val DEFAULT_GROUP_COLOR_ARGB: Int = 0xFF00FF85.toInt()
-
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
@@ -39,9 +36,11 @@ object DatabaseModule {
                 // 디바이스에는 시드가 누락된다. onOpen + INSERT OR IGNORE 로 매번 보장.
                 override suspend fun onOpen(connection: SQLiteConnection) {
                     val now = System.currentTimeMillis()
+                    val name = Group.DEFAULT_NAME
+                    val nameNormalized = name.lowercase()
                     connection.execSQL(
                         "INSERT OR IGNORE INTO groups (id, name, nameNormalized, colorArgb, createdAt) " +
-                            "VALUES (${Group.DEFAULT_ID}, 'Starred', 'starred', $DEFAULT_GROUP_COLOR_ARGB, $now)"
+                            "VALUES (${Group.DEFAULT_ID}, '$name', '$nameNormalized', ${Group.DEFAULT_COLOR_ARGB}, $now)"
                     )
                 }
             })

@@ -16,8 +16,8 @@ class GroupDataSourceImpl @Inject constructor() : GroupDataSource {
         listOf(
             Group(
                 id = Group.DEFAULT_ID,
-                name = "Starred",
-                colorArgb = 0xFF00FF85.toInt(),
+                name = Group.DEFAULT_NAME,
+                colorArgb = Group.DEFAULT_COLOR_ARGB,
                 createdAt = System.currentTimeMillis(),
             ),
         ),
