@@ -18,10 +18,11 @@ class CollectionDataSourceImpl @Inject constructor() : CollectionDataSource {
     override fun observeByKey(key: String): Flow<CollectedCard?> =
         cards.map { list -> list.find { it.key == key } }
 
-    override suspend fun insert(card: CollectedCard) {
+    override suspend fun insert(card: CollectedCard): Boolean {
         // 신규 삽입 전용 — 이미 동일 key 가 있으면 IGNORE (prod Dao 의 INSERT IGNORE 와 동등).
-        if (cards.value.any { it.key == card.key }) return
+        if (cards.value.any { it.key == card.key }) return false
         cards.value = cards.value + card
+        return true
     }
 
     override suspend fun moveToGroup(key: String, groupId: Long) {
