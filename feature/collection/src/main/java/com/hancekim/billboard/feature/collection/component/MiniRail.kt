@@ -31,8 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
@@ -46,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.hancekim.billboard.core.data.model.Group
-import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.icon.Album
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.icon.IcoClose
@@ -74,13 +71,18 @@ fun MiniRail(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 14.dp, start = 16.dp, end = 16.dp, bottom = 20.dp),
+            .padding(top = 14.dp, bottom = 20.dp),
     ) {
-        MiniRailHeader(cardCount = cards.size)
+        MiniRailHeader(
+            cardCount = cards.size,
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
         Spacer(Modifier.height(10.dp))
+        // LazyRow 자체는 화면 끝까지 — 양옆 16dp 는 contentPadding 으로 처리해 ✕ 뱃지가 잘리지 않도록.
         LazyRow(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = PaddingValues(vertical = 8.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         ) {
             items(cards, key = { it.key }) { card ->
                 MiniRailCard(
@@ -99,7 +101,6 @@ fun MiniRailEmpty(
     group: Group,
     modifier: Modifier = Modifier,
 ) {
-    val groupColor = Color(group.colorArgb)
     val infinite = rememberInfiniteTransition(label = "miniRailEmpty")
     Column(
         modifier = modifier
@@ -135,7 +136,7 @@ fun MiniRailEmpty(
         Spacer(Modifier.height(22.dp))
         Text(
             text = stringResource(R.string.collection_empty_rail_title, group.name),
-            color = BillboardTheme.colorScheme.textOnDark,
+            color = BillboardTheme.colorScheme.textPrimary,
             fontWeight = FontWeight.Black,
             fontSize = 14.sp,
             lineHeight = 18.2.sp,
@@ -143,7 +144,7 @@ fun MiniRailEmpty(
         Spacer(Modifier.height(6.dp))
         Text(
             text = stringResource(R.string.collection_empty_rail_subtitle, group.name),
-            color = BillboardColor.Grey400,
+            color = BillboardTheme.colorScheme.textSecondary,
             fontWeight = FontWeight.Bold,
             fontSize = 11.sp,
             lineHeight = 16.5.sp,
@@ -154,9 +155,9 @@ fun MiniRailEmpty(
 }
 
 @Composable
-private fun MiniRailHeader(cardCount: Int) {
+private fun MiniRailHeader(cardCount: Int, modifier: Modifier = Modifier) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -166,14 +167,14 @@ private fun MiniRailHeader(cardCount: Int) {
             } else {
                 stringResource(R.string.collection_cards_count, cardCount)
             },
-            color = BillboardTheme.colorScheme.textOnDark,
+            color = BillboardTheme.colorScheme.textPrimary,
             fontWeight = FontWeight.Black,
             fontSize = 11.sp,
             letterSpacing = 1.5.sp,
         )
         Text(
             text = stringResource(R.string.collection_rail_hint),
-            color = Color.White.copy(alpha = 0.4f),
+            color = BillboardTheme.colorScheme.textSecondary,
             fontWeight = FontWeight.Bold,
             fontSize = 9.sp,
             letterSpacing = 1.2.sp,
@@ -190,6 +191,7 @@ private fun MiniRailCard(
 ) {
     val accent = BillboardTheme.colorScheme.accent
     val bgColor = BillboardTheme.colorScheme.bgApp
+    val onSurface = BillboardTheme.colorScheme.textPrimary
     val removeLabel = stringResource(R.string.cd_remove_card, card.title)
     val thumbDesc = stringResource(R.string.cd_card_title_by_artist, card.title, card.artist)
     val throttledRemove = throttledProcess(id = "miniRailRemove-${card.key}") { onRemove(card.key) }
@@ -208,14 +210,10 @@ private fun MiniRailCard(
                 modifier = Modifier
                     .size(THUMB_SIZE)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(BillboardColor.Slate800, BillboardColor.Slate900),
-                        ),
-                    )
+                    .background(BillboardTheme.colorScheme.bgImageFallback, RoundedCornerShape(14.dp))
                     .border(
                         width = if (isActive) 2.dp else 1.dp,
-                        color = if (isActive) accent else Color.White.copy(alpha = 0.08f),
+                        color = if (isActive) accent else onSurface.copy(alpha = 0.10f),
                         shape = RoundedCornerShape(14.dp),
                     )
                     .graphicsLayer { alpha = if (isActive) 1f else 0.7f }
@@ -227,7 +225,7 @@ private fun MiniRailCard(
                     .align(Alignment.TopEnd)
                     .offset(x = 7.dp, y = (-7).dp)
                     .size(BADGE_SIZE)
-                    .background(BillboardColor.BadgeDark, CircleShape)
+                    .background(onSurface.copy(alpha = 0.92f), CircleShape)
                     .border(2.dp, bgColor, CircleShape)
                     .noRippleClickable(onClick = throttledRemove)
                     .semantics {
@@ -239,14 +237,14 @@ private fun MiniRailCard(
                 Icon(
                     imageVector = BillboardIcons.IcoClose,
                     contentDescription = null,
-                    tint = Color.White.copy(alpha = 0.8f),
+                    tint = bgColor,
                     modifier = Modifier.size(12.dp),
                 )
             }
         }
         Text(
             text = card.title,
-            color = BillboardTheme.colorScheme.textOnDark,
+            color = onSurface,
             fontWeight = if (isActive) FontWeight.Black else FontWeight.Bold,
             fontSize = 11.sp,
             lineHeight = 13.75.sp,
@@ -256,7 +254,7 @@ private fun MiniRailCard(
         )
         Text(
             text = card.artist,
-            color = Color.White.copy(alpha = 0.55f),
+            color = BillboardTheme.colorScheme.textSecondary,
             fontWeight = FontWeight.Bold,
             fontSize = 10.sp,
             lineHeight = 12.5.sp,
@@ -271,12 +269,13 @@ private fun MiniRailCard(
 
 @Composable
 private fun EmptySlot(modifier: Modifier = Modifier) {
-    val border = Color.White.copy(alpha = 0.14f)
+    val onSurface = BillboardTheme.colorScheme.textPrimary
+    val border = onSurface.copy(alpha = 0.18f)
     val dash = PathEffect.dashPathEffect(floatArrayOf(8f, 6f))
     Box(
         modifier = modifier
             .size(THUMB_SIZE)
-            .background(Color.White.copy(alpha = 0.02f), RoundedCornerShape(14.dp))
+            .background(onSurface.copy(alpha = 0.04f), RoundedCornerShape(14.dp))
             .drawWithCache {
                 val stroke = androidx.compose.ui.graphics.drawscope.Stroke(
                     width = 1.5.dp.toPx(),
@@ -298,7 +297,7 @@ private fun EmptySlot(modifier: Modifier = Modifier) {
         Icon(
             imageVector = BillboardIcons.Album,
             contentDescription = null,
-            tint = Color.White.copy(alpha = 0.28f),
+            tint = onSurface.copy(alpha = 0.32f),
             modifier = Modifier.size(28.dp),
         )
     }
