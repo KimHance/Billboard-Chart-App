@@ -1,5 +1,7 @@
 package com.hancekim.billboard.core.datasource
 
+import android.database.sqlite.SQLiteConstraintException
+import com.hancekim.billboard.core.data.exception.DuplicateGroupNameException
 import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.datasource.db.GroupDao
 import com.hancekim.billboard.core.datasource.db.GroupEntity
@@ -30,7 +32,12 @@ class GroupDataSourceImpl @Inject constructor(
             colorArgb = colorArgb,
             createdAt = System.currentTimeMillis(),
         )
-        return dao.insert(entity)
+        return try {
+            dao.insert(entity)
+        } catch (e: SQLiteConstraintException) {
+            // UNIQUE 인덱스 충돌(race) → 도메인-친화 어댑터 예외로 표면화. SQLite 의존을 도메인에 누설하지 않음.
+            throw DuplicateGroupNameException(trimmed).apply { initCause(e) }
+        }
     }
 
     override suspend fun deleteById(id: Long) {
