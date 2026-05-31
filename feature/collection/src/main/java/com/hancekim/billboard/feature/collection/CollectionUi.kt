@@ -1,14 +1,10 @@
 package com.hancekim.billboard.feature.collection
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
@@ -20,15 +16,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.circuit.BillboardScreen
@@ -36,7 +25,7 @@ import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.designfoundation.icon.ArrowBack
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
-import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
+import com.hancekim.billboard.core.designfoundation.icon.Menu
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeader
@@ -87,6 +76,8 @@ fun CollectionUi(state: CollectionState, modifier: Modifier = Modifier) {
         ModalNavigationDrawer(
             modifier = modifier,
             drawerState = drawerState,
+            // 스와이프 제스처로 열고 닫는 동작은 차단 — 헤더의 메뉴 버튼으로만 토글.
+            gesturesEnabled = false,
             drawerContent = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                     ModalDrawerSheet(
@@ -130,6 +121,7 @@ private fun CollectionContent(
     onOpenSidebar: () -> Unit,
 ) {
     val colorScheme = BillboardTheme.colorScheme
+    val openSidebarLabel = stringResource(R.string.cd_open_group_sidebar)
     Scaffold(
         containerColor = colorScheme.bgApp,
         topBar = {
@@ -137,49 +129,18 @@ private fun CollectionContent(
                 title = stringResource(R.string.collection_title),
                 isLogoVisible = false,
                 leadingIcon = BillboardIcons.ArrowBack,
-                trailingIcon = null,
+                trailingIcon = BillboardIcons.Menu,
+                trailingIconContentDescription = openSidebarLabel,
                 onLeadingIconClick = { state.eventSink(CollectionEvent.OnBackClick) },
+                onTrailingIconClick = onOpenSidebar,
             )
         },
     ) { inner ->
-        BoxWithConstraints(
+        Box(
             Modifier
                 .fillMaxSize()
                 .padding(inner),
         ) {
-            // 정사각형(변 = 화면 높이) radial gradient → scaleX 로 가로 타원화 →
-            // offset 으로 우측 화면 밖으로 밀어 절반이 잘리도록.
-            // base 는 화면 폭의 절반 가량 — 가로 반지름 기준
-            val ellipseSize = maxWidth * 0.6f
-            if (!state.sidebarOpen) {
-                val current = state.groups.firstOrNull { it.id == state.currentGroupId }
-                if (current != null) {
-                    val barColor = Color(current.colorArgb)
-                    val openSidebarLabel = stringResource(R.string.cd_open_group_sidebar)
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .offset(x = ellipseSize * 0.6f)   // 더 우측으로 밀어 잘리게
-                            .size(ellipseSize)
-                            .graphicsLayer { scaleY = 2.2f }  // 세로로 늘려 세로 타원
-                            .background(
-                                brush = Brush.radialGradient(
-                                    colorStops = arrayOf(
-                                        0f to barColor.copy(alpha = 0.7f),
-                                        0.4f to barColor.copy(alpha = 0.35f),
-                                        0.7f to barColor.copy(alpha = 0.1f),
-                                        1f to barColor.copy(alpha = 0f),
-                                    ),
-                                ),
-                            )
-                            .noRippleClickable { onOpenSidebar() }
-                            .semantics {
-                                role = Role.Button
-                                contentDescription = openSidebarLabel
-                            },
-                    )
-                }
-            }
             Column(Modifier.fillMaxSize()) {
                 val currentGroup = state.groups.firstOrNull { it.id == state.currentGroupId }
                 if (currentGroup != null) {

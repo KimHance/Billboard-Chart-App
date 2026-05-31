@@ -55,6 +55,7 @@ fun BillboardHeader(
     isLogoVisible: Boolean = true,
     leadingIcon: ImageVector? = null,
     trailingIcon: ImageVector? = BillboardIcons.Setting,
+    trailingIconContentDescription: String? = null,
     onLeadingIconClick: (() -> Unit)? = null,
     onTrailingIconClick: (() -> Unit)? = null,
     collectionCount: Int? = null,
@@ -181,7 +182,8 @@ fun BillboardHeader(
                                     onClick = onTrailingIconClick
                                 ),
                             imageVector = icon,
-                            contentDescription = stringResource(R.string.cd_open_settings)
+                            contentDescription = trailingIconContentDescription
+                                ?: stringResource(R.string.cd_open_settings),
                         )
                     }
                 }
