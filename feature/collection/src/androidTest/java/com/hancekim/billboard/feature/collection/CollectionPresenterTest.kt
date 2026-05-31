@@ -3,7 +3,7 @@ package com.hancekim.billboard.feature.collection
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.hancekim.billboard.core.circuit.BillboardScreen
-import com.hancekim.billboard.core.data.model.Group
+import com.hancekim.billboard.core.datatest.fixture.DEFAULT_GROUP_ID
 import com.hancekim.billboard.core.datatest.repository.FakeCollectionRepository
 import com.hancekim.billboard.core.datatest.repository.FakeGroupRepository
 import com.hancekim.billboard.core.domain.AddGroupUseCase
@@ -52,10 +52,10 @@ class CollectionPresenterTest {
     fun `초기 currentGroupId 는 DEFAULT_ID`() = runTest {
         launchPresenter(buildPresenter())
         composeTestRule.waitUntil(timeoutMillis = 3_000) {
-            currentState?.currentGroupId == Group.DEFAULT_ID
+            currentState?.currentGroupId == DEFAULT_GROUP_ID
         }
         composeTestRule.runOnIdle {
-            assertEquals(Group.DEFAULT_ID, checkNotNull(currentState).currentGroupId)
+            assertEquals(DEFAULT_GROUP_ID, checkNotNull(currentState).currentGroupId)
         }
     }
 
@@ -104,10 +104,10 @@ class CollectionPresenterTest {
         composeTestRule.waitUntil(timeoutMillis = 3_000) {
             currentState != null
         }
-        sendEvent(CollectionEvent.OnRequestDeleteGroup(Group.DEFAULT_ID))
+        sendEvent(CollectionEvent.OnRequestDeleteGroup(DEFAULT_GROUP_ID))
         composeTestRule.runOnIdle {
             val s = checkNotNull(currentState)
-            assertTrue(s.groups.any { it.id == Group.DEFAULT_ID })
+            assertTrue(s.groups.any { it.id == DEFAULT_GROUP_ID })
         }
     }
 }
