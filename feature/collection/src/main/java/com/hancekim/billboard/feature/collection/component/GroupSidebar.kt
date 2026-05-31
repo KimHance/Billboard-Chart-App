@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -16,10 +17,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.icon.IcoDelete
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
+import com.hancekim.billboard.core.designfoundation.util.throttledProcess
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.group.GroupDot
 import com.hancekim.billboard.core.domain.model.Group
@@ -62,13 +68,16 @@ fun GroupSidebar(
                 style = BillboardTheme.typography.labelMd(),
                 color = colorScheme.textPrimary,
             )
+            val closeLabel = stringResource(R.string.cd_close_group_sidebar)
             Text(
                 text = "✕",
                 style = BillboardTheme.typography.labelMd(),
                 color = colorScheme.textSecondary,
                 modifier = Modifier
+                    .size(36.dp)
+                    .semantics { role = Role.Button; contentDescription = closeLabel }
                     .noRippleClickable { onClose() }
-                    .padding(4.dp),
+                    .wrapContentSize(Alignment.Center),
             )
         }
         groups.forEach { g ->
@@ -92,12 +101,13 @@ fun GroupSidebar(
                     modifier = Modifier.weight(1f),
                 )
                 if (g.id != Group.DEFAULT_ID) {
+                    val throttledDelete = throttledProcess(id = "groupDelete-${g.id}") { onRequestDelete(g.id) }
                     Icon(
                         imageVector = BillboardIcons.IcoDelete,
                         contentDescription = stringResource(R.string.cd_delete_group, g.name),
                         modifier = Modifier
                             .size(20.dp)
-                            .noRippleClickable { onRequestDelete(g.id) },
+                            .noRippleClickable(onClick = throttledDelete),
                         tint = colorScheme.error,
                     )
                 }

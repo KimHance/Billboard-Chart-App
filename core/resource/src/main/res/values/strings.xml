@@ -38,6 +38,7 @@
     <string name="collection_empty_rail_title">No cards in %1$s yet</string>
     <string name="collection_empty_rail_subtitle">Long-press a track on the Hot 100, then save it to %1$s.</string>
     <string name="cd_open_group_sidebar">Open group sidebar</string>
+    <string name="cd_close_group_sidebar">Close group sidebar</string>
     <string name="cd_inspect_card">Inspect card</string>
     <string name="cd_card_title_by_artist">%1$s by %2$s</string>
     <string name="cd_remove_card">Remove %1$s</string>
