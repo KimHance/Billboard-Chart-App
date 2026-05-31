@@ -64,7 +64,10 @@ class CollectionPresenter @AssistedInject constructor(
         var newGroupForm by rememberRetained { mutableStateOf<NewGroupFormState?>(null) }
         var pendingDeleteGroupId by rememberRetained { mutableStateOf<Long?>(null) }
 
-        LaunchedEffect(currentGroupId, cardsInCurrentGroup.firstOrNull()?.key) {
+        // 카드 추가/삭제로 리스트가 바뀔 때마다 현재 nowPlayingKey 가 유효한지 검증.
+        // (firstOrNull 의 key 만 키로 쓰면 "활성 카드가 첫 카드가 아닐 때 삭제" 시 effect 가 재실행되지 않아
+        // 하이라이트가 사라지는 버그가 발생.)
+        LaunchedEffect(currentGroupId, cardsInCurrentGroup) {
             if (nowPlayingKey == null || cardsInCurrentGroup.none { it.key == nowPlayingKey }) {
                 nowPlayingKey = cardsInCurrentGroup.firstOrNull()?.key
             }
@@ -88,11 +91,8 @@ class CollectionPresenter @AssistedInject constructor(
                     is CollectionEvent.OnRemoveCard -> {
                         scope.launch {
                             runCatching { removeFromCollectionUseCase(event.key) }
-                                .onSuccess {
-                                    // 삭제된 카드가 now-playing 이면 자동으로 다음 후보로 폴백 (LaunchedEffect 가 갱신)
-                                    if (nowPlayingKey == event.key) nowPlayingKey = null
-                                }
                                 .onFailure { Timber.e(it, "remove card failed: ${event.key}") }
+                            // 삭제 성공 시 flow 가 새 리스트를 흘려보내고 LaunchedEffect 가 first 로 폴백시킴.
                         }
                     }
                     CollectionEvent.OnInspectClick ->
