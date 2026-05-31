@@ -5,10 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,7 +14,6 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -43,12 +39,15 @@ import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
-import com.hancekim.billboard.core.designsystem.componenet.group.GroupChip
 import com.hancekim.billboard.core.designsystem.componenet.header.BillboardHeader
 import com.hancekim.billboard.core.resource.R
-import com.hancekim.billboard.feature.collection.component.EmptyGroupPlaceholder
+import com.hancekim.billboard.feature.collection.component.CollectionDivider
+import com.hancekim.billboard.feature.collection.component.CollectionSubline
 import com.hancekim.billboard.feature.collection.component.GroupSidebar
 import com.hancekim.billboard.feature.collection.component.MiniRail
+import com.hancekim.billboard.feature.collection.component.MiniRailEmpty
+import com.hancekim.billboard.feature.collection.component.NowPlayingDeck
+import com.hancekim.billboard.feature.collection.component.NowPlayingDeckEmpty
 import com.slack.circuit.codegen.annotations.CircuitInject
 import dagger.hilt.android.components.ActivityRetainedComponent
 import kotlinx.collections.immutable.persistentListOf
@@ -183,65 +182,47 @@ private fun CollectionContent(
             }
             Column(Modifier.fillMaxSize()) {
                 val currentGroup = state.groups.firstOrNull { it.id == state.currentGroupId }
-                Text(
-                    text = stringResource(
-                        R.string.collection_count_in_group,
-                        state.cardsInCurrentGroup.size,
-                        currentGroup?.name?.uppercase() ?: "—",
-                    ),
-                    style = BillboardTheme.typography.labelMd(),
-                    color = currentGroup?.colorArgb?.let { Color(it) } ?: colorScheme.textSecondary,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                )
-                if (state.cardsInCurrentGroup.isEmpty()) {
-                    Spacer(Modifier.weight(1f))
-                    EmptyGroupPlaceholder()
-                } else {
-                    val currentCard = state.cardsInCurrentGroup.firstOrNull { it.key == state.nowPlayingKey }
-                        ?: state.cardsInCurrentGroup.first()
-                    Spacer(Modifier.height(8.dp))
-                    currentGroup?.let { GroupChip(it, Modifier.padding(horizontal = 16.dp)) }
-                    Text(
-                        text = currentCard.title,
-                        style = BillboardTheme.typography.titleMd(),
-                        color = colorScheme.textPrimary,
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                if (currentGroup != null) {
+                    CollectionSubline(
+                        totalCount = state.countsByGroupId.values.sum(),
+                        inGroupCount = state.cardsInCurrentGroup.size,
+                        group = currentGroup,
                     )
-                    Text(
-                        text = currentCard.artist,
-                        style = BillboardTheme.typography.bodyMd(),
-                        color = colorScheme.textSecondary,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                    )
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        text = stringResource(R.string.collection_cards_count, state.cardsInCurrentGroup.size),
-                        style = BillboardTheme.typography.labelMd(),
-                        color = colorScheme.textSecondary,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                    )
+                }
+                // [3]+[4] NowPlayingDeck + INSPECT, 세로 중앙 정렬을 위해 weight(1f)
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    val currentCard = state.cardsInCurrentGroup
+                        .firstOrNull { it.key == state.nowPlayingKey }
+                        ?: state.cardsInCurrentGroup.firstOrNull()
+
+                    if (currentCard != null && currentGroup != null) {
+                        NowPlayingDeck(
+                            card = currentCard,
+                            group = currentGroup,
+                            onInspect = { state.eventSink(CollectionEvent.OnInspectClick) },
+                        )
+                    } else {
+                        NowPlayingDeckEmpty()
+                    }
+                }
+                // [5] 디바이더
+                CollectionDivider()
+                // [6] MiniRail
+                if (state.cardsInCurrentGroup.isNotEmpty()) {
                     MiniRail(
                         cards = state.cardsInCurrentGroup,
                         activeKey = state.nowPlayingKey,
                         onSelect = { state.eventSink(CollectionEvent.OnSelectCard(it)) },
+                        onRemove = { state.eventSink(CollectionEvent.OnRemoveCard(it)) },
                     )
+                } else if (currentGroup != null) {
+                    MiniRailEmpty(group = currentGroup)
                 }
-            }
-            if (state.nowPlayingKey != null) {
-                val inspectLabel = stringResource(R.string.cd_inspect_card)
-                Text(
-                    text = stringResource(R.string.collection_inspect),
-                    style = BillboardTheme.typography.labelMd(),
-                    color = colorScheme.textPrimary,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(top = 72.dp, end = 32.dp)
-                        .noRippleClickable { state.eventSink(CollectionEvent.OnInspectClick) }
-                        .semantics {
-                            role = Role.Button
-                            contentDescription = inspectLabel
-                        },
-                )
             }
         }
     }

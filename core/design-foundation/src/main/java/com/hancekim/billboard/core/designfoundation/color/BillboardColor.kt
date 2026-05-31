@@ -29,4 +29,7 @@ object BillboardColor {
     val HoloAmber = Color(0xFFFFB400)
     val HoloMagenta = Color(0xFFE879F9)
     val Red500 = Color(0xFFEF4444)
+
+    // 미니 카드의 ✕ 삭제 배지 — 다크 슬레이트 위에 컷아웃처럼 보이는 반투명 배경
+    val BadgeDark = Color(0xEB141826)
 }

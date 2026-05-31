@@ -29,14 +29,18 @@
 
     <!-- Collection -->
     <string name="collection_title">COLLECTION</string>
-    <string name="collection_inspect">INSPECT</string>
-    <string name="collection_count_in_group">%1$d IN %2$s</string>
+    <string name="collection_inspect_card">INSPECT CARD ▸</string>
+    <string name="collection_subline">%1$d TOTAL · %2$d IN %3$s</string>
+    <string name="collection_nothing_playing">NOTHING PLAYING</string>
     <string name="collection_cards_count">%1$d CARDS</string>
-    <string name="collection_empty_title">No cards in this group</string>
-    <string name="collection_empty_subtitle">Long-press a song on Home to add</string>
+    <string name="collection_cards_count_one">1 CARD</string>
+    <string name="collection_rail_hint">TAP TO PLAY · ✕ TO REMOVE</string>
+    <string name="collection_empty_rail_title">No cards in %1$s yet</string>
+    <string name="collection_empty_rail_subtitle">Long-press a track on the Hot 100, then save it to %1$s.</string>
     <string name="cd_open_group_sidebar">Open group sidebar</string>
     <string name="cd_inspect_card">Inspect card</string>
     <string name="cd_card_title_by_artist">%1$s by %2$s</string>
+    <string name="cd_remove_card">Remove %1$s</string>
 
     <!-- Card detail -->
     <string name="card_detail_stat_lw">LW</string>
