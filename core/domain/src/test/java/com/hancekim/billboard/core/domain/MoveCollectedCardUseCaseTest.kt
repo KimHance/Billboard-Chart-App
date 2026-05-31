@@ -4,10 +4,9 @@ import com.hancekim.billboard.core.data.repository.CollectionRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertThrows
 import org.junit.Test
-import kotlinx.coroutines.runBlocking
 
 class MoveCollectedCardUseCaseTest {
 
@@ -21,10 +20,8 @@ class MoveCollectedCardUseCaseTest {
     }
 
     @Test
-    fun `repo 가 throw 하면 UseCase 가 그대로 전파한다 - 계약 회귀 방지`() {
+    fun `repo 가 throw 하면 UseCase 가 그대로 전파한다 - 계약 회귀 방지`() = runTest {
         coEvery { repo.moveToGroup(any(), any()) } throws IllegalStateException("boom")
-        assertThrows(IllegalStateException::class.java) {
-            runBlocking { useCase("k", 1L) }
-        }
+        assertFailsWith<IllegalStateException> { useCase("k", 1L) }
     }
 }
