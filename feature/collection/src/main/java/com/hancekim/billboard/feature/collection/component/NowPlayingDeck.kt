@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -46,7 +48,7 @@ import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.core.resource.R
 
 private val DECK_SIZE = 224.dp
-private val GLOW_SIZE = 330.dp
+private val GLOW_SIZE = 560.dp
 
 @Composable
 fun NowPlayingDeck(
@@ -64,30 +66,37 @@ fun NowPlayingDeck(
             .padding(top = 24.dp, bottom = 14.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // 카드 + 배경 글로우 — 글로우를 카드 뒤에 살짝 위쪽으로 배치
+        // 카드 + 배경 글로우 — 글로우는 unbounded 로 부모(=224dp) 밖으로 넘쳐 흐르게.
         Box(
             modifier = Modifier.size(DECK_SIZE),
             contentAlignment = Alignment.Center,
         ) {
             Box(
                 modifier = Modifier
+                    .wrapContentSize(unbounded = true)
                     .size(GLOW_SIZE)
-                    .blur(16.dp)
+                    .blur(32.dp)
                     .background(
                         brush = Brush.radialGradient(
                             colorStops = arrayOf(
-                                0f to groupColor.copy(alpha = 0.27f),
-                                0.65f to Color.Transparent,
+                                0f to groupColor.copy(alpha = 0.32f),
+                                0.35f to groupColor.copy(alpha = 0.16f),
+                                0.65f to groupColor.copy(alpha = 0.05f),
+                                1f to Color.Transparent,
                             ),
                         ),
                         shape = CircleShape,
                     ),
             )
-            HoloCard(
-                albumArtUrl = card.albumArtUrl,
-                cardSize = DECK_SIZE,
-                interactive = true,
-            )
+            // 카드 키가 바뀌면 새 HoloCard 인스턴스 → angle Animatable 이 0 으로 재시작.
+            key(card.key) {
+                HoloCard(
+                    albumArtUrl = card.albumArtUrl,
+                    cardSize = DECK_SIZE,
+                    interactive = true,
+                    autoSpeed = 8f,
+                )
+            }
         }
 
         Spacer(Modifier.height(16.dp))
@@ -96,7 +105,7 @@ fun NowPlayingDeck(
 
         Text(
             text = card.title,
-            color = BillboardTheme.colorScheme.textOnDark,
+            color = BillboardTheme.colorScheme.textPrimary,
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -110,7 +119,7 @@ fun NowPlayingDeck(
         Spacer(Modifier.height(4.dp))
         Text(
             text = card.artist,
-            color = BillboardTheme.colorScheme.textOnDarkMuted,
+            color = BillboardTheme.colorScheme.textSecondary,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -123,11 +132,19 @@ fun NowPlayingDeck(
         )
         Spacer(Modifier.height(4.dp))
 
-        // INSPECT CARD pill
+        // INSPECT CARD pill — bg/border 모두 textPrimary 의 저알파로 라이트/다크 모두 대응.
+        val pillSurface = BillboardTheme.colorScheme.textPrimary
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(percent = 50))
-                .background(Color.White.copy(alpha = 0.08f))
+                .background(pillSurface.copy(alpha = 0.08f))
+                .drawBehind {
+                    drawRoundRect(
+                        color = pillSurface.copy(alpha = 0.15f),
+                        style = Stroke(width = 1.dp.toPx()),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(size.height / 2f, size.height / 2f),
+                    )
+                }
                 .noRippleClickable(onClick = onInspect)
                 .semantics {
                     role = Role.Button
@@ -137,7 +154,7 @@ fun NowPlayingDeck(
         ) {
             Text(
                 text = stringResource(R.string.collection_inspect_card),
-                color = BillboardTheme.colorScheme.textOnDark,
+                color = BillboardTheme.colorScheme.textPrimary,
                 fontWeight = FontWeight.Bold,
                 fontSize = 9.sp,
                 letterSpacing = 1.4.sp,
@@ -148,7 +165,9 @@ fun NowPlayingDeck(
 
 @Composable
 fun NowPlayingDeckEmpty(modifier: Modifier = Modifier) {
-    val borderColor = Color.White.copy(alpha = 0.16f)
+    val onSurface = BillboardTheme.colorScheme.textPrimary
+    val borderColor = onSurface.copy(alpha = 0.20f)
+    val surfaceColor = onSurface.copy(alpha = 0.04f)
     val dash = PathEffect.dashPathEffect(floatArrayOf(8f, 6f))
     Column(
         modifier = modifier
@@ -160,7 +179,7 @@ fun NowPlayingDeckEmpty(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(DECK_SIZE)
                 .background(
-                    color = Color.White.copy(alpha = 0.02f),
+                    color = surfaceColor,
                     shape = RoundedCornerShape(16.dp),
                 )
                 .drawWithCache {
@@ -185,12 +204,12 @@ fun NowPlayingDeckEmpty(modifier: Modifier = Modifier) {
                 Icon(
                     imageVector = BillboardIcons.Album,
                     contentDescription = null,
-                    tint = Color.White.copy(alpha = 0.22f),
+                    tint = onSurface.copy(alpha = 0.28f),
                     modifier = Modifier.size(40.dp),
                 )
                 Text(
                     text = stringResource(R.string.collection_nothing_playing),
-                    color = Color.White.copy(alpha = 0.4f),
+                    color = onSurface.copy(alpha = 0.5f),
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp,
                     letterSpacing = 1.5.sp,
@@ -261,6 +280,7 @@ fun CollectionSubline(
 
 @Composable
 fun CollectionDivider(modifier: Modifier = Modifier) {
+    val accent = BillboardTheme.colorScheme.textPrimary.copy(alpha = 0.16f)
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -268,11 +288,7 @@ fun CollectionDivider(modifier: Modifier = Modifier) {
             .height(1.dp)
             .background(
                 Brush.horizontalGradient(
-                    colors = listOf(
-                        Color.Transparent,
-                        Color.White.copy(alpha = 0.12f),
-                        Color.Transparent,
-                    ),
+                    colors = listOf(Color.Transparent, accent, Color.Transparent),
                 ),
             ),
     )
