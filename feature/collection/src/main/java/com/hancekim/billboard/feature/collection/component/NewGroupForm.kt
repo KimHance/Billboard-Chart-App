@@ -42,7 +42,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 // 그룹 색상 팔레트: BillboardColor 의 강조 색 중 시각적으로 구분 가능한 5개.
 private val GroupColorPalette: ImmutableList<Color> = persistentListOf(
-    BillboardColor.HoloGreen,   // 초록
+    BillboardColor.Green400,    // 초록 (앱 accent 색과 동일)
     BillboardColor.Red500,      // 빨강
     BillboardColor.HoloAmber,   // 주황/노랑
     BillboardColor.HoloMagenta, // 보라
