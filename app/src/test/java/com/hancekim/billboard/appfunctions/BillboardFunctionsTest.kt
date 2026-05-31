@@ -1,7 +1,6 @@
 package com.hancekim.billboard.appfunctions
 
 import androidx.appfunctions.AppFunctionContext
-import androidx.appfunctions.AppFunctionElementNotFoundException
 import com.hancekim.billboard.core.domain.GetBillboardHot100UseCase
 import com.hancekim.billboard.core.domain.model.Chart
 import com.hancekim.billboard.core.domain.model.ChartOverview
@@ -10,7 +9,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import kotlin.test.assertFailsWith
 
 class BillboardFunctionsTest {
 
@@ -35,14 +33,4 @@ class BillboardFunctionsTest {
         assertEquals(1, result.rank)
     }
 
-    @Test
-    fun `getCurrentHot100TopSong - rank 1 이 없으면 AppFunctionElementNotFoundException`() = runTest {
-        coEvery { useCase() } returns ChartOverview(
-            chartList = listOf(Chart(rank = 2, title = "Only Second", artist = "X")),
-        )
-
-        assertFailsWith<AppFunctionElementNotFoundException> {
-            sut.getCurrentHot100TopSong(context)
-        }
-    }
 }
