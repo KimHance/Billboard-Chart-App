@@ -138,6 +138,63 @@ The new file lives in `:app` (not in a feature module), so no `:core:domain` →
 - Should `appfunctions-service` be added in a new `billboard.android.appfunctions` convention plugin, or inline in `app/build.gradle.kts`? **Recommendation: inline.** Convention plugins are for cross-module reuse; this is a one-shot in `:app`.
 - Real minSdk floor for `appfunctions-service` may actually be 34 (per `AppFunctionManagerCompat U+` note) rather than 36 — the `/ai/appfunctions` page asserted 16+. Going with 36 to match the most recent doc claim; revisit if the alpha09 AAR manifest reveals a lower floor.
 
+## Verification Results — Task 5 (ADB list-app-functions)
+
+**Date:** 2026-06-01
+**Device:** Galaxy S25, serial `R5CT40JH2HY`
+**Install:** success — `Installed on 1 device.` (SM-S901N, Android 16)
+
+**`adb shell cmd app_function list-app-functions`:**
+
+```
+No shell command implementation.
+```
+
+> Note: The `cmd app_function list-app-functions` sub-command is not exposed on OneUI 8.5 (Galaxy S25). The `app_function` service itself exists (`service list` confirms `android.app.appfunctions.IAppFunctionManager`). Verification was performed via `adb shell dumpsys app_function` and `adb shell dumpsys package com.hancekim.billboard` instead.
+
+**`dumpsys package com.hancekim.billboard` — AppFunctionService entries:**
+
+```
+android.app.appfunctions.AppFunctionService:
+  com.hancekim.billboard/androidx.appfunctions.service.PlatformAppFunctionService
+    filter permission android.permission.BIND_APP_FUNCTION_SERVICE
+    Action: "android.app.appfunctions.AppFunctionService"
+  com.hancekim.billboard/androidx.appfunctions.service.ExtensionAppFunctionService
+    filter permission android.permission.BIND_APP_FUNCTION_SERVICE
+    Action: "android.app.appfunctions.AppFunctionService"
+```
+
+**`dumpsys app_function` — indexed AppFunctionMetadata for our package:**
+
+```
+AppFunctionMetadata for: com.hancekim.billboard.appfunctions.BillboardFunctions#getCurrentHot100TopSong
+  Static Metadata:
+    {
+      "description": ["Returns the current #1 song on Billboard Hot 100."]
+      "response": [{
+        "valueType": [{
+          "dataTypeReference": ["com.hancekim.billboard.appfunctions.BillboardFunctions$TopSong"]
+          "type": [11]
+          "isNullable": [false]
+        }]
+      }]
+      "enabledByDefault": [true]
+      "functionId": ["com.hancekim.billboard.appfunctions.BillboardFunctions#getCurrentHot100TopSong"]
+      "mobileApplicationQualifiedId": ["android$apps-db/apps#com.hancekim.billboard"]
+      "packageName": ["com.hancekim.billboard"]
+    }
+  Runtime Metadata:
+    {
+      "appFunctionStaticMetadataQualifiedId": ["android$apps-db/app_functions#com.hancekim.billboard/com.hancekim.billboard.appfunctions.BillboardFunctions#getCurrentHot100TopSong"]
+      "functionId": ["com.hancekim.billboard.appfunctions.BillboardFunctions#getCurrentHot100TopSong"]
+      "packageName": ["com.hancekim.billboard"]
+    }
+```
+
+**Outcome:** ✅ function visible — both `PlatformAppFunctionService` and `ExtensionAppFunctionService` are registered, and the AppFunction system has indexed the full static + runtime metadata for `getCurrentHot100TopSong`. The `cmd app_function list-app-functions` shell sub-command not being implemented on Samsung OneUI is a device-specific CLI gap, not a registration failure.
+
+---
+
 ## Out of Scope (explicitly)
 
 - ADK Kotlin (`com.google.adk:google-adk-kotlin-core-android`) — not added.
