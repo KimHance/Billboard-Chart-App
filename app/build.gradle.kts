@@ -8,12 +8,6 @@ plugins {
 android {
     namespace = "com.hancekim.billboard"
 
-    testOptions {
-        unitTests {
-            isReturnDefaultValues = true
-        }
-    }
-
     defaultConfig {
         applicationId = "com.hancekim.billboard"
         versionCode = libs.versions.appVersionCode.get().toInt()
