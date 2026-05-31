@@ -57,7 +57,7 @@ class CardDetailPresenterTest {
     // ── 카드 로드 ──────────────────────────────────────────────────────────────
 
     @Test
-    fun 카드가_존재하면_state에_반영된다() = runTest {
+    fun `카드가 존재하면 state 에 반영된다`() = runTest {
         fakeRepository.add(fakeCollectedCard(testCardKey))
 
         launchPresenter()
@@ -71,7 +71,7 @@ class CardDetailPresenterTest {
     }
 
     @Test
-    fun 카드가_없으면_state_card는_null이다() {
+    fun `카드가 없으면 state card 는 null 이다`() {
         launchPresenter("nonexistent_key")
 
         composeTestRule.runOnIdle {
@@ -82,7 +82,7 @@ class CardDetailPresenterTest {
     // ── 닫기 ────────────────────────────────────────────────────────────────────
 
     @Test
-    fun OnCloseClick으로_navigator_pop이_호출된다() = runTest {
+    fun `OnCloseClick 으로 navigator pop 이 호출된다`() = runTest {
         fakeRepository.add(fakeCollectedCard(testCardKey))
         launchPresenter()
         composeTestRule.waitUntil(timeoutMillis = 3_000) {
@@ -99,7 +99,7 @@ class CardDetailPresenterTest {
     // ── 삭제 ────────────────────────────────────────────────────────────────────
 
     @Test
-    fun OnRemoveClick으로_카드가_삭제되고_pop이_호출된다() = runTest {
+    fun `OnRemoveClick 으로 카드가 삭제되고 pop 이 호출된다`() = runTest {
         fakeRepository.add(fakeCollectedCard(testCardKey))
         launchPresenter()
         composeTestRule.waitUntil(timeoutMillis = 3_000) {
