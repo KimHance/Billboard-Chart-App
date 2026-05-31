@@ -11,7 +11,7 @@ import com.hancekim.billboard.core.player.PlayerState
 import com.hancekim.billboard.core.player.pip.PipState
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
-import com.hancekim.billboard.core.data.model.Group
+import com.hancekim.billboard.core.domain.model.Group
 import com.hancekim.billboard.home.component.OverlayCollectState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap

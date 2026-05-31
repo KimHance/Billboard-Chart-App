@@ -9,7 +9,6 @@ android {
 dependencies {
     api(projects.core.designFoundation)
     api(projects.core.imageLoader)
-    api(projects.core.data)
     api(projects.core.resource)
     implementation(libs.timber)
 }

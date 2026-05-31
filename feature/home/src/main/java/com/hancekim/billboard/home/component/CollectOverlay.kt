@@ -36,17 +36,19 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.card.HoloCard
 import com.hancekim.billboard.core.designsystem.componenet.card.SparkleEffect
+import com.hancekim.billboard.core.designsystem.componenet.group.GroupBadge
 import com.hancekim.billboard.core.designsystem.componenet.group.GroupDropdown
 import com.hancekim.billboard.core.domain.model.Chart
+import com.hancekim.billboard.core.domain.model.Group
 import com.hancekim.billboard.core.resource.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -173,8 +175,11 @@ fun CollectOverlay(
                         modifier = Modifier.graphicsLayer { clip = false },
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            val badges = remember(groups) {
+                                groups.map { GroupBadge(it.id, it.name, it.colorArgb) }.toImmutableList()
+                            }
                             GroupDropdown(
-                                groups = groups,
+                                items = badges,
                                 selectedId = selectedGroupId,
                                 onSelect = onSelectGroup,
                             )

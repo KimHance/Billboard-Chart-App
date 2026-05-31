@@ -17,8 +17,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.circuit.PopResult
-import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.designsystem.componenet.filter.ChartFilter
+import com.hancekim.billboard.core.domain.model.Group
 import com.hancekim.billboard.core.domain.GetBillboard200UseCase
 import com.hancekim.billboard.core.domain.GetBillboardArtist100UseCase
 import com.hancekim.billboard.core.domain.GetBillboardGlobal200UseCase

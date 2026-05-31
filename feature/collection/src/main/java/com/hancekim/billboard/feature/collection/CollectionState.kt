@@ -1,7 +1,7 @@
 package com.hancekim.billboard.feature.collection
 
 import androidx.compose.runtime.Immutable
-import com.hancekim.billboard.core.data.model.Group
+import com.hancekim.billboard.core.domain.model.Group
 import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.feature.collection.component.NewGroupFormState
 import com.slack.circuit.runtime.CircuitUiEvent

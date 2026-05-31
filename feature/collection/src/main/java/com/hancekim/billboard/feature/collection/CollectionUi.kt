@@ -23,8 +23,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.circuit.BillboardScreen
-import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.domain.model.CollectedCard
+import com.hancekim.billboard.core.domain.model.Group
 import com.hancekim.billboard.core.designfoundation.icon.ArrowBack
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.icon.Menu
@@ -189,7 +189,7 @@ private fun CollectionContent(
 }
 
 private val previewGroups = persistentListOf(
-    Group(Group.DEFAULT_ID, "Starred", 0xFF00FF85.toInt(), 0L),
+    Group(Group.DEFAULT_ID, Group.DEFAULT_NAME, Group.DEFAULT_COLOR_ARGB, 0L),
     Group(2L, "Workout", 0xFFFFA000.toInt(), 0L),
     Group(3L, "Chill", 0xFF8E7BFF.toInt(), 0L),
 )

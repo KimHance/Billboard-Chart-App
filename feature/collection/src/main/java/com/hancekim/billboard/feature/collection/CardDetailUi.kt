@@ -130,7 +130,7 @@ fun CardDetailUi(state: CardDetailState, modifier: Modifier = Modifier) {
 
                 Spacer(modifier = Modifier.height(18.dp))
 
-                state.group?.let { GroupChip(it) }
+                state.group?.let { GroupChip(name = it.name, colorArgb = it.colorArgb) }
 
                 Spacer(modifier = Modifier.height(18.dp))
 

@@ -13,17 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
-import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.designfoundation.color.BillboardColor
 import com.hancekim.billboard.core.designfoundation.preview.ThemePreviews
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 
 @Composable
 fun GroupChip(
-    group: Group,
+    name: String,
+    colorArgb: Int,
     modifier: Modifier = Modifier,
 ) {
-    val color = Color(group.colorArgb)
+    val color = Color(colorArgb)
     Row(
         modifier = modifier
             .background(color.copy(alpha = 0.18f), RoundedCornerShape(50))
@@ -32,8 +32,8 @@ fun GroupChip(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        GroupDot(colorArgb = group.colorArgb, size = 8.dp)
-        Text(text = group.name.uppercase(), color = color, style = BillboardTheme.typography.labelMd())
+        GroupDot(colorArgb = colorArgb, size = 8.dp)
+        Text(text = name.uppercase(), color = color, style = BillboardTheme.typography.labelMd())
     }
 }
 
@@ -41,6 +41,6 @@ fun GroupChip(
 @Composable
 private fun GroupChipPreview() {
     BillboardTheme {
-        GroupChip(Group(1, "Workout", BillboardColor.HoloAmber.toArgb(), 0L))
+        GroupChip(name = "Workout", colorArgb = BillboardColor.HoloAmber.toArgb())
     }
 }

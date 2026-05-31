@@ -8,13 +8,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hancekim.billboard.core.circuit.BillboardScreen
-import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.domain.AddGroupUseCase
 import com.hancekim.billboard.core.domain.GetCollectionFlowUseCase
 import com.hancekim.billboard.core.domain.GetGroupsFlowUseCase
 import com.hancekim.billboard.core.domain.RemoveFromCollectionUseCase
 import com.hancekim.billboard.core.domain.RemoveGroupUseCase
 import com.hancekim.billboard.core.domain.model.CollectedCard
+import com.hancekim.billboard.core.domain.model.Group
 import com.hancekim.billboard.feature.collection.component.NewGroupFormState
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
@@ -104,7 +104,7 @@ class CollectionPresenter @AssistedInject constructor(
                             Timber.e("attempted to delete Default group")
                         } else if ((countsByGroupId[event.id] ?: 0) == 0) {
                             scope.launch {
-                                runCatching { removeGroupUseCase(event.id) }
+                                removeGroupUseCase(event.id)
                                     .onSuccess {
                                         if (currentGroupId == event.id) currentGroupId = Group.DEFAULT_ID
                                     }
@@ -117,7 +117,7 @@ class CollectionPresenter @AssistedInject constructor(
                     CollectionEvent.OnConfirmDeleteGroup -> {
                         pendingDeleteGroupId?.let { id ->
                             scope.launch {
-                                runCatching { removeGroupUseCase(id) }
+                                removeGroupUseCase(id)
                                     .onSuccess {
                                         if (currentGroupId == id) currentGroupId = Group.DEFAULT_ID
                                         pendingDeleteGroupId = null

@@ -43,7 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.hancekim.billboard.core.data.model.Group
+import com.hancekim.billboard.core.domain.model.Group
 import com.hancekim.billboard.core.designfoundation.icon.Album
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.icon.IcoClose
@@ -324,6 +324,6 @@ private fun MiniRailPreview() {
 @Composable
 private fun MiniRailEmptyPreview() {
     BillboardTheme {
-        MiniRailEmpty(group = Group(1L, "Starred", 0xFF00FF85.toInt(), 0L))
+        MiniRailEmpty(group = Group(Group.DEFAULT_ID, Group.DEFAULT_NAME, Group.DEFAULT_COLOR_ARGB, 0L))
     }
 }

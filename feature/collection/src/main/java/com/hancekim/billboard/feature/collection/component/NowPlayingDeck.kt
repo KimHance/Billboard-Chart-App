@@ -37,7 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hancekim.billboard.core.data.model.Group
+import com.hancekim.billboard.core.domain.model.Group
 import com.hancekim.billboard.core.designfoundation.icon.Album
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
@@ -300,7 +300,7 @@ private fun NowPlayingDeckPreview() {
     BillboardTheme {
         NowPlayingDeck(
             card = CollectedCard("a", "Preview Title", "Preview Artist", "", 0L, 1, 1, 4),
-            group = Group(1L, "Starred", 0xFF00FF85.toInt(), 0L),
+            group = Group(Group.DEFAULT_ID, Group.DEFAULT_NAME, Group.DEFAULT_COLOR_ARGB, 0L),
             onInspect = {},
         )
     }

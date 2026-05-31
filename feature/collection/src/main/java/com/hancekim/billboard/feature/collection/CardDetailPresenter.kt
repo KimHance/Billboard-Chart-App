@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import com.hancekim.billboard.core.circuit.BillboardScreen
-import com.hancekim.billboard.core.data.model.Group
+import com.hancekim.billboard.core.domain.model.Group
 import com.hancekim.billboard.core.domain.GetCollectedCardFlowUseCase
 import com.hancekim.billboard.core.domain.GetGroupsFlowUseCase
 import com.hancekim.billboard.core.domain.RemoveFromCollectionUseCase

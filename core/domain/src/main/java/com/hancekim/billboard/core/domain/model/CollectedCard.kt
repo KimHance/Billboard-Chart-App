@@ -1,7 +1,5 @@
 package com.hancekim.billboard.core.domain.model
 
-import com.hancekim.billboard.core.data.model.Group
-
 data class CollectedCard(
     val key: String,
     val title: String,

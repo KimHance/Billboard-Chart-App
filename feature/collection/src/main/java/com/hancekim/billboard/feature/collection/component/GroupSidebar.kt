@@ -17,12 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.designfoundation.icon.BillboardIcons
 import com.hancekim.billboard.core.designfoundation.icon.IcoDelete
 import com.hancekim.billboard.core.designfoundation.modifier.noRippleClickable
 import com.hancekim.billboard.core.designsystem.BillboardTheme
 import com.hancekim.billboard.core.designsystem.componenet.group.GroupDot
+import com.hancekim.billboard.core.domain.model.Group
 import com.hancekim.billboard.core.resource.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
@@ -149,7 +149,7 @@ private fun GroupSidebarPreview() {
     BillboardTheme {
         GroupSidebar(
             groups = kotlinx.collections.immutable.persistentListOf(
-                Group(Group.DEFAULT_ID, "Starred", 0xFF00FF85.toInt(), 0L),
+                Group(Group.DEFAULT_ID, Group.DEFAULT_NAME, Group.DEFAULT_COLOR_ARGB, 0L),
                 Group(2L, "Workout", 0xFFFFA000.toInt(), 0L),
             ),
             currentGroupId = Group.DEFAULT_ID,
