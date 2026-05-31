@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
 import androidx.sqlite.SQLiteConnection
-import androidx.sqlite.execSQL
 import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.datasource.db.CollectionDao
 import com.hancekim.billboard.core.datasource.db.CollectionDatabase
@@ -35,13 +34,19 @@ object DatabaseModule {
                 // onCreate 는 DB 가 처음 만들어질 때만 호출되어, 이전 빌드에 DB 가 이미 있는
                 // 디바이스에는 시드가 누락된다. onOpen + INSERT OR IGNORE 로 매번 보장.
                 override suspend fun onOpen(connection: SQLiteConnection) {
-                    val now = System.currentTimeMillis()
-                    val name = Group.DEFAULT_NAME
-                    val nameNormalized = name.lowercase()
-                    connection.execSQL(
+                    // Parameterized 바인딩 — driver 가 escaping 처리해 따옴표/특수문자/inject 위험 차단.
+                    val statement = connection.prepare(
                         "INSERT OR IGNORE INTO groups (id, name, nameNormalized, colorArgb, createdAt) " +
-                            "VALUES (${Group.DEFAULT_ID}, '$name', '$nameNormalized', ${Group.DEFAULT_COLOR_ARGB}, $now)"
+                            "VALUES (?, ?, ?, ?, ?)"
                     )
+                    statement.use {
+                        it.bindLong(1, Group.DEFAULT_ID)
+                        it.bindText(2, Group.DEFAULT_NAME)
+                        it.bindText(3, Group.DEFAULT_NAME.lowercase())
+                        it.bindInt(4, Group.DEFAULT_COLOR_ARGB)
+                        it.bindLong(5, System.currentTimeMillis())
+                        it.step()
+                    }
                 }
             })
             .build()
