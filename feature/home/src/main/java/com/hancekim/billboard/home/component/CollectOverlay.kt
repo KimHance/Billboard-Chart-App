@@ -95,10 +95,11 @@ fun CollectOverlay(
             }
         }
 
-        // 선택된 그룹 색으로 글로우 색을 구동 (draw 단계에서만 read)
+        // 선택된 그룹 색으로 글로우 색을 구동 — animateColorAsState 결과 State 자체를 들고
+        // drawBehind 람다(draw phase) 안에서 .value 를 read 해 매 보간 프레임 recompose 회피.
         val targetGlowColor = groups.firstOrNull { it.id == selectedGroupId }
             ?.colorArgb?.let(::Color) ?: Color.White
-        val animatedGlowColor by animateColorAsState(
+        val animatedGlowColor = animateColorAsState(
             targetValue = targetGlowColor,
             animationSpec = tween(300),
             label = "overlay-glow",
@@ -131,10 +132,11 @@ fun CollectOverlay(
                             .size(360.dp)
                             .blur(12.dp)
                             .drawBehind {
+                                val c = animatedGlowColor.value
                                 drawRect(
                                     brush = Brush.radialGradient(
                                         colors = listOf(
-                                            animatedGlowColor.copy(alpha = 0.3f),
+                                            c.copy(alpha = 0.3f),
                                             Color.Transparent,
                                         ),
                                         center = Offset(size.width / 2f, size.height / 2f),
@@ -199,7 +201,7 @@ fun CollectOverlay(
                                             Triple(
                                                 stringResource(R.string.home_overlay_remove),
                                                 Color.Transparent,
-                                                Color.White,
+                                                BillboardTheme.colorScheme.textOnDark,
                                             )
                                         } else {
                                             Triple(

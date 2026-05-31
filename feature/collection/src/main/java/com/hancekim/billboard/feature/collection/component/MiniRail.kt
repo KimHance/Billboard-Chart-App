@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -113,7 +112,9 @@ fun MiniRailEmpty(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             repeat(4) { index ->
-                val staggered by infinite.animateFloat(
+                // animateFloat 결과 State 자체를 들고, graphicsLayer 람다(draw phase) 안에서 .value read
+                // → 매 프레임 컴포지션을 일으키지 않는다 (03-compose-state deferred read).
+                val staggered = infinite.animateFloat(
                     initialValue = 0f,
                     targetValue = 1f,
                     animationSpec = infiniteRepeatable(
@@ -122,13 +123,12 @@ fun MiniRailEmpty(
                     ),
                     label = "pulse$index",
                 )
-                val alpha = 0.35f + 0.30f * staggered
-                val translateY = -2f * staggered
                 EmptySlot(
                     modifier = Modifier
                         .graphicsLayer {
-                            this.alpha = alpha
-                            translationY = translateY * density
+                            val v = staggered.value
+                            alpha = 0.35f + 0.30f * v
+                            translationY = -2f * v * density
                         },
                 )
             }
