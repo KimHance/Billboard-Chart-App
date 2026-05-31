@@ -9,6 +9,7 @@ import com.hancekim.billboard.core.datatest.repository.FakeGroupRepository
 import com.hancekim.billboard.core.domain.AddGroupUseCase
 import com.hancekim.billboard.core.domain.GetCollectionFlowUseCase
 import com.hancekim.billboard.core.domain.GetGroupsFlowUseCase
+import com.hancekim.billboard.core.domain.RemoveFromCollectionUseCase
 import com.hancekim.billboard.core.domain.RemoveGroupUseCase
 import com.slack.circuit.test.FakeNavigator
 import kotlinx.coroutines.test.runTest
@@ -36,6 +37,7 @@ class CollectionPresenterTest {
         getCollectionFlow = GetCollectionFlowUseCase(collectionRepo),
         addGroupUseCase = AddGroupUseCase(groupRepo),
         removeGroupUseCase = RemoveGroupUseCase(groupRepo),
+        removeFromCollectionUseCase = RemoveFromCollectionUseCase(collectionRepo),
     )
 
     private fun launchPresenter(presenter: CollectionPresenter) {

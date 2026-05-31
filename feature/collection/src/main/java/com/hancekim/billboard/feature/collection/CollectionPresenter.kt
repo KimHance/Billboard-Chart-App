@@ -12,6 +12,7 @@ import com.hancekim.billboard.core.data.model.Group
 import com.hancekim.billboard.core.domain.AddGroupUseCase
 import com.hancekim.billboard.core.domain.GetCollectionFlowUseCase
 import com.hancekim.billboard.core.domain.GetGroupsFlowUseCase
+import com.hancekim.billboard.core.domain.RemoveFromCollectionUseCase
 import com.hancekim.billboard.core.domain.RemoveGroupUseCase
 import com.hancekim.billboard.core.domain.model.CollectedCard
 import com.hancekim.billboard.feature.collection.component.NewGroupFormState
@@ -39,6 +40,7 @@ class CollectionPresenter @AssistedInject constructor(
     private val getCollectionFlow: GetCollectionFlowUseCase,
     private val addGroupUseCase: AddGroupUseCase,
     private val removeGroupUseCase: RemoveGroupUseCase,
+    private val removeFromCollectionUseCase: RemoveFromCollectionUseCase,
 ) : Presenter<CollectionState> {
 
     @Composable
@@ -82,6 +84,16 @@ class CollectionPresenter @AssistedInject constructor(
                     CollectionEvent.OnBackClick -> navigator.pop()
                     is CollectionEvent.OnSelectCard -> {
                         nowPlayingKey = event.key
+                    }
+                    is CollectionEvent.OnRemoveCard -> {
+                        scope.launch {
+                            runCatching { removeFromCollectionUseCase(event.key) }
+                                .onSuccess {
+                                    // 삭제된 카드가 now-playing 이면 자동으로 다음 후보로 폴백 (LaunchedEffect 가 갱신)
+                                    if (nowPlayingKey == event.key) nowPlayingKey = null
+                                }
+                                .onFailure { Timber.e(it, "remove card failed: ${event.key}") }
+                        }
                     }
                     CollectionEvent.OnInspectClick ->
                         nowPlayingKey?.let { navigator.goTo(BillboardScreen.CardDetail(it)) }

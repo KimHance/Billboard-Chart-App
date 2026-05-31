@@ -25,6 +25,7 @@ data class CollectionState(
 sealed interface CollectionEvent : CircuitUiEvent {
     data object OnBackClick : CollectionEvent
     data class OnSelectCard(val key: String) : CollectionEvent
+    data class OnRemoveCard(val key: String) : CollectionEvent
     data object OnInspectClick : CollectionEvent
     data class OnSidebarToggle(val open: Boolean) : CollectionEvent
     data class OnSelectGroup(val id: Long) : CollectionEvent
