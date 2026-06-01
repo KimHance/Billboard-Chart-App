@@ -5,12 +5,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import com.google.adk.kt.runners.InMemoryRunner
+import com.google.adk.kt.sessions.InMemorySessionService
+import com.google.adk.kt.types.Content
+import com.google.adk.kt.types.Part
 import com.hancekim.billboard.core.circuit.BillboardScreen
-import com.hancekim.billboard.core.domain.GetBillboard200UseCase
-import com.hancekim.billboard.core.domain.GetBillboardArtist100UseCase
-import com.hancekim.billboard.core.domain.GetBillboardGlobal200UseCase
-import com.hancekim.billboard.core.domain.GetBillboardHot100UseCase
-import com.hancekim.billboard.feature.agentchat.gemini.GeminiAgentClient
+import com.hancekim.billboard.feature.agentchat.agent.BillboardAgents
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
@@ -22,21 +22,16 @@ import dagger.hilt.android.components.ActivityRetainedComponent
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.int
-import kotlinx.serialization.json.jsonPrimitive
 import timber.log.Timber
 import java.util.UUID
+import com.google.adk.kt.types.Role as AdkRole
 
 class AgentChatPresenter @AssistedInject constructor(
     @Assisted private val navigator: Navigator,
-    // BillboardFunctions 의 @AppFunction 과 동일한 4 개 차트 UseCase 를 그대로 활용.
-    private val getBillboardHot100UseCase: GetBillboardHot100UseCase,
-    private val getBillboard200UseCase: GetBillboard200UseCase,
-    private val getBillboardGlobal200UseCase: GetBillboardGlobal200UseCase,
-    private val getBillboardArtist100UseCase: GetBillboardArtist100UseCase,
-    private val geminiClient: GeminiAgentClient,
+    private val billboardAgents: BillboardAgents,
 ) : Presenter<AgentChatState> {
 
     @Composable
@@ -48,6 +43,16 @@ class AgentChatPresenter @AssistedInject constructor(
         }
         var input: String by rememberRetained { mutableStateOf("") }
         var isSending: Boolean by rememberRetained { mutableStateOf(false) }
+
+        // ADK 세션/러너는 채팅이 살아있는 동안 유지 — rememberRetained.
+        val sessionService = rememberRetained { InMemorySessionService() }
+        val runner = rememberRetained {
+            InMemoryRunner(
+                agent = billboardAgents.mainConcierge,
+                sessionService = sessionService,
+            )
+        }
+        val sessionId = rememberRetained { UUID.randomUUID().toString() }
 
         return AgentChatState(
             messages = messages,
@@ -76,19 +81,39 @@ class AgentChatPresenter @AssistedInject constructor(
                     input = ""
                     isSending = true
 
-                    val historyForLlm = messages
                     scope.launch {
-                        val reply = runCatching {
-                            geminiClient.chat(historyForLlm, ::resolveTool)
-                        }.getOrElse { error ->
-                            Timber.e(error, "agent chat failed")
-                            ChatMessage(
+                        runCatching {
+                            val reply = StringBuilder()
+                            // ADK 0.2.0 InMemoryRunner 는 자체 디스패처 전환을 하지 않아
+                            // Compose 의 Main 디스패처에서 OkHttp 호출 -> NetworkOnMainThreadException.
+                            // flowOn(Dispatchers.IO) 로 upstream(LLM 호출/tool 실행)을 IO 로 옮긴다.
+                            runner.runAsync(
+                                userId = USER_ID,
+                                sessionId = sessionId,
+                                newMessage = Content(
+                                    role = AdkRole.USER,
+                                    parts = listOf(Part(text = trimmed)),
+                                ),
+                            ).flowOn(Dispatchers.IO).collect { event ->
+                                val text = event.content?.parts?.firstOrNull()?.text
+                                if (!text.isNullOrBlank()) reply.append(text)
+                            }
+                            reply.toString().trim()
+                        }.onSuccess { text ->
+                            val assistantMsg = ChatMessage(
+                                role = Role.Assistant,
+                                text = text.ifBlank { "(empty response)" },
+                                id = UUID.randomUUID().toString(),
+                            )
+                            messages = (messages + assistantMsg).toPersistentList()
+                        }.onFailure { error ->
+                            Timber.e(error, "agent run failed")
+                            messages = (messages + ChatMessage(
                                 role = Role.Error,
                                 text = error.message ?: "Unknown error",
                                 id = UUID.randomUUID().toString(),
-                            )
+                            )).toPersistentList()
                         }
-                        messages = (messages + reply).toPersistentList()
                         isSending = false
                     }
                 }
@@ -96,66 +121,14 @@ class AgentChatPresenter @AssistedInject constructor(
         }
     }
 
-    /**
-     * Gemini 가 호출한 function call 을 인앱 데이터로 해석.
-     * BillboardFunctions 의 @AppFunction 과 동일한 데이터 경로 (GetBillboardHot100UseCase) 사용.
-     */
-    private suspend fun resolveTool(name: String, args: JsonObject): Map<String, Any?> {
-        return when (name) {
-            "getSongChartByRank" -> {
-                // chartType 검증 → 적절한 UseCase 선택 → rank 검증 → 차트에서 해당 순위 곡 추출.
-                val rawChartType = args["chartType"]?.jsonPrimitive?.content
-                    ?: throw IllegalArgumentException("chartType argument missing")
-                val chartType = rawChartType.lowercase()
-                val maxRank = when (chartType) {
-                    "hot100" -> 100
-                    "billboard200", "global200" -> 200
-                    else -> throw IllegalArgumentException(
-                        "Unknown chartType '$rawChartType'. Use 'hot100', 'billboard200', or 'global200'."
-                    )
-                }
-                val rank = args["rank"]?.jsonPrimitive?.int
-                    ?: throw IllegalArgumentException("rank argument missing")
-                require(rank in 1..maxRank) { "rank must be in 1..$maxRank for $chartType, got $rank" }
-
-                val overview = when (chartType) {
-                    "hot100" -> getBillboardHot100UseCase()
-                    "billboard200" -> getBillboard200UseCase()
-                    "global200" -> getBillboardGlobal200UseCase()
-                    else -> error("unreachable")
-                }
-                val entry = overview.chartList.firstOrNull { it.rank == rank }
-                    ?: throw IllegalStateException("$chartType has no rank-$rank entry")
-                mapOf(
-                    "title" to entry.title,
-                    "artist" to entry.artist,
-                    "rank" to rank,
-                    "chartType" to chartType,
-                )
-            }
-
-            "getArtist100ByRank" -> {
-                val rank = args["rank"]?.jsonPrimitive?.int
-                    ?: throw IllegalArgumentException("rank argument missing")
-                require(rank in 1..100) { "rank must be in 1..100, got $rank" }
-                val overview = getBillboardArtist100UseCase()
-                val entry = overview.chartList.firstOrNull { it.rank == rank }
-                    ?: throw IllegalStateException("Artist 100 has no rank-$rank entry")
-                // 도메인 매퍼 에 따라 artist 또는 title 한쪽에 아티스트 이름이 들어옴.
-                val artistName = entry.artist.ifBlank { entry.title }
-                mapOf(
-                    "name" to artistName,
-                    "rank" to rank,
-                )
-            }
-
-            else -> throw IllegalArgumentException("Unknown tool: $name")
-        }
-    }
-
     @AssistedFactory
     @CircuitInject(BillboardScreen.AgentChat::class, ActivityRetainedComponent::class)
     fun interface Factory {
         fun create(navigator: Navigator): AgentChatPresenter
+    }
+
+    private companion object {
+        // 단일 사용자 데모. 세션 격리는 sessionId 로만 처리.
+        const val USER_ID = "billboard_user"
     }
 }

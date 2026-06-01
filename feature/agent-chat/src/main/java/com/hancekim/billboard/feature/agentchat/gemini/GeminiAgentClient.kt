@@ -24,8 +24,17 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-// Gemini REST API 호출 + tool calling round-trip 담당.
-// 의존성이 없으므로 unscoped @Inject constructor 로 충분.
+/**
+ * Gemini REST API 호출 + tool calling round-trip 담당.
+ *
+ * Retained as fallback in case ADK setup fails. Production path now goes through
+ * `AgentChatPresenter` → `BillboardAgents` (ADK `InMemoryRunner`). This class is no longer
+ * wired into the active chat flow and is kept only for reference / emergency rollback.
+ */
+@Deprecated(
+    message = "Replaced by ADK runner in AgentChatPresenter via BillboardAgents.",
+    level = DeprecationLevel.WARNING,
+)
 class GeminiAgentClient @Inject constructor() {
 
     private val json = Json {

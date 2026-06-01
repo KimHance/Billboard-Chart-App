@@ -24,6 +24,7 @@ androidxDatastore = "1.2.1"
 androidxBaselineprofile = "1.4.1"
 androidxRoom3 = "3.0.0-alpha04"
 androidxAppFunctions = "1.0.0-alpha08"
+adk = "0.2.0"
 androidxNavigation = "2.8.9"
 androidxWorkManager = "2.11.2"
 androidxHilt = "1.3.0"
@@ -150,6 +151,10 @@ androidx-room3-gradle-plugin = { group = "androidx.room3", name = "room3-gradle-
 androidx-appfunctions = { group = "androidx.appfunctions", name = "appfunctions", version.ref = "androidxAppFunctions" }
 androidx-appfunctions-service = { group = "androidx.appfunctions", name = "appfunctions-service", version.ref = "androidxAppFunctions" }
 androidx-appfunctions-compiler = { group = "androidx.appfunctions", name = "appfunctions-compiler", version.ref = "androidxAppFunctions" }
+
+# ADK (Agent Development Kit for Android) — LlmAgent + @Tool + InMemoryRunner.
+adk-core-android = { group = "com.google.adk", name = "google-adk-kotlin-core-android", version.ref = "adk" }
+adk-processor = { group = "com.google.adk", name = "google-adk-kotlin-processor", version.ref = "adk" }
 androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
 
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }

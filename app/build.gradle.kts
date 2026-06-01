@@ -31,6 +31,25 @@ android {
             isDebuggable = false
         }
     }
+
+    // ADK(google-genai 등) transitive 의존성이 META-INF/INDEX.LIST + 라이선스 텍스트 들을 중복 제공해
+    // mergeJavaResource 가 실패한다. Android 표준 제외 룰 + INDEX.LIST 추가 제외.
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/INDEX.LIST",
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/license.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/notice.txt",
+                "META-INF/ASL2.0",
+                "META-INF/*.kotlin_module",
+            )
+        }
+    }
 }
 
 ksp {

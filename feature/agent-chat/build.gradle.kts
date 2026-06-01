@@ -42,4 +42,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.kotlinx.serialization.json)
+
+    // ADK (Agent Development Kit) — multi-agent + @Tool annotation processor.
+    implementation(libs.adk.core.android)
+    ksp(libs.adk.processor)
 }
