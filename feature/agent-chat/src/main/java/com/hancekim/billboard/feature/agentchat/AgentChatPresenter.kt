@@ -6,6 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.hancekim.billboard.core.circuit.BillboardScreen
+import com.hancekim.billboard.core.domain.GetBillboard200UseCase
+import com.hancekim.billboard.core.domain.GetBillboardArtist100UseCase
+import com.hancekim.billboard.core.domain.GetBillboardGlobal200UseCase
 import com.hancekim.billboard.core.domain.GetBillboardHot100UseCase
 import com.hancekim.billboard.feature.agentchat.gemini.GeminiAgentClient
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -28,7 +31,11 @@ import java.util.UUID
 
 class AgentChatPresenter @AssistedInject constructor(
     @Assisted private val navigator: Navigator,
+    // BillboardFunctions 의 @AppFunction 과 동일한 4 개 차트 UseCase 를 그대로 활용.
     private val getBillboardHot100UseCase: GetBillboardHot100UseCase,
+    private val getBillboard200UseCase: GetBillboard200UseCase,
+    private val getBillboardGlobal200UseCase: GetBillboardGlobal200UseCase,
+    private val getBillboardArtist100UseCase: GetBillboardArtist100UseCase,
     private val geminiClient: GeminiAgentClient,
 ) : Presenter<AgentChatState> {
 
@@ -95,17 +102,49 @@ class AgentChatPresenter @AssistedInject constructor(
      */
     private suspend fun resolveTool(name: String, args: JsonObject): Map<String, Any?> {
         return when (name) {
-            "getHot100SongByRank" -> {
-                // LLM 이 보낸 rank 인자를 검증 + 차트에서 해당 순위 곡을 찾는다.
+            "getSongChartByRank" -> {
+                // chartType 검증 → 적절한 UseCase 선택 → rank 검증 → 차트에서 해당 순위 곡 추출.
+                val rawChartType = args["chartType"]?.jsonPrimitive?.content
+                    ?: throw IllegalArgumentException("chartType argument missing")
+                val chartType = rawChartType.lowercase()
+                val maxRank = when (chartType) {
+                    "hot100" -> 100
+                    "billboard200", "global200" -> 200
+                    else -> throw IllegalArgumentException(
+                        "Unknown chartType '$rawChartType'. Use 'hot100', 'billboard200', or 'global200'."
+                    )
+                }
                 val rank = args["rank"]?.jsonPrimitive?.int
                     ?: throw IllegalArgumentException("rank argument missing")
-                require(rank in 1..100) { "rank must be in 1..100, got $rank" }
-                val overview = getBillboardHot100UseCase()
+                require(rank in 1..maxRank) { "rank must be in 1..$maxRank for $chartType, got $rank" }
+
+                val overview = when (chartType) {
+                    "hot100" -> getBillboardHot100UseCase()
+                    "billboard200" -> getBillboard200UseCase()
+                    "global200" -> getBillboardGlobal200UseCase()
+                    else -> error("unreachable")
+                }
                 val entry = overview.chartList.firstOrNull { it.rank == rank }
-                    ?: throw IllegalStateException("Hot 100 has no rank-$rank entry")
+                    ?: throw IllegalStateException("$chartType has no rank-$rank entry")
                 mapOf(
                     "title" to entry.title,
                     "artist" to entry.artist,
+                    "rank" to rank,
+                    "chartType" to chartType,
+                )
+            }
+
+            "getArtist100ByRank" -> {
+                val rank = args["rank"]?.jsonPrimitive?.int
+                    ?: throw IllegalArgumentException("rank argument missing")
+                require(rank in 1..100) { "rank must be in 1..100, got $rank" }
+                val overview = getBillboardArtist100UseCase()
+                val entry = overview.chartList.firstOrNull { it.rank == rank }
+                    ?: throw IllegalStateException("Artist 100 has no rank-$rank entry")
+                // 도메인 매퍼 에 따라 artist 또는 title 한쪽에 아티스트 이름이 들어옴.
+                val artistName = entry.artist.ifBlank { entry.title }
+                mapOf(
+                    "name" to artistName,
                     "rank" to rank,
                 )
             }

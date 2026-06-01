@@ -207,13 +207,60 @@ class GeminiAgentClient @Inject constructor() {
         private const val TIMEOUT_SECONDS = 30L
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
 
-        // 단일 generic tool: getHot100SongByRank(rank: 1~100).
-        // 1위 의도는 LLM 이 rank=1 로 호출하면 되므로 별도 Top 함수 불필요.
+        // 2 개 tool 노출:
+        //  1) getSongChartByRank — Hot 100 / Billboard 200 / Global 200 통합. Song schema(title+artist).
+        //  2) getArtist100ByRank — Artist 100 전용. Artist schema(name only).
+        // chartType, rank 의 description 에 valid range / enum 을 명시해 LLM 이 정확히 호출하도록 유도.
         private val TOOL_DECLARATION = Tool(
             functionDeclarations = listOf(
                 FunctionDeclaration(
-                    name = "getHot100SongByRank",
-                    description = "Returns the Billboard Hot 100 song at a specific chart rank between 1 and 100. Pass rank=1 for the current #1 song.",
+                    name = "getSongChartByRank",
+                    description = "Returns a Billboard song chart entry (title + artist) at a specific chart rank. " +
+                        "Supports three song-oriented charts: 'hot100' (Hot 100, rank 1..100), " +
+                        "'billboard200' (Billboard 200 albums, rank 1..200), " +
+                        "'global200' (Global 200, rank 1..200). " +
+                        "Pass rank=1 for #1 on the requested chart. " +
+                        "For artist-level lookups use getArtist100ByRank instead.",
+                    parameters = JsonObject(
+                        mapOf(
+                            "type" to JsonPrimitive("object"),
+                            "properties" to JsonObject(
+                                mapOf(
+                                    "chartType" to JsonObject(
+                                        mapOf(
+                                            "type" to JsonPrimitive("string"),
+                                            "enum" to JsonArray(
+                                                listOf(
+                                                    JsonPrimitive("hot100"),
+                                                    JsonPrimitive("billboard200"),
+                                                    JsonPrimitive("global200"),
+                                                )
+                                            ),
+                                            "description" to JsonPrimitive(
+                                                "Chart identifier. One of 'hot100', 'billboard200', 'global200'."
+                                            ),
+                                        )
+                                    ),
+                                    "rank" to JsonObject(
+                                        mapOf(
+                                            "type" to JsonPrimitive("integer"),
+                                            "description" to JsonPrimitive(
+                                                "Chart rank position. 1..100 for hot100; 1..200 for billboard200 and global200."
+                                            ),
+                                        )
+                                    ),
+                                )
+                            ),
+                            "required" to JsonArray(
+                                listOf(JsonPrimitive("chartType"), JsonPrimitive("rank"))
+                            ),
+                        )
+                    ),
+                ),
+                FunctionDeclaration(
+                    name = "getArtist100ByRank",
+                    description = "Returns the Billboard Artist 100 entry (artist name) at a specific rank between 1 and 100. " +
+                        "Artist 100 ranks artists themselves, not songs or albums — the response has no song title.",
                     parameters = JsonObject(
                         mapOf(
                             "type" to JsonPrimitive("object"),
