@@ -67,4 +67,13 @@
     <string name="settings_title">Setting</string>
     <string name="settings_theme_title">Theme</string>
     <string name="settings_font_title">Font</string>
+    <string name="setting_agent_chat_button">AI Chat (Test)</string>
+
+    <!-- Agent chat (test-only) -->
+    <string name="agent_chat_title">AI Chat (Test)</string>
+    <string name="agent_chat_input_hint">Ask about Billboard charts...</string>
+    <string name="agent_chat_send">Send</string>
+    <string name="agent_chat_empty">Send a message to start the conversation.</string>
+    <string name="agent_chat_error_no_api_key">Set GEMINI_API_KEY in local.properties to enable the chat.</string>
+    <string name="cd_agent_chat_send">Send message</string>
 </resources>

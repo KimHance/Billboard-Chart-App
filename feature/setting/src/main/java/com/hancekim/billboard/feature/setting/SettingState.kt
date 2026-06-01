@@ -18,4 +18,7 @@ sealed interface SettingEvent : CircuitUiEvent {
     data object OnBackButtonClick : SettingEvent
     data class OnThemeOptionClick(val theme: AppTheme) : SettingEvent
     data class OnFontOptionClick(val font: AppFont) : SettingEvent
+
+    // 테스트용 AgentChat 화면 진입.
+    data object OnAgentChatClick : SettingEvent
 }

@@ -54,6 +54,7 @@ dependencies {
     implementation(projects.feature.home)
     implementation(projects.feature.setting)
     implementation(projects.feature.collection)
+    implementation(projects.feature.agentChat)
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(projects.core.dataTest)
 

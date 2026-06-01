@@ -18,4 +18,8 @@ sealed interface BillboardScreen : Screen {
 
     @Parcelize
     data class CardDetail(val cardKey: String) : BillboardScreen
+
+    // 테스트용 — 외부 LLM(Gemini REST)이 인앱 AppFunction 데이터를 사용해 채팅으로 응답.
+    @Parcelize
+    data object AgentChat : BillboardScreen
 }

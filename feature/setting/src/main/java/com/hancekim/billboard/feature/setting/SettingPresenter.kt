@@ -54,6 +54,8 @@ class SettingPresenter @AssistedInject constructor(
                         updateAppThemeUseCase(event.theme)
                     }
                 }
+
+                SettingEvent.OnAgentChatClick -> navigator.goTo(BillboardScreen.AgentChat)
             }
         }
     }

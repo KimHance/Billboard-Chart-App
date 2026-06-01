@@ -2,10 +2,14 @@ package com.hancekim.billboard.feature.setting
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonColors
@@ -17,6 +21,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role as A11yRole
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.hancekim.billboard.core.circuit.BillboardScreen
 import com.hancekim.billboard.core.designfoundation.icon.ArrowBack
@@ -88,9 +96,41 @@ fun SettingUi(
                         eventSink(SettingEvent.OnFontOptionClick(it))
                     }
                 )
+                AgentChatEntryButton(
+                    onClick = throttledProcess {
+                        eventSink(SettingEvent.OnAgentChatClick)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     )
+}
+
+// 테스트용 AgentChat 진입 버튼. throttledProcess 로 중복 클릭 방어.
+@Composable
+private fun AgentChatEntryButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colorScheme = BillboardTheme.colorScheme
+    val label = stringResource(R.string.setting_agent_chat_button)
+    Box(
+        modifier = modifier
+            .background(colorScheme.bgCard, RoundedCornerShape(8.dp))
+            .semantics {
+                role = A11yRole.Button
+                contentDescription = label
+            }
+            .clickable { onClick() }
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+    ) {
+        Text(
+            text = label,
+            color = colorScheme.textPrimary,
+            style = BillboardTheme.typography.buttonMd(),
+        )
+    }
 }
 
 @Composable
