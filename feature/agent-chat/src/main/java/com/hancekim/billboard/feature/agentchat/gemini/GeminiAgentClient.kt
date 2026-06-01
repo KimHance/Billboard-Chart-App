@@ -207,25 +207,13 @@ class GeminiAgentClient @Inject constructor() {
         private const val TIMEOUT_SECONDS = 30L
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
 
-        // 두 가지 tool 노출:
-        //  1) getCurrentHot100TopSong — 파라미터 없는 1위 조회 (Top 의도 명시용).
-        //  2) getHot100SongByRank(rank: Int) — 1~100 임의 순위 조회.
-        // LLM 이 사용자 질의를 보고 둘 중 적절한 것을 자율 선택.
+        // 단일 generic tool: getHot100SongByRank(rank: 1~100).
+        // 1위 의도는 LLM 이 rank=1 로 호출하면 되므로 별도 Top 함수 불필요.
         private val TOOL_DECLARATION = Tool(
             functionDeclarations = listOf(
                 FunctionDeclaration(
-                    name = "getCurrentHot100TopSong",
-                    description = "Returns the current #1 song on Billboard Hot 100 chart.",
-                    parameters = JsonObject(
-                        mapOf(
-                            "type" to JsonPrimitive("object"),
-                            "properties" to JsonObject(emptyMap()),
-                        )
-                    ),
-                ),
-                FunctionDeclaration(
                     name = "getHot100SongByRank",
-                    description = "Returns the Billboard Hot 100 song at a specific chart rank between 1 and 100.",
+                    description = "Returns the Billboard Hot 100 song at a specific chart rank between 1 and 100. Pass rank=1 for the current #1 song.",
                     parameters = JsonObject(
                         mapOf(
                             "type" to JsonPrimitive("object"),

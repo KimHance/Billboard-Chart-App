@@ -95,17 +95,6 @@ class AgentChatPresenter @AssistedInject constructor(
      */
     private suspend fun resolveTool(name: String, args: JsonObject): Map<String, Any?> {
         return when (name) {
-            "getCurrentHot100TopSong" -> {
-                val overview = getBillboardHot100UseCase()
-                val top = overview.chartList.firstOrNull { it.rank == 1 }
-                    ?: throw IllegalStateException("Hot 100 has no rank-1 entry")
-                mapOf(
-                    "title" to top.title,
-                    "artist" to top.artist,
-                    "rank" to 1,
-                )
-            }
-
             "getHot100SongByRank" -> {
                 // LLM 이 보낸 rank 인자를 검증 + 차트에서 해당 순위 곡을 찾는다.
                 val rank = args["rank"]?.jsonPrimitive?.int

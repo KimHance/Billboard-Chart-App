@@ -13,17 +13,6 @@ class BillboardFunctions @Inject constructor(
     private val getBillboardHot100UseCase: GetBillboardHot100UseCase,
 ) {
 
-    /** 현재 빌보드 Hot 100 1위 곡. */
-    @AppFunctionSerializable(isDescribedByKDoc = true)
-    data class TopSong(
-        /** Song title. */
-        val title: String,
-        /** Artist name. */
-        val artist: String,
-        /** Chart rank (always 1 for this function). */
-        val rank: Int,
-    )
-
     /** A song entry on the Billboard Hot 100 chart at a specific rank. */
     @AppFunctionSerializable(isDescribedByKDoc = true)
     data class ChartSong(
@@ -36,18 +25,9 @@ class BillboardFunctions @Inject constructor(
     )
 
     /**
-     * Returns the current #1 song on Billboard Hot 100.
-     */
-    @AppFunction(isDescribedByKDoc = true)
-    suspend fun getCurrentHot100TopSong(context: AppFunctionContext): TopSong {
-        val overview = getBillboardHot100UseCase()
-        val top = overview.chartList.firstOrNull { it.rank == 1 }
-            ?: throw AppFunctionElementNotFoundException("Hot 100 has no rank-1 entry")
-        return TopSong(title = top.title, artist = top.artist, rank = 1)
-    }
-
-    /**
      * Returns the Billboard Hot 100 song at the specified chart position.
+     *
+     * 1위 조회는 rank=1 로 호출하면 되므로 별도 Top 함수는 불필요 — generic 하나로 통합.
      *
      * @param rank The chart rank to look up. Must be between 1 and 100 inclusive.
      */
