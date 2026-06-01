@@ -448,3 +448,55 @@ Reasoning:
 **Trigger to revisit:** if Path A returns "Partial" (function listed but not invokable) or "Fail" (not listed). At that point the `:agent` module becomes the cheapest way to isolate whether the runtime invocation path is broken vs. the device CLI surface is incomplete.
 
 **If we do build it later:** scaffold under `:agent` (NOT `:feature:agent`) so it is unambiguously out of the production graph. Convention plugin reuse: `billboard.android.application` + `billboard.android.hilt`. No production module should ever depend on `:agent`.
+
+---
+
+## Decisive Finding — Gemini Client Tool Catalog (2026-06-01, second device)
+
+Second-device verification on **SM-F936N (Galaxy Z Fold 4), Android 16 / API 36**, with `com.hancekim.billboard` installed and `dumpsys app_function` confirming our function is OS-indexed identically to S25.
+
+### What the user did
+Asked the on-device Gemini app to enumerate its available client-side tools (function-calling catalog). Gemini responded with a complete list.
+
+### What Gemini reported it can do (verbatim summary)
+
+1. **`device_actions`** — OS component / UI event control
+   - `open_app(app_name)` — open a target package's main activity
+   - `take_screenshot()`, `take_photo(...)`, `control_flashlight(...)`, `go_home()`, `show_power_menu()`
+2. **`device_settings`** — system Settings provider + hardware routines
+   - `open_setting_page(...)`, `set_setting_toggle(...)`, `set_volume(...)`, `set_mute(...)`
+3. **`notes_and_lists`** — local notes/tasks CRUD
+   - `create_note_or_list`, `get_note_or_list`, `update_note_or_list_title`, `add_items_to_list`, `update_list_items`, `clear_list_or_note`
+
+### What is conspicuously absent
+
+> **There is no `invoke_app_function` / `call_app_function` / generic third-party AppFunctions tool in Gemini's client-side catalog.**
+
+The closest entry, `device_actions.open_app(app_name)`, can launch our `MainActivity` but cannot invoke `BillboardFunctions.getCurrentHot100TopSong` or any other AppFunction.
+
+### Implication — this is the OS-level implementation of "private preview with trusted testers"
+
+The 9to5google 2026-02 report stated Gemini *already uses AppFunctions* for Calendar / Notes / Tasks. The presence of `notes_and_lists` in the catalog confirms this — **but it is exposed as a hardcoded, named tool, not as a generic AppFunctions caller.** That is the architectural choice that gates third-party access:
+
+- **Google-owned AppFunctions** → registered in Gemini's tool catalog under a hand-curated name (`notes_and_lists`) → Gemini model knows when to invoke it
+- **Third-party AppFunctions** (like ours) → not in the catalog → Gemini model has no symbol to invoke even though the OS has the function indexed and the GSA process holds `EXECUTE_APP_FUNCTIONS=granted=true`
+
+This is the exact technical realization of the "private preview with trusted testers" phrase from `/ai/appfunctions`. Becoming a trusted tester means Google adds an entry to the Gemini tool catalog referencing our function — **no code change on our side will unblock this**.
+
+### Device-version concern ("Fold 4 might be older") — addressed
+
+User noted the Fold 4's Gemini build may be older than newer models'. Counter-evidence:
+- S25 (SM-S931N) — newer hardware, also tested 2026-06-01 — same conclusion: ADB direct invoke worked, consumer Gemini did not
+- Conclusion holds across both devices we tested
+
+A newer Gemini build (e.g., Gemini Pro on a Pixel 9 Pro) might expose additional tools, but that would be a Google-side rollout, not something our integration can influence.
+
+### Updated Final Disposition
+
+Spike result: **PASS (technical) / BLOCKED (consumer Gemini)** — same conclusion as the first Final Outcome section, now with direct evidence from the Gemini client itself listing the missing tool.
+
+Recommendation:
+1. **Close the spike.** Our integration is correct, future-proof, and zero-maintenance until Google flips the policy.
+2. **Do not merge `minSdk=36` bump** to `develop`/`main` until either (a) Google moves AppFunctions out of private preview, or (b) we accept the minSdk regression in exchange for trusted-tester enrollment.
+3. **Track AppFunctions Jetpack release notes** — when `androidx.appfunctions` GAs and the Gemini tool catalog opens, our code already works.
+4. **`:agent` module not needed** — decision from the previous section stands, now with stronger evidence (the missing piece is policy/catalog, not code).
