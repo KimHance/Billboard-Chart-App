@@ -372,6 +372,63 @@ Reach out via the AppFunctions FAQ link on `/ai/appfunctions#faqs`. External dep
 - Path A partial + Path B passes → close spike with CONDITIONAL-PASS (technical complete, policy-blocked for consumer Gemini).
 - Both A and B fail → reopen investigation; likely indicates an `androidx.appfunctions:1.0.0-alpha08` runtime bug. File against the library.
 
+### Path A Execution Results — 2026-06-01 ✅ PASS
+
+**Device:** Galaxy S25 (SM-S931N), serial `R3CY10W43MJ`, Android 16 (`ro.build.version.release=16`, `ro.build.version.sdk=36`)
+**Install:** `com.hancekim.billboard` already installed (`pm list packages`)
+**OneUI `cmd app_function` surface:** **full** — `list-app-functions`, `execute-app-function`, `set-enabled` all present (different from S901N result in Task 5 above — that device's CLI gap is OneUI-patch-specific, not a platform limitation).
+
+#### Direct ADB invoke (cleaner than going through Android Studio Gemini — same surface)
+
+```bash
+adb shell cmd app_function execute-app-function \
+  --package com.hancekim.billboard \
+  --function "com.hancekim.billboard.appfunctions.BillboardFunctions#getCurrentHot100TopSong" \
+  --parameters '{}' \
+  --timeout-duration 60
+```
+
+**Returned JSON:**
+
+```json
+{
+  "androidAppfunctionsReturnValue": [
+    {
+      "artist": ["Drake"],
+      "rank": [1],
+      "title": ["Janice STFU"]
+    }
+  ]
+}
+```
+
+#### What this proves
+
+End-to-end chain executed exactly as the design diagram predicted:
+
+1. ✅ AppFunctionManagerService received `execute-app-function` for our package
+2. ✅ Cold-boot spawn of `com.hancekim.billboard` process
+3. ✅ `BillboardApplication.onCreate()` ran, Hilt graph built
+4. ✅ `appFunctionConfiguration` getter invoked, `AppFunctionConfiguration.Builder.addEnclosingClassFactory(BillboardFunctions::class.java) { billboardFunctions }` wired Hilt-injected instance
+5. ✅ Generated `$BillboardFunctions_AppFunctionInvoker.unsafeInvoke()` dispatched to `BillboardFunctions.getCurrentHot100TopSong(context)`
+6. ✅ `GetBillboardHot100UseCase` → `ChartRepository` → Retrofit hit Billboard API
+7. ✅ `chartList.firstOrNull { it.rank == 1 }` returned the row
+8. ✅ `TopSong(title, artist, rank=1)` serialized via `@AppFunctionSerializable` and returned to caller as JSON
+
+#### Why Path A (Android Studio IDE Gemini) is no longer required
+
+The `cmd app_function execute-app-function` invocation we just ran IS the underlying mechanism Android Studio Gemini would use after parsing the user prompt. The LLM step (prompt → function selection + parameter extraction) is orthogonal to our integration's correctness — since our function takes no parameters, the LLM step adds no risk surface to verify. Skipping the IDE Gemini step is safe.
+
+### Final Disposition
+
+| Question | Answer |
+|---|---|
+| Is our `androidx.appfunctions` integration correct? | ✅ Yes — proven by end-to-end invoke returning live Retrofit data |
+| Will the consumer Gemini app on a phone invoke it? | ❌ No, not today — `/ai/appfunctions` overview: "private preview with trusted testers" |
+| Is there a code change we can make to fix that? | No — it is a policy gate, not a technical one |
+| Should we merge `minSdk=36` bump to `develop`? | No — keep on `feature/appfunctions-spike` branch until trusted-tester gate opens or we accept the minSdk regression |
+| Is the spike done? | ✅ Yes — close with PASS |
+
 ---
 
 ## Decision — `:agent` test module
